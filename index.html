@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Focus Academy · Català</title>
+  <meta name="description" content="Pràctiques de llengua catalana per a estudiants. Single-file, sense dependències." />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="wrap row">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">Q</div>
+        <h1>Focus Academy · Català</h1>
+      </div>
+      <nav class="right">
+        <button class="pill" onclick="showView('home')">Inici</button>
+        <button class="pill" onclick="showView('results')">Resultats</button>
+        <button class="pill" onclick="showView('about')">Sobre</button>
+        <input id="studentName" class="input" placeholder="Nom de l'alumne/a" />
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- HOME -->
+    <section id="view-home" class="hero">
+      <div class="panel card">
+        <h2 class="title">Benvingut/da! 👋</h2>
+        <p class="subtitle">Tria un mòdul per configurar-lo i començar. Tot queda guardat en aquest dispositiu (sense comptes).</p>
+
+        <div class="section-title">Mòduls de llengua catalana</div>
+        <div class="grid" id="moduleGrid"></div>
+      </div>
+    </section>
+
+    <!-- CONFIG -->
+    <section id="view-config" class="hidden">
+      <div class="panel card">
+        <div class="row" style="align-items:center">
+          <div>
+            <h2 class="title" id="cfg-title" style="margin:0">Configura el mòdul</h2>
+            <p class="subtitle" id="cfg-desc"></p>
+          </div>
+          <div class="controls">
+            <button class="btn-secondary" onclick="showView('home')">← Torna</button>
+            <button onclick="startFromConfig()">Comença</button>
+          </div>
+        </div>
+
+        <div class="section-title">Opcions comunes</div>
+        <div class="controls">
+          <label class="field chip">Preguntes
+            <select id="cfg-count">
+              <option>10</option><option>20</option><option>30</option><option>50</option>
+            </select>
+          </label>
+          <label class="field chip">Temps (min)
+            <select id="cfg-time">
+              <option value="0">Sense límit</option><option>5</option><option>10</option><option>15</option><option>20</option>
+            </select>
+          </label>
+          <label class="field chip">Nivell (1–4)
+            <select id="cfg-level"></select>
+          </label>
+        </div>
+
+        <div id="cfg-specific"></div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="view-quiz" class="hidden">
+      <div class="quiz">
+        <div class="panel card">
+          <div class="q-header">
+            <div style="display:flex; align-items:center; gap:10px">
+              <span id="qModule" class="chip">—</span>
+              <span id="qLevel" class="chip">Nivell 1</span>
+              <span id="timer" class="chip timer">--:--</span>
+            </div>
+            <div class="progress" style="flex:1"><i id="bar"></i></div>
+          </div>
+
+          <div class="q">
+            <div class="meta" id="qMeta">Pregunta 1 de 10</div>
+            <h2 id="qText">—</h2>
+            <div id="qMedia" style="margin:4px 0 2px"></div>
+            <div class="answer-row">
+              <input id="answer" class="input answer" placeholder="Resposta" />
+              <button id="btnCheck">Comprova (↵)</button>
+              <button class="btn-secondary" id="btnSkip">Omet (→)</button>
+            </div>
+            <div id="feedback"></div>
+          </div>
+        </div>
+
+        <div class="panel card">
+          <h3 class="title" style="margin-top:0">Opcions de resposta</h3>
+          <div class="board" id="textOptions">
+            <!-- S'omplirà dinàmicament per a preguntes d'opció múltiple -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="view-results" class="hidden">
+      <div class="panel card">
+        <div class="row">
+          <h3 class="title" style="margin:0">Resultats guardats</h3>
+          <div class="tbl-actions">
+            <button class="btn-secondary" onclick="exportCSV()">Exporta CSV</button>
+            <button class="btn-ghost" onclick="clearResults()">Neteja</button>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px">
+          <label class="chip">Filtra mòdul: <select id="filter-module"></select></label>
+          <label class="chip">Alumne/a: <input id="filter-student" class="input" placeholder="Tots" style="width:160px"></label>
+        </div>
+        <div id="resultsTable">No hi ha dades encara.</div>
+      </div>
+
+      <!-- PERFIL / ANALYTICS -->
+      <div class="panel card" id="results-analytics">
+        <div class="row" style="align-items:center">
+          <h3 class="title" style="margin:0">Perfil i gràfiques</h3>
+          <div class="subtitle">Es basa en el filtre d'<b>alumne</b> i (opcionalment) el de <b>mòdul</b>.</div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid" id="kpiWrap">
+          <!-- S'omple des de JS -->
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title">Evolució de puntuació</div>
+            <div id="chartScoreTrend"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Mitjana per mòdul</div>
+            <div id="chartByModule"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Temps vs Puntuació</div>
+            <div id="chartTimeVsScore"></div>
+          </div>
+        </div>
+
+        <div id="analyticsHint" class="chip" style="margin-top:10px; display:none">
+          Escriu un nom d'alumne/a al filtre per veure el seu perfil.
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="view-about" class="hidden">
+      <div class="panel card">
+        <h3 class="title" style="margin-top:0">Sobre aquesta eina</h3>
+        <p class="subtitle">Web single-file creada per Focus Academy. Dedicada a l'aprenentatge del català. Dades locals al navegador.</p>
+        <ul>
+          <li>Generador de preguntes per: Ortografia, Gramàtica, Lèxic i Comprensió Lectora.</li>
+          <li>Temps opcional, nivell 1-4, i repàs de només les preguntes errònies.</li>
+          <li>Historial exportable a CSV i mode offline (funciona sense internet).</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="wrap" style="display:flex; align-items:center; justify-content:space-between; gap:16px">
+      <div>Fet per Focus Academy Sant Cugat · © <span id="year"></span></div>
+    </footer>
+  </main>
+  <script src="main.js" defer></script>
+</body>
+</html>
