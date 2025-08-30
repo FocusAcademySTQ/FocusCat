@@ -1,178 +1,813 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Focus Academy · Català</title>
-  <meta name="description" content="Pràctiques de llengua catalana per a estudiants. Single-file, sense dependències." />
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Focus · Proves per a Primària (Mestre/Alumne)</title>
+<meta name="description" content="Crea proves per a primària, comparteix-les i recull resultats. Single-file, sense servidor." />
+<style>
+  :root{
+    --bg:#f7f7fb; --card:#fff; --ink:#0f172a; --muted:#64748b;
+    --p1:#7aa2ff; --p2:#22c55e; --bad:#ef4444; --hair:#e5e7eb;
+    --shadow:0 12px 28px rgba(15,23,42,.10); --radius:18px;
+    --focus:0 0 0 3px rgba(122,162,255,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background:linear-gradient(180deg,#f7f7fb, #f1f5ff 35%, #f7f7fb 70%);
+    color:var(--ink);
+  }
+  header{
+    position:sticky; top:0; z-index:5; background:rgba(255,255,255,.8); backdrop-filter: blur(8px);
+    border-bottom:1px solid var(--hair);
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:14px 16px;}
+  .row{display:flex; align-items:center; gap:14px; justify-content:space-between}
+  .brand{display:flex; align-items:center; gap:12px}
+  .logo{
+    width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
+    background:conic-gradient(from 180deg, #ffffff, #cbd5ff, #ffffff, #cbd5ff, #ffffff);
+    color:#0f172a; font-weight:900; box-shadow:var(--shadow);
+  }
+  h1{font-size:18px; margin:0}
+  nav .pill{
+    border:none; padding:10px 14px; border-radius:999px; background:#fff;
+    box-shadow: var(--shadow); cursor:pointer; font-weight:600;
+  }
+  nav .pill.active{background:var(--p1); color:#fff}
+  main{max-width:1100px; margin:24px auto; padding:0 16px 48px}
+  .grid{display:grid; gap:16px}
+  @media(min-width:900px){ .grid-2{grid-template-columns: 2fr 1fr} }
+  .card{
+    background:var(--card); border:1px solid var(--hair); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:18px;
+  }
+  .title{font-size:18px; font-weight:800; margin:0 0 8px}
+  .muted{color:var(--muted); font-size:14px; margin:0 0 16px}
+  label{display:block; font-weight:700; margin:12px 0 6px}
+  input[type="text"], input[type="number"], textarea, select{
+    width:100%; padding:10px 12px; border:1px solid var(--hair); border-radius:12px;
+    font-size:16px; background:#fff;
+  }
+  textarea{min-height:88px; resize:vertical}
+  .row-inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .btn{
+    appearance:none; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer;
+    background:var(--p1); color:#fff; box-shadow: var(--shadow);
+  }
+  .btn.secondary{background:#fff; color:var(--ink); border:1px solid var(--hair)}
+  .btn.good{background:var(--p2); color:#073b14}
+  .btn.bad{background:#fff; color:var(--bad); border:1px solid #fecaca}
+  .btn.small{padding:6px 10px; font-weight:600; border-radius:10px}
+  .badge{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700; font-size:12px}
+  .q-item{border:1px dashed var(--hair); border-radius:14px; padding:12px; margin:10px 0; background:#fafbff}
+  .q-head{display:flex; align-items:center; gap:8px; justify-content:space-between}
+  .q-type{font-size:12px; font-weight:800; color:#334155}
+  .q-body{margin-top:8px}
+  .options{display:grid; gap:8px; margin-top:8px}
+  .opt-row{display:flex; gap:8px; align-items:center}
+  .hr{height:1px; background:var(--hair); margin:12px 0}
+  .flex{display:flex; gap:10px; flex-wrap:wrap}
+  .table{width:100%; border-collapse: collapse; background:#fff; border-radius:12px; overflow:hidden; border:1px solid var(--hair)}
+  .table th, .table td{padding:10px 12px; border-bottom:1px solid var(--hair); text-align:left; font-size:14px}
+  .table th{background:#f8fafc; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
+  .dropzone{
+    padding:18px; text-align:center; border:2px dashed #c7d2fe; border-radius:14px; background:#fbfdff;
+  }
+  .help{font-size:13px; color:#475569}
+  .right{margin-left:auto}
+  .success{color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:8px 10px; border-radius:10px; display:inline-block}
+  .warn{color:#92400e; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:10px; display:inline-block}
+  .code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f1f5f9; border:1px solid var(--hair); padding:6px 8px; border-radius:8px}
+  .center{text-align:center}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  .footer-note{color:#64748b; font-size:12px; margin-top:16px}
+</style>
 </head>
 <body>
-  <header>
-    <div class="wrap row">
-      <div class="brand">
-        <div class="logo" aria-hidden="true">Q</div>
-        <h1>Focus Academy · Català</h1>
-      </div>
-      <nav class="right">
-        <button class="pill" onclick="showView('home')">Inici</button>
-        <button class="pill" onclick="showView('results')">Resultats</button>
-        <button class="pill" onclick="showView('about')">Sobre</button>
-        <input id="studentName" class="input" placeholder="Nom de l'alumne/a" />
-      </nav>
+<header>
+  <div class="wrap row">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">FQ</div>
+      <h1>Focus · Proves per a Primària</h1>
+      <span class="badge">Sense servidor</span>
     </div>
-  </header>
+    <nav class="right">
+      <button class="pill" id="btnHome" onclick="showView('home')">Inici</button>
+      <button class="pill" id="btnTeacher" onclick="enterRole('teacher')">Mestre</button>
+      <button class="pill" id="btnStudent" onclick="enterRole('student')">Alumne</button>
+    </nav>
+  </div>
+</header>
 
-  <main class="wrap">
-    <!-- HOME -->
-    <section id="view-home" class="hero">
-      <div class="panel card">
-        <h2 class="title">Benvingut/da! 👋</h2>
-        <p class="subtitle">Tria un mòdul per configurar-lo i començar. Tot queda guardat en aquest dispositiu (sense comptes).</p>
-
-        <div class="section-title">Mòduls de llengua catalana</div>
-        <div class="grid" id="moduleGrid"></div>
+<main>
+  <!-- HOME -->
+  <section id="view-home" class="grid">
+    <div class="card">
+      <h2 class="title">Què és això?</h2>
+      <p class="muted">
+        Crea una prova des del teu ordinador, comparteix l’enllaç amb l’alumnat i recull els resultats, <strong>sense</strong> instal·lar res ni crear comptes.
+      </p>
+      <div class="flex">
+        <button class="btn" onclick="enterRole('teacher')">Sóc Mestre</button>
+        <button class="btn secondary" onclick="enterRole('student')">Sóc Alumne</button>
       </div>
-    </section>
+      <p class="footer-note">
+        Privadesa: Les proves i resultats es guarden en el teu dispositiu (LocalStorage) o en fitxers .json que pots compartir.
+      </p>
+    </div>
+  </section>
 
-    <!-- CONFIG -->
-    <section id="view-config" class="hidden">
-      <div class="panel card">
-        <div class="row" style="align-items:center">
-          <div>
-            <h2 class="title" id="cfg-title" style="margin:0">Configura el mòdul</h2>
-            <p class="subtitle" id="cfg-desc"></p>
-          </div>
-          <div class="controls">
-            <button class="btn-secondary" onclick="showView('home')">← Torna</button>
-            <button onclick="startFromConfig()">Comença</button>
-          </div>
-        </div>
+  <!-- TEACHER -->
+  <section id="view-teacher" class="grid grid-2" style="display:none">
+    <div class="card">
+      <h2 class="title">Creador de Proves</h2>
+      <p class="muted">Títol, instruccions i preguntes. Pots barrejar tipus de pregunta.</p>
 
-        <div class="section-title">Opcions comunes</div>
-        <div class="controls">
-          <label class="field chip">Preguntes
-            <select id="cfg-count">
-              <option>10</option><option>20</option><option>30</option><option>50</option>
-            </select>
-          </label>
-          <label class="field chip">Temps (min)
-            <select id="cfg-time">
-              <option value="0">Sense límit</option><option>5</option><option>10</option><option>15</option><option>20</option>
-            </select>
-          </label>
-          <label class="field chip">Nivell (1–4)
-            <select id="cfg-level"></select>
-          </label>
-        </div>
+      <label for="examTitle">Títol de la prova</label>
+      <input id="examTitle" type="text" placeholder="Ex: Comprensió lectora · 4t" />
 
-        <div id="cfg-specific"></div>
-      </div>
-    </section>
+      <label for="examDesc">Instruccions per a l’alumnat</label>
+      <textarea id="examDesc" placeholder="Llegeix atentament i respon."></textarea>
 
-    <!-- QUIZ -->
-    <section id="view-quiz" class="hidden">
-      <div class="quiz">
-        <div class="panel card">
-          <div class="q-header">
-            <div style="display:flex; align-items:center; gap:10px">
-              <span id="qModule" class="chip">—</span>
-              <span id="qLevel" class="chip">Nivell 1</span>
-              <span id="timer" class="chip timer">--:--</span>
-            </div>
-            <div class="progress" style="flex:1"><i id="bar"></i></div>
-          </div>
-
-          <div class="q">
-            <div class="meta" id="qMeta">Pregunta 1 de 10</div>
-            <h2 id="qText">—</h2>
-            <div id="qMedia" style="margin:4px 0 2px"></div>
-            <div class="answer-row">
-              <input id="answer" class="input answer" placeholder="Resposta" />
-              <button id="btnCheck">Comprova (↵)</button>
-              <button class="btn-secondary" id="btnSkip">Omet (→)</button>
-            </div>
-            <div id="feedback"></div>
-          </div>
-        </div>
-
-        <div class="panel card">
-          <h3 class="title" style="margin-top:0">Opcions de resposta</h3>
-          <div class="board" id="textOptions">
-            <!-- S'omplirà dinàmicament per a preguntes d'opció múltiple -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- RESULTS -->
-    <section id="view-results" class="hidden">
-      <div class="panel card">
-        <div class="row">
-          <h3 class="title" style="margin:0">Resultats guardats</h3>
-          <div class="tbl-actions">
-            <button class="btn-secondary" onclick="exportCSV()">Exporta CSV</button>
-            <button class="btn-ghost" onclick="clearResults()">Neteja</button>
-          </div>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px">
-          <label class="chip">Filtra mòdul: <select id="filter-module"></select></label>
-          <label class="chip">Alumne/a: <input id="filter-student" class="input" placeholder="Tots" style="width:160px"></label>
-        </div>
-        <div id="resultsTable">No hi ha dades encara.</div>
+      <div class="row-inline" style="align-items:center">
+        <label for="examShowScore" style="margin:0">Mostrar nota a l’alumne en enviar?</label>
+        <select id="examShowScore">
+          <option value="yes">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <label class="right row-inline" style="margin-left:auto">
+          <input type="checkbox" id="examShuffle" onchange="toggleShuffle(this.checked)" />
+          <span class="help">Barrejar ordre de preguntes</span>
+        </label>
       </div>
 
-      <!-- PERFIL / ANALYTICS -->
-      <div class="panel card" id="results-analytics">
-        <div class="row" style="align-items:center">
-          <h3 class="title" style="margin:0">Perfil i gràfiques</h3>
-          <div class="subtitle">Es basa en el filtre d'<b>alumne</b> i (opcionalment) el de <b>mòdul</b>.</div>
-        </div>
+      <div class="hr"></div>
 
-        <!-- KPIs -->
-        <div class="kpi-grid" id="kpiWrap">
-          <!-- S'omple des de JS -->
-        </div>
+      <div class="row-inline">
+        <button class="btn small" onclick="addQuestion('mc')">+ Opció múltiple</button>
+        <button class="btn small" onclick="addQuestion('tf')">+ Vertader/Fals</button>
+        <button class="btn small" onclick="addQuestion('short')">+ Resposta curta</button>
+        <button class="btn small secondary" onclick="openQuickAdd()">+ Afegit ràpid…</button>
+      </div>
 
-        <!-- Charts -->
-        <div class="charts-grid">
-          <div class="chart-card">
-            <div class="chart-title">Evolució de puntuació</div>
-            <div id="chartScoreTrend"></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Mitjana per mòdul</div>
-            <div id="chartByModule"></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Temps vs Puntuació</div>
-            <div id="chartTimeVsScore"></div>
-          </div>
-        </div>
+      <div id="qCount" class="help" style="margin-top:6px"></div>
+      <div id="questions"></div>
 
-        <div id="analyticsHint" class="chip" style="margin-top:10px; display:none">
-          Escriu un nom d'alumne/a al filtre per veure el seu perfil.
+      <div class="hr"></div>
+
+      <div class="flex">
+        <button class="btn good" onclick="saveExam()">Desar prova (dispositiu)</button>
+        <button class="btn secondary" onclick="clearExam()">Buida</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="title">Compartir amb l’alumnat</h3>
+      <p class="muted">1) Genera una <strong>sessió</strong> i codi/enllaç. 2) Envia l’enllaç o mostra el codi.</p>
+
+      <div class="row-inline">
+        <button class="btn small" onclick="generateSession()">Crear sessió</button>
+        <span id="sessionBadge" class="badge" style="display:none"></span>
+      </div>
+
+      <label>Enllaç per als alumnes</label>
+      <input id="shareLink" type="text" readonly class="mono" />
+      <div class="flex">
+        <button class="btn small" onclick="copyShareLink()">Copiar enllaç</button>
+        <button class="btn small" onclick="copyShareCode()">Copiar codi</button>
+        <button class="btn small" onclick="downloadExam()">Descarrega .exam.json</button>
+      </div>
+
+      <label>Codi de prova (per enganxar al camp de l'alumne)</label>
+      <input id="shareCode" type="text" readonly class="mono" />
+
+      <div class="hr"></div>
+
+      <h3 class="title">Col·lector de Resultats</h3>
+      <p class="muted">Demana que, en enviar, l’alumne descarregui el seu <strong>.result.json</strong> i te’l faci arribar. Arrossega aquí tots els fitxers o importa’ls.</p>
+
+      <div id="drop" class="dropzone" ondragover="evDragOver(event)" ondrop="evDrop(event)">
+        Arrossega aquí arxius .result.json
+      </div>
+      <div class="flex" style="margin-top:8px">
+        <input id="resultsFile" type="file" accept=".json" multiple onchange="importResultsFiles(this.files)" />
+        <button class="btn small secondary" onclick="exportCSV()">Exporta CSV</button>
+      </div>
+
+      <div id="aggSummary" class="help" style="margin-top:10px"></div>
+
+      <div style="max-height:360px; overflow:auto; margin-top:10px">
+        <table class="table" id="resultsTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- STUDENT -->
+  <section id="view-student" class="grid grid-2" style="display:none">
+    <div class="card">
+      <h2 class="title">Carregar Prova</h2>
+      <p class="muted">Obre l’enllaç que t’ha donat el/la mestre/a o enganxa el codi EXAM:… També pots importar l’arxiu .exam.json.</p>
+      <label for="pasteCode">Enganxa l'enllaç o el codi de prova (EXAM:...)</label>
+      <textarea id="pasteCode" placeholder="EXAM:eyJpZCI6IiIsInRpdGxlIjoiLi4u"></textarea>
+      <div class="flex">
+        <button class="btn small" onclick="loadFromCode()">Carrega del codi</button>
+        <input id="examFile" type="file" accept=".json" onchange="importExamFile(this.files[0])" />
+      </div>
+      <p id="loadStatus" class="help"></p>
+
+      <div class="hr"></div>
+
+      <h3 class="title">Identificació</h3>
+      <label for="studentName">Nom i cognoms</label>
+      <input id="studentName" type="text" placeholder="Ex: Marta Puig" />
+      <label for="studentGroup">Grup / Classe</label>
+      <input id="studentGroup" type="text" placeholder="Ex: 5è A" />
+      <button class="btn" onclick="startExam()">Començar</button>
+    </div>
+
+    <div class="card">
+      <h3 class="title">Detalls de la Prova</h3>
+      <div id="examDetails" class="help">Encara no hi ha cap prova carregada.</div>
+    </div>
+  </section>
+
+  <!-- STUDENT DO EXAM -->
+  <section id="view-do" class="grid" style="display:none">
+    <div class="card">
+      <h2 class="title" id="doTitle">Prova</h2>
+      <p class="muted" id="doDesc"></p>
+      <div id="doQuestions"></div>
+      <div class="hr"></div>
+      <button class="btn good" onclick="submitExam()">Enviar respostes</button>
+      <span id="doNotice" class="help"></span>
+    </div>
+  </section>
+
+  <!-- STUDENT RESULT -->
+  <section id="view-result" class="grid" style="display:none">
+    <div class="card center">
+      <h2 class="title">Resultats enviats</h2>
+      <p class="muted" id="studentScoreInfo"></p>
+      <div class="flex center" style="justify-content:center">
+        <button class="btn" onclick="downloadResult()">Descarregar .result.json</button>
+        <button class="btn secondary" onclick="showView('student')">Tornar</button>
+      </div>
+      <p class="footer-note">Envia aquest fitxer al teu mestre/a.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ========= Utils ========= */
+const $ = sel => document.querySelector(sel);
+function showView(id){
+  for(const el of document.querySelectorAll('main > section')) el.style.display='none';
+  $('#view-'+id).style.display='';
+  for(const b of document.querySelectorAll('nav .pill')) b.classList.remove('active');
+  if(id==='home') $('#btnHome').classList.add('active');
+  if(id==='teacher') $('#btnTeacher').classList.add('active');
+  if(id==='student' || id==='do' || id==='result') $('#btnStudent').classList.add('active');
+}
+function enterRole(role){ showView(role==='teacher'?'teacher':'student'); }
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function nowISO(){ return new Date().toISOString(); }
+
+/* Unicode-safe Base64 */
+function b64encode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = ""; bytes.forEach(b=>bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+function b64decode(b64){
+  const bin = atob(b64);
+  const bytes = new Uint8Array([...bin].map(ch=>ch.charCodeAt(0)));
+  return new TextDecoder().decode(bytes);
+}
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+/* ========= Exam model ========= */
+let exam = {
+  id: uid(),
+  title: '',
+  desc: '',
+  settings: { showScoreToStudent: true, shuffle: false },
+  session: null,
+  questions: []
+};
+
+function toggleShuffle(v){
+  exam.settings.shuffle = !!v;
+  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
+}
+
+function addQuestion(type){
+  const q = { id: uid(), type, text:'', points:1 };
+  if(type==='mc'){ q.options=[{text:'Opció 1', correct:false},{text:'Opció 2', correct:false}]; }
+  if(type==='tf'){ q.options=[{text:'Vertader', correct:true},{text:'Fals', correct:false}]; }
+  if(type==='short'){ q.answerText=''; q.accepts=['']; }
+  exam.questions.push(q);
+  renderQuestions();
+}
+function duplicateQuestion(qid){
+  const i = exam.questions.findIndex(q=>q.id===qid);
+  if(i<0) return;
+  const clone = JSON.parse(JSON.stringify(exam.questions[i]));
+  clone.id = uid();
+  exam.questions.splice(i+1, 0, clone);
+  renderQuestions();
+}
+function moveQuestion(qid, dir){
+  const i = exam.questions.findIndex(q=>q.id===qid);
+  if(i<0) return;
+  const j = clamp(i + (dir==='up'?-1:1), 0, exam.questions.length-1);
+  if(i===j) return;
+  const [q] = exam.questions.splice(i,1);
+  exam.questions.splice(j,0,q);
+  renderQuestions();
+}
+function delQuestion(qid){
+  exam.questions = exam.questions.filter(q=>q.id!==qid);
+  renderQuestions();
+}
+
+function renderQuestions(){
+  const wrap = $('#questions'); wrap.innerHTML='';
+  const cnt = exam.questions.length;
+  $('#qCount').textContent = cnt ? `Preguntes: ${cnt}` : 'Encara no hi ha preguntes.';
+  exam.questions.forEach((q,idx)=>{
+    const div = document.createElement('div'); div.className='q-item';
+    div.innerHTML = `
+      <div class="q-head">
+        <div><span class="q-type">Q${idx+1} · ${q.type==='mc'?'Opció múltiple':q.type==='tf'?'Vertader/Fals':'Resposta curta'}</span></div>
+        <div class="row-inline">
+          <button class="btn small secondary" title="Pujar" onclick="moveQuestion('${q.id}','up')">↑</button>
+          <button class="btn small secondary" title="Baixar" onclick="moveQuestion('${q.id}','down')">↓</button>
+          <button class="btn small secondary" title="Duplicar" onclick="duplicateQuestion('${q.id}')">⎘</button>
+          <span class="help">Punts</span>
+          <input type="number" min="0" step="0.5" value="${q.points}" style="width:90px" oninput="updatePoints('${q.id}', this.value)" />
+          <button class="btn small bad" onclick="delQuestion('${q.id}')">Eliminar</button>
         </div>
       </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="view-about" class="hidden">
-      <div class="panel card">
-        <h3 class="title" style="margin-top:0">Sobre aquesta eina</h3>
-        <p class="subtitle">Web single-file creada per Focus Academy. Dedicada a l'aprenentatge del català. Dades locals al navegador.</p>
-        <ul>
-          <li>Generador de preguntes per: Ortografia, Gramàtica, Lèxic i Comprensió Lectora.</li>
-          <li>Temps opcional, nivell 1-4, i repàs de només les preguntes errònies.</li>
-          <li>Historial exportable a CSV i mode offline (funciona sense internet).</li>
-        </ul>
+      <div class="q-body">
+        <label>Enunciat</label>
+        <textarea oninput="updateQText('${q.id}', this.value)" placeholder="Escriu la pregunta...">${q.text||''}</textarea>
+        ${q.type==='mc' || q.type==='tf' ? renderOptionsEditor(q) : renderShortEditor(q)}
       </div>
-    </section>
+    `;
+    wrap.appendChild(div);
+  });
+  // guarda estat lleugerament quan es dibuixa
+  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
+}
+function updatePoints(qid, v){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.points = Number(v)||0; } }
+function updateQText(qid, v){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.text=v; } }
 
-    <footer class="wrap" style="display:flex; align-items:center; justify-content:space-between; gap:16px">
-      <div>Fet per Focus Academy Sant Cugat · © <span id="year"></span></div>
-    </footer>
-  </main>
-  <script src="main.js" defer></script>
+function renderOptionsEditor(q){
+  const opts = q.options.map((o,i)=>`
+    <div class="opt-row">
+      <input type="radio" name="correct-${q.id}" ${o.correct?'checked':''} onclick="setCorrect('${q.id}', ${i})" />
+      <input type="text" value="${o.text.replaceAll('"','&quot;')}" oninput="setOptText('${q.id}', ${i}, this.value)" />
+      ${q.type==='mc'?`<button class="btn small secondary" onclick="delOpt('${q.id}', ${i})">−</button>`:''}
+    </div>
+  `).join('');
+  const addBtn = q.type==='mc'?`<button class="btn small" onclick="addOpt('${q.id}')">+ Afegir opció</button>`:'';
+  return `<label>Opcions</label><div class="options">${opts}</div>${addBtn}`;
+}
+function addOpt(qid){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.options.push({text:'Nova opció', correct:false}); renderQuestions(); } }
+function delOpt(qid, i){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.options.splice(i,1); renderQuestions(); } }
+function setCorrect(qid, i){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.options.forEach((o,j)=>o.correct = j===i); } }
+function setOptText(qid, i, v){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.options[i].text=v; } }
+
+function renderShortEditor(q){
+  return `
+    <label>Resposta correcta (text)</label>
+    <input type="text" value="${(q.answerText||'').replaceAll('"','&quot;')}" oninput="setShortAnswer('${q.id}', this.value)" />
+    <label>Altres respostes acceptables (separades per ; )</label>
+    <input type="text" value="${(q.accepts||[]).join('; ')}" oninput="setShortAccepts('${q.id}', this.value)" />
+    <p class="help">La correcció és sense diferència de majúscules/minúscules i ignora espais extres.</p>
+  `;
+}
+function setShortAnswer(qid, v){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.answerText=v; } }
+function setShortAccepts(qid, v){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.accepts = v.split(';').map(s=>s.trim()).filter(Boolean); } }
+
+/* Exam Save/Share */
+function saveExam(){
+  exam.title = $('#examTitle').value.trim();
+  exam.desc = $('#examDesc').value.trim();
+  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
+  const cnt = exam.questions.length;
+  if(!exam.title || cnt===0){
+    alert('Cal un títol i almenys una pregunta.'); return;
+  }
+  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
+  alert(`Prova desada al dispositiu. Nº de preguntes: ${cnt}`);
+}
+function clearExam(){
+  if(confirm('Vols buidar la prova actual?')){
+    exam = { id:uid(), title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, session:null, questions:[] };
+    $('#examTitle').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes';
+    $('#examShuffle').checked=false;
+    $('#shareLink').value=''; $('#shareCode').value=''; $('#sessionBadge').style.display='none';
+    renderQuestions();
+  }
+}
+
+/* Afegit ràpid de diverses preguntes (format senzill) */
+function openQuickAdd(){
+  const tip = `Format ràpid (una per línia):
+- mc; Enunciat? | opció A* | opció B | opció C   (* indica la correcta; una sola)
+- tf; Enunciat? | vertader  (o "fals")
+- short; Enunciat? | resposta correcta | alternativa1 | alternativa2
+
+Exemples:
+mc; Capital de França? | París* | Lyon | Marsella
+tf; El 12 és parell | vertader
+short; 5+7 = ? | 12 | dotze`;
+  const raw = prompt(tip, 'mc; Capital de França? | París* | Lyon | Marsella');
+  if(!raw) return;
+  const lines = raw.split('\n').map(s=>s.trim()).filter(Boolean);
+  lines.forEach(line=>{
+    const [typePart, rest] = line.split(';');
+    if(!rest) return;
+    const type = (typePart||'').trim().toLowerCase();
+    const chunks = rest.split('|').map(s=>s.trim()).filter(Boolean);
+    const enunciat = chunks.shift() || '';
+    if(type==='mc'){
+      const opts = chunks.map(t=>{
+        const correct = /\*$/.test(t);
+        return {text: t.replace(/\*$/,''), correct};
+      });
+      if(!opts.some(o=>o.correct) && opts.length>0) opts[0].correct=true;
+      exam.questions.push({id:uid(), type:'mc', text:enunciat, points:1, options:opts});
+    } else if(type==='tf'){
+      const v = (chunks[0]||'').toLowerCase();
+      const correctIsTrue = v.startsWith('v'); // vertader
+      exam.questions.push({id:uid(), type:'tf', text:enunciat, points:1, options:[
+        {text:'Vertader', correct:correctIsTrue},
+        {text:'Fals', correct:!correctIsTrue}
+      ]});
+    } else if(type==='short'){
+      const ans = chunks.shift()||'';
+      exam.questions.push({id:uid(), type:'short', text:enunciat, points:1, answerText:ans, accepts:chunks});
+    }
+  });
+  renderQuestions();
+}
+
+/* Construeix codi EXAM: amb Base64 URL-safe */
+function buildExamCode(obj){
+  const json = JSON.stringify(obj);
+  const b64 = b64encode(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/,'');
+  return 'EXAM:' + b64;
+}
+
+function generateSession(){
+  // Valida i desa
+  exam.title = $('#examTitle').value.trim();
+  exam.desc = $('#examDesc').value.trim();
+  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
+  if(!exam.title || exam.questions.length===0){
+    alert('Cal un títol i almenys una pregunta.'); return;
+  }
+  // Crea sessió
+  exam.session = Math.floor(100000 + Math.random()*900000).toString();
+
+  const code = buildExamCode(exam);
+  const url = location.origin + location.pathname + '#' + code;
+
+  $('#shareLink').value = url;
+  $('#shareCode').value = code;
+  $('#sessionBadge').style.display='inline-block';
+  $('#sessionBadge').textContent = 'Sessió ' + exam.session;
+  $('#aggSummary').innerHTML = `<span class="success">Sessió creada. Comparteix l’enllaç o el codi.</span>`;
+
+  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
+}
+
+function copyShareLink(){
+  const el = $('#shareLink'); if(!el.value){ alert('Primer crea una sessió'); return; }
+  navigator.clipboard.writeText(el.value).then(()=>{ alert('Enllaç copiat!'); });
+}
+function copyShareCode(){
+  const el = $('#shareCode'); if(!el.value){ alert('Primer crea una sessió'); return; }
+  navigator.clipboard.writeText(el.value).then(()=>{ alert('Codi copiat!'); });
+}
+
+function downloadExam(){
+  // Desa estat actual
+  exam.title = $('#examTitle').value.trim();
+  exam.desc = $('#examDesc').value.trim();
+  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
+  if(!exam.title || exam.questions.length===0){
+    alert('Cal un títol i almenys una pregunta.'); return;
+  }
+  const blob = new Blob([JSON.stringify(exam,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (exam.title||'prova')+'.exam.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ========= Collector ========= */
+let collected = []; // {exam_id, exam_title, session, student:{name,group}, totals, responses, submitted_at}
+function evDragOver(e){ e.preventDefault(); }
+function evDrop(e){
+  e.preventDefault();
+  importResultsFiles(e.dataTransfer.files);
+}
+function importResultsFiles(files){
+  const arr = Array.from(files||[]);
+  if(arr.length===0) return;
+  let done=0, ok=0, bad=0;
+  arr.forEach(f=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      try{
+        const obj = JSON.parse(fr.result);
+        if(obj && obj.type==='focus-result' && obj.totals){
+          collected.push(obj);
+          ok++;
+        } else bad++;
+      }catch(err){ bad++; }
+      done++; if(done===arr.length){ renderResults(); $('#aggSummary').innerHTML = `<span class="success">${ok} resultats importats</span> ${bad?` · <span class="warn">${bad} descartats</span>`:''}`; }
+    };
+    fr.readAsText(f);
+  });
+}
+
+function renderResults(){
+  if(collected.length===0){ $('#resultsTable').innerHTML=''; return; }
+  const maxQ = Math.max(...collected.map(r=>r.responses.length));
+  let thead = `<tr>
+    <th>Alumne</th><th>Grup</th><th>Prova</th><th>Sessió</th>
+    <th>Puntuació</th><th>Màx</th><th>%</th><th>Data</th>`;
+  for(let i=1;i<=maxQ;i++) thead += `<th>Q${i}</th>`;
+  thead += `</tr>`;
+  let rows = '';
+  collected.forEach(r=>{
+    const pct = (100*r.totals.score/r.totals.max).toFixed(1);
+    let qs = '';
+    r.responses.forEach((ans,idx)=>{
+      const tag = ans.correct===true?'✅':(ans.correct===false?'❌':'—');
+      qs += `<td title="${escapeHtml(ans.answer)}">${tag}</td>`;
+    });
+    for(let k=r.responses.length;k<maxQ;k++) qs += `<td>—</td>`;
+    rows += `<tr>
+      <td>${escapeHtml(r.student.name||'')}</td>
+      <td>${escapeHtml(r.student.group||'')}</td>
+      <td>${escapeHtml(r.exam_title||'')}</td>
+      <td>${escapeHtml(r.session||'')}</td>
+      <td>${r.totals.score}</td>
+      <td>${r.totals.max}</td>
+      <td>${pct}%</td>
+      <td>${new Date(r.submitted_at).toLocaleString()}</td>
+      ${qs}
+    </tr>`;
+  });
+  $('#resultsTable').innerHTML = `<thead>${thead}</thead><tbody>${rows}</tbody>`;
+}
+
+function exportCSV(){
+  if(collected.length===0){ alert('No hi ha resultats.'); return; }
+  const maxQ = Math.max(...collected.map(r=>r.responses.length));
+  const head = ['Alumne','Grup','Prova','Sessió','Puntuació','Max','Percent','Data', ...Array.from({length:maxQ},(_,i)=>`Q${i+1}`)];
+  const lines = [head.join(',')];
+  collected.forEach(r=>{
+    const pct = (100*r.totals.score/r.totals.max).toFixed(1);
+    const base = [
+      csv(r.student.name||''), csv(r.student.group||''), csv(r.exam_title||''), csv(r.session||''),
+      r.totals.score, r.totals.max, pct, csv(new Date(r.submitted_at).toLocaleString())
+    ];
+    const qcells = r.responses.map(ans=>csv(ans.correct===true?'OK':(ans.correct===false?'KO':'NA')));
+    while(qcells.length<maxQ) qcells.push('');
+    lines.push([...base, ...qcells].join(','));
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'resultats.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function csv(s){ return `"${String(s).replaceAll('"','""')}"`; }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+/* ========= Student flow ========= */
+let loadedExam = null;
+
+function parseExamFromHash(){
+  const h = (location.hash||'').trim();
+  if(!h) return;
+  const raw = h.startsWith('#') ? h.slice(1) : h;
+  try{
+    const obj = parseAnyExamCode(raw);
+    loadedExam = obj;
+    $('#loadStatus').innerHTML = `<span class="success">Prova carregada des de l’enllaç.</span>`;
+    showExamDetails(obj);
+  }catch(e){
+    $('#loadStatus').innerHTML = `<span class="warn">No s’ha pogut llegir l’enllaç (#EXAM...).</span>`;
+  }
+}
+
+function loadFromCode(){
+  const txt0 = $('#pasteCode').value.trim();
+  if(!txt0){ alert('Enganxa l’enllaç o el codi EXAM:...'); return; }
+
+  let txt = txt0;
+  // Si enganxa l’enllaç complet, n’extraiem el fragment
+  try{
+    if(/https?:\/\//i.test(txt0) || txt0.includes('#')){
+      const u = new URL(txt0, location.href);
+      txt = (u.hash||'').replace(/^#/, '');
+    }
+  }catch(_){ /* ignora */ }
+
+  try{
+    const obj = parseAnyExamCode(txt);
+    loadedExam = obj;
+    showExamDetails(obj);
+    $('#loadStatus').innerHTML = `<span class="success">Prova carregada!</span>`;
+  }catch(e){
+    alert('Codi o enllaç invàlid. Assegura’t que comença per EXAM: o que enganxes l’enllaç complet.');
+  }
+}
+
+// Accepta: "EXAM:...", només Base64, o hash EXAM sense #.
+function parseAnyExamCode(s){
+  let payload = s.trim();
+
+  if(payload.startsWith('EXAM:')) payload = payload.slice(5);
+  // Normalitza Base64 URL-safe -> estàndard
+  payload = payload.replace(/-/g,'+').replace(/_/g,'/');
+
+  // Padding '=' si cal
+  const m = payload.length % 4;
+  if(m===2) payload += '==';
+  else if(m===3) payload += '=';
+  else if(m!==0 && m!==2 && m!==3){
+    if(payload.startsWith('#EXAM:')) return parseAnyExamCode(payload.slice(1));
+    throw new Error('Bad base64 length');
+  }
+
+  const json = b64decode(payload);
+  const obj = JSON.parse(json);
+  if(!obj || !Array.isArray(obj.questions)) throw new Error('No questions');
+  return obj;
+}
+
+function importExamFile(file){
+  const fr = new FileReader();
+  fr.onload = ()=>{
+    try{
+      const obj = JSON.parse(fr.result);
+      if(obj && obj.questions){ loadedExam = obj; showExamDetails(obj); $('#loadStatus').textContent='Prova carregada de fitxer.'; }
+      else throw new Error();
+    }catch(e){ alert('Arxiu invàlid.'); }
+  };
+  fr.readAsText(file);
+}
+function showExamDetails(x){
+  $('#examDetails').innerHTML = `
+    <div><strong>Títol:</strong> ${escapeHtml(x.title||'')}</div>
+    <div><strong>Instruccions:</strong> ${escapeHtml(x.desc||'')}</div>
+    <div><strong>Preguntes:</strong> ${x.questions?x.questions.length:0}</div>
+    <div><strong>Sessió:</strong> ${escapeHtml(x.session||'(no definida)')}</div>
+  `;
+}
+
+function shuffleArray(a){
+  // Fisher-Yates
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+}
+
+function startExam(){
+  if(!loadedExam){ alert('Carrega primer una prova.'); return; }
+  const name = $('#studentName').value.trim();
+  const group = $('#studentGroup').value.trim();
+  if(!name){ alert('Escriu el teu nom.'); return; }
+
+  // Preparem l’ordre (respectant "shuffle" si activat)
+  const questions = JSON.parse(JSON.stringify(loadedExam.questions||[]));
+  if(loadedExam.settings?.shuffle) shuffleArray(questions);
+
+  $('#doTitle').textContent = loadedExam.title||'Prova';
+  $('#doDesc').textContent = loadedExam.desc||'';
+  const host = $('#doQuestions'); host.innerHTML='';
+  questions.forEach((q,idx)=>{
+    const el = document.createElement('div'); el.className='q-item';
+    let body='';
+    if(q.type==='mc' || q.type==='tf'){
+      body = (q.options||[]).map((o,i)=>`
+        <label class="opt-row">
+          <input type="radio" name="ans-${q.id}" value="${i}" />
+          <span>${escapeHtml(o.text)}</span>
+        </label>
+      `).join('');
+    } else {
+      body = `<input type="text" id="ans-${q.id}" placeholder="Escriu la resposta" />`;
+    }
+    el.innerHTML = `
+      <div class="q-head"><div class="q-type">Q${idx+1}</div><div class="help">${q.points||1} punt(s)</div></div>
+      <div class="q-body">
+        <div style="font-weight:700; margin-bottom:6px">${escapeHtml(q.text||'')}</div>
+        ${body}
+      </div>
+    `;
+    host.appendChild(el);
+  });
+  // Guardem temporalment l'ordre decidit a loadedExam (per corregir)
+  loadedExam.__runtimeOrder = questions.map(q=>q.id);
+  showView('do');
+}
+
+let lastResult = null;
+function submitExam(){
+  const answers = [];
+  let score=0, max=0;
+  // Recorrem segons l'ordre runtime, així el mapping és estable
+  const ids = loadedExam.__runtimeOrder || (loadedExam.questions||[]).map(q=>q.id);
+  const qById = Object.fromEntries((loadedExam.questions||[]).map(q=>[q.id,q]));
+  ids.forEach(id=>{
+    const q = qById[id];
+    max += Number(q.points)||1;
+    if(q.type==='mc' || q.type==='tf'){
+      const sel = document.querySelector(`input[name="ans-${q.id}"]:checked`);
+      const idx = sel? Number(sel.value): null;
+      const isCorrect = (idx!=null) ? (q.options[idx]?.correct===true) : false;
+      if(isCorrect) score += Number(q.points)||1;
+      answers.push({qid:q.id, type:q.type, answer: idx!=null ? (q.options[idx]?.text||'') : '', correct:isCorrect});
+    } else {
+      const val = ($('#ans-'+q.id)?.value||'').trim();
+      const norm = s=>s.toLowerCase().replace(/\s+/g,' ').trim();
+      const ok = val ? ([q.answerText||'', ...(q.accepts||[])].some(acc=>norm(acc)===norm(val))) : false;
+      if(ok) score += Number(q.points)||1;
+      answers.push({qid:q.id, type:q.type, answer: val, correct: ok});
+    }
+  });
+
+  const name = $('#studentName').value.trim();
+  const group = $('#studentGroup').value.trim();
+  lastResult = {
+    type:'focus-result',
+    exam_id: loadedExam.id,
+    exam_title: loadedExam.title,
+    session: loadedExam.session || '',
+    student:{name, group},
+    submitted_at: nowISO(),
+    totals:{score, max},
+    responses: answers
+  };
+  const showScore = loadedExam.settings?.showScoreToStudent !== false;
+  $('#studentScoreInfo').innerHTML = showScore ? 
+    `Has fet <strong>${score}</strong> de <strong>${max}</strong> punts.` :
+    `S’han guardat les respostes. El/la mestre/a veurà la teva nota.`;
+  showView('result');
+}
+
+function downloadResult(){
+  if(!lastResult) return;
+  const base = `result_${(lastResult.session||'sessio')}_${(lastResult.student.name||'alumne').replace(/\s+/g,'_')}`;
+  const blob = new Blob([JSON.stringify(lastResult,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = base+'.result.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ========= Init ========= */
+function restoreExam(){
+  const raw = localStorage.getItem('focusPrimaria_exam');
+  if(raw){
+    try{
+      exam = JSON.parse(raw);
+      $('#examTitle').value = exam.title||'';
+      $('#examDesc').value = exam.desc||'';
+      $('#examShowScore').value = exam.settings?.showScoreToStudent===false?'no':'yes';
+      $('#examShuffle').checked = !!exam.settings?.shuffle;
+      if(exam.session){
+        $('#sessionBadge').style.display='inline-block';
+        $('#sessionBadge').textContent='Sessió '+exam.session;
+      }
+      const code = buildExamCode(exam);
+      $('#shareLink').value = location.origin + location.pathname + '#'+code;
+      $('#shareCode').value = code;
+      renderQuestions();
+    }catch(e){}
+  }
+}
+window.addEventListener('load', ()=>{
+  restoreExam();
+  parseExamFromHash();
+});
+</script>
 </body>
 </html>
