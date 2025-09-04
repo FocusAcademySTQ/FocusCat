@@ -952,7 +952,7 @@ function startExam(){
           <input type="radio" name="ans-${q.id}" value="${i}" />
           <span>${escapeHtml(o.text)}</span>
         </label>
-      ).join('');
+      `).join('');
     } else if(q.type==='short'){
       body = `<input type="text" id="ans-${q.id}" placeholder="Escriu la resposta" />`;
     } else if(q.type==='num'){
