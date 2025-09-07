@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Focus · Proves per a Primària (Mestre/Alumne)</title>
-<meta name="description" content="Crea proves per a primària, comparteix-les i recull resultats. Single-file." />
-<!-- KaTeX (opcional: només si hi ha internet). Si no carrega, simplement es veuran els $...$ com a text. -->
+<title>Focus · Proves (Mestre/Alumne)</title>
+<meta name="description" content="Crea proves, publica al servidor i accedeix per PIN. Resultats centralitzats." />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
@@ -19,49 +18,29 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{
-    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    background:linear-gradient(180deg,#f7f7fb, #f1f5ff 35%, #f7f7fb 70%);
-    color:var(--ink);
-  }
-  header{
-    position:sticky; top:0; z-index:5; background:rgba(255,255,255,.8); backdrop-filter: blur(8px);
-    border-bottom:1px solid var(--hair);
-  }
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+       background:linear-gradient(180deg,#f7f7fb, #f1f5ff 35%, #f7f7fb 70%); color:var(--ink)}
+  header{position:sticky; top:0; z-index:5; background:rgba(255,255,255,.8); backdrop-filter: blur(8px); border-bottom:1px solid var(--hair)}
   .wrap{max-width:1200px; margin:0 auto; padding:14px 16px;}
   .row{display:flex; align-items:center; gap:14px; justify-content:space-between}
   .brand{display:flex; align-items:center; gap:12px}
-  .logo{
-    width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
-    background:conic-gradient(from 180deg, #ffffff, #cbd5ff, #ffffff, #cbd5ff, #ffffff);
-    color:#0f172a; font-weight:900; box-shadow:var(--shadow);
-  }
+  .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#fff;box-shadow:var(--shadow);font-weight:900}
   h1{font-size:18px; margin:0}
-  nav .pill{
-    border:none; padding:10px 14px; border-radius:999px; background:#fff;
-    box-shadow: var(--shadow); cursor:pointer; font-weight:600;
-  }
+  nav .pill{border:none; padding:10px 14px; border-radius:999px; background:#fff; box-shadow: var(--shadow); cursor:pointer; font-weight:600}
   nav .pill.active{background:var(--p1); color:#fff}
   main{max-width:1200px; margin:24px auto; padding:0 16px 48px}
   .grid{display:grid; gap:16px}
   @media(min-width:960px){ .grid-2{grid-template-columns: 2fr 1.2fr} }
-  .card{
-    background:var(--card); border:1px solid var(--hair); border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:18px;
-  }
+  .card{background:var(--card); border:1px solid var(--hair); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
   .title{font-size:18px; font-weight:800; margin:0 0 8px}
   .muted{color:var(--muted); font-size:14px; margin:0 0 16px}
   label{display:block; font-weight:700; margin:12px 0 6px}
   input[type="text"], input[type="number"], textarea, select{
-    width:100%; padding:10px 12px; border:1px solid var(--hair); border-radius:12px;
-    font-size:16px; background:#fff;
+    width:100%; padding:10px 12px; border:1px solid var(--hair); border-radius:12px; font-size:16px; background:#fff;
   }
   textarea{min-height:88px; resize:vertical}
   .row-inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-  .btn{
-    appearance:none; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer;
-    background:var(--p1); color:#fff; box-shadow: var(--shadow);
-  }
+  .btn{appearance:none; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; background:var(--p1); color:#fff; box-shadow: var(--shadow)}
   .btn.secondary{background:#fff; color:var(--ink); border:1px solid var(--hair)}
   .btn.good{background:var(--p2); color:#073b14}
   .btn.bad{background:#fff; color:#b91c1c; border:1px solid #fecaca}
@@ -86,29 +65,9 @@
   .code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f1f5f9; border:1px solid var(--hair); padding:6px 8px; border-radius:8px}
   .center{text-align:center}
   .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
-  .footer-note{color:#64748b; font-size:12px; margin-top:16px}
-  .pin-card{
-    display:grid; grid-template-columns: 1fr auto; gap:16px; align-items:center;
-    border:1px solid var(--hair); border-radius:16px; padding:16px; background:#ffffff; box-shadow:var(--shadow);
-  }
-  .pin-big{font-size:34px; font-weight:900; letter-spacing:.08em}
-  .pin-label{font-size:12px; color:#64748b; text-transform:uppercase; letter-spacing:.08em}
-  canvas#qr{width:180px; height:180px; border:1px solid var(--hair); border-radius:12px; background:#fff}
-  .tag{display:inline-block; padding:4px 8px; border:1px solid var(--hair); border-radius:10px; font-size:12px; margin:2px 6px 2px 0}
-  .tag input{border:none; outline:none}
-  .chips{display:flex; flex-wrap:wrap; gap:6px}
-  .fav{cursor:pointer; user-select:none}
   .pill-tab{display:inline-flex; gap:6px; border:1px solid var(--hair); border-radius:999px; padding:4px; background:#fff}
   .pill-tab button{border:none; background:none; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700}
   .pill-tab button.active{background:#eef2ff}
-  .bank-row{display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:center}
-  .drag-hint{font-size:12px; color:#64748b}
-  /* Dialog (modal) molt simple */
-  dialog{border:none; border-radius:16px; padding:0; max-width:920px; width:92vw; box-shadow:var(--shadow)}
-  dialog::backdrop{background:rgba(0,0,0,.3)}
-  .modal-head{padding:16px 18px; border-bottom:1px solid var(--hair); font-weight:900}
-  .modal-body{padding:16px 18px}
-  .modal-foot{padding:14px 18px; border-top:1px solid var(--hair); display:flex; gap:10px; justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -116,8 +75,8 @@
   <div class="wrap row">
     <div class="brand">
       <div class="logo" aria-hidden="true">FQ</div>
-      <h1>Focus · Proves per a Primària</h1>
-      <span class="badge">Sense servidor</span>
+      <h1>Focus · Proves</h1>
+      <span class="badge">PIN via servidor</span>
     </div>
     <nav class="right">
       <button class="pill" id="btnHome" onclick="showView('home')">Inici</button>
@@ -131,17 +90,12 @@
   <!-- HOME -->
   <section id="view-home" class="grid">
     <div class="card">
-      <h2 class="title">Què és això?</h2>
-      <p class="muted">
-        Crea una prova des del teu ordinador, comparteix l’enllaç amb l’alumnat i recull els resultats, <strong>sense</strong> instal·lar res ni crear comptes.
-      </p>
+      <h2 class="title">Com funciona</h2>
+      <p class="muted">El/la mestre/a crea una prova i la <strong>publica al servidor</strong>. El servidor retorna un <strong>PIN</strong>. L’alumne entra el PIN i fa la prova. Els resultats es guarden al servidor.</p>
       <div class="flex">
         <button class="btn" onclick="enterRole('teacher')">Sóc Mestre</button>
         <button class="btn secondary" onclick="enterRole('student')">Sóc Alumne</button>
       </div>
-      <p class="footer-note">
-        Privadesa: Les proves i resultats es guarden en el teu dispositiu (LocalStorage) o en fitxers .json que pots compartir.
-      </p>
     </div>
   </section>
 
@@ -149,7 +103,7 @@
   <section id="view-teacher" class="grid grid-2" style="display:none">
     <div class="card">
       <h2 class="title">Creador de Proves</h2>
-      <p class="muted">Títol, instruccions i preguntes. Pots barrejar tipus de pregunta.</p>
+      <p class="muted">Títol, instruccions i preguntes. Pots barrejar tipus de pregunta. Quan estigui a punt, <strong>Publica</strong> i obtindràs un PIN.</p>
 
       <label for="examTitle">Títol de la prova</label>
       <input id="examTitle" type="text" placeholder="Ex: Comprensió lectora · 4t" oninput="lazySaveExam()" />
@@ -181,69 +135,32 @@
           <button onclick="addQuestion('order')">Ordenar llista</button>
           <button onclick="addQuestion('match')">Correspondències</button>
         </div>
-        <button class="btn small secondary" onclick="openQuickAdd()">Afegit ràpid…</button>
-        <button class="btn small" onclick="openBank()">Afegeix des del banc</button>
+        <button class="btn small" onclick="openQuickAdd()">Afegit ràpid…</button>
       </div>
 
       <div id="qCount" class="help" style="margin-top:6px"></div>
       <div id="questions"></div>
 
       <div class="hr"></div>
-
       <div class="flex">
-        <button class="btn good" onclick="saveExam(true)">Desar prova</button>
+        <button class="btn good" onclick="publishExam()">Publica al servidor</button>
         <button class="btn secondary" onclick="clearExam()">Buida</button>
-        <button class="btn secondary" onclick="openBankManage()">Gestiona Banc</button>
       </div>
+      <p id="publishInfo" class="help"></p>
     </div>
 
     <div class="card">
-      <h3 class="title">Compartir amb l’alumnat</h3>
-      <p class="muted">1) Genera una <strong>sessió</strong> i codi/enllaç. 2) Envia l’enllaç o mostra el codi.</p>
+      <h3 class="title">Resultats (del servidor)</h3>
+      <p class="muted">Consulta els resultats per a l’<strong>examId</strong> que rebràs en publicar.</p>
 
-      <div class="row-inline">
-        <button class="btn small" onclick="generateSession()">Crear sessió</button>
-        <span id="sessionBadge" class="badge" style="display:none"></span>
-      </div>
-
-      <div class="pin-card" id="pinCard" style="display:none" aria-live="polite">
-        <div>
-          <div class="pin-label">Codi de sessió</div>
-          <div class="pin-big" id="pinBig">— — — — — —</div>
-          <div class="help">Dicta’l a classe o mostra el QR.</div>
-        </div>
-        <div>
-          <canvas id="qr" width="180" height="180" aria-label="Codi QR de l’enllaç de prova"></canvas>
-        </div>
-      </div>
-
-      <label>Enllaç per als alumnes</label>
-      <input id="shareLink" type="text" readonly class="mono" />
+      <label for="examIdLookup">examId</label>
+      <input id="examIdLookup" type="text" placeholder="Ex: 9f3a2b1c..." />
       <div class="flex">
-        <button class="btn small" onclick="copyShareLink()">Copiar enllaç</button>
-        <button class="btn small" onclick="copyShareCode()">Copiar codi</button>
-        <button class="btn small" onclick="downloadExam()">Descarrega .exam.json</button>
-        <button class="btn small secondary" onclick="window.print()">Imprimeix full d’instruccions</button>
+        <button class="btn small" onclick="fetchResults()">Carrega resultats</button>
+        <button class="btn small secondary" onclick="downloadCSV()">Descarrega CSV</button>
       </div>
-
-      <label>Codi de prova (per enganxar al camp de l'alumne)</label>
-      <input id="shareCode" type="text" readonly class="mono" />
-
       <div class="hr"></div>
-
-      <h3 class="title">Col·lector de Resultats</h3>
-      <p class="muted">Arrossega aquí tots els <strong>.result.json</strong> o importa’ls.</p>
-
-      <div id="drop" class="dropzone" ondragover="evDragOver(event)" ondrop="evDrop(event)">
-        Arrossega aquí arxius .result.json
-      </div>
-      <div class="flex" style="margin-top:8px">
-        <input id="resultsFile" type="file" accept=".json" multiple onchange="importResultsFiles(this.files)" />
-        <button class="btn small secondary" onclick="exportCSV()">Exporta CSV</button>
-      </div>
-
       <div id="aggSummary" class="help" style="margin-top:10px"></div>
-
       <div style="max-height:360px; overflow:auto; margin-top:10px">
         <table class="table" id="resultsTable"></table>
       </div>
@@ -253,18 +170,16 @@
   <!-- STUDENT -->
   <section id="view-student" class="grid grid-2" style="display:none">
     <div class="card">
-      <h2 class="title">Carregar Prova</h2>
-      <p class="muted">Obre l’enllaç que t’ha donat el/la mestre/a o enganxa el codi EXAM:… També pots importar l’arxiu .exam.json.</p>
-      <label for="pasteCode">Enganxa l'enllaç o el codi de prova (EXAM:...)</label>
-      <textarea id="pasteCode" placeholder="EXAM:eyJpZCI6IiIsInRpdGxlIjoiLi4u"></textarea>
+      <h2 class="title">Accés amb PIN</h2>
+      <p class="muted">Introdueix el <strong>PIN</strong> que t’ha donat el/la mestre/a per carregar la prova des del servidor.</p>
+      <label for="pinInput">PIN (6 dígits)</label>
+      <input id="pinInput" type="text" placeholder="Ex: 482917" />
       <div class="flex">
-        <button class="btn small" onclick="loadFromCode()">Carrega del codi</button>
-        <input id="examFile" type="file" accept=".json" onchange="importExamFile(this.files[0])" />
+        <button class="btn small" onclick="loadExamByPin()">Carrega prova</button>
       </div>
       <p id="loadStatus" class="help"></p>
 
       <div class="hr"></div>
-
       <h3 class="title">Identificació</h3>
       <label for="studentName">Nom i cognoms</label>
       <input id="studentName" type="text" placeholder="Ex: Marta Puig" />
@@ -279,7 +194,7 @@
     </div>
   </section>
 
-  <!-- STUDENT DO EXAM -->
+  <!-- DO EXAM -->
   <section id="view-do" class="grid" style="display:none">
     <div class="card">
       <h2 class="title" id="doTitle">Prova</h2>
@@ -291,92 +206,22 @@
     </div>
   </section>
 
-  <!-- STUDENT RESULT -->
+  <!-- RESULT -->
   <section id="view-result" class="grid" style="display:none">
     <div class="card center">
       <h2 class="title">Resultats enviats</h2>
       <p class="muted" id="studentScoreInfo"></p>
       <div class="flex center" style="justify-content:center">
-        <button class="btn" onclick="downloadResult()">Descarregar .result.json</button>
         <button class="btn secondary" onclick="showView('student')">Tornar</button>
       </div>
-      <p class="footer-note">Envia aquest fitxer al teu mestre/a.</p>
     </div>
   </section>
 </main>
 
-<!-- ====== Modals Banc de Preguntes ====== -->
-<dialog id="dlgBank">
-  <div class="modal-head">Afegeix des del banc</div>
-  <div class="modal-body">
-    <div class="flex" style="align-items:center">
-      <input id="bankSearch" type="text" placeholder="Cerca al banc (text, etiqueta...)" oninput="renderBankList()">
-      <div class="pill-tab" style="margin-left:auto">
-        <button id="bankTabAll" class="active" onclick="setBankFilter('all')">Totes</button>
-        <button id="bankTabFav" onclick="setBankFilter('fav')">Favorits ⭐</button>
-      </div>
-    </div>
-    <div id="bankList" style="margin-top:12px; max-height:50vh; overflow:auto"></div>
-  </div>
-  <div class="modal-foot">
-    <button class="btn secondary" onclick="closeBank()">Tancar</button>
-  </div>
-</dialog>
-
-<dialog id="dlgBankManage">
-  <div class="modal-head">Banc de preguntes · Gestiona</div>
-  <div class="modal-body">
-    <div class="help">Crea preguntes per reutilitzar-les. Es guarden al dispositiu.</div>
-    <div class="hr"></div>
-    <div class="bank-row">
-      <input id="bmTitle" type="text" placeholder="Títol/Enunciat curt">
-      <select id="bmType">
-        <option value="mc">Opció múltiple</option>
-        <option value="tf">Vertader/Fals</option>
-        <option value="short">Resposta curta</option>
-        <option value="num">Numèrica ± tol</option>
-        <option value="long">Resposta llarga</option>
-        <option value="order">Ordenar llista</option>
-        <option value="match">Correspondències</option>
-      </select>
-    </div>
-    <label>Etiquetes (separades per comes)</label>
-    <input id="bmTags" type="text" placeholder="ex: mates, fraccions, 5è">
-
-    <label>Cos (text amb $...$ opcional). Posa opcions/llistes als apartats següents segons el tipus.</label>
-    <textarea id="bmBody" placeholder="Enunciat de la pregunta"></textarea>
-
-    <div class="grid" style="grid-template-columns:1fr 1fr">
-      <div>
-        <label>Opcions / Llista esquerra / Resposta (segons tipus)</label>
-        <textarea id="bmA" placeholder="Per mc/tf: opcions (una per línia, * indica la correcta)
-Per order: elements desordenats (una per línia)
-Per short/num: resposta correcta
-Per match: llista esquerra (una per línia)"></textarea>
-      </div>
-      <div>
-        <label>Alternatives / Llista dreta / Tolerància (segons tipus)</label>
-        <textarea id="bmB" placeholder="Per short: alternatives vàlides (una per línia)
-Per num: tolerància (ex: 0.1)
-Per match: llista dreta (mateix nombre d'elements)"></textarea>
-      </div>
-    </div>
-
-    <div class="flex" style="margin-top:10px">
-      <button class="btn" onclick="bankAdd()">Afegir al banc</button>
-      <button class="btn secondary" onclick="exportBank()">Exporta banc (.json)</button>
-      <input id="bankFile" type="file" accept=".json" onchange="importBankFile(this.files[0])" />
-    </div>
-
-    <div class="hr"></div>
-    <div id="bankManageList" style="max-height:32vh; overflow:auto"></div>
-  </div>
-  <div class="modal-foot">
-    <button class="btn secondary" onclick="closeBankManage()">Tancar</button>
-  </div>
-</dialog>
-
 <script>
+/* ========= Config ========= */
+const API_BASE = ''; // mateix host (reverse proxy / estàtic). Si cal: 'http://localhost:3000'
+
 /* ========= Utils ========= */
 const $ = sel => document.querySelector(sel);
 function showView(id){
@@ -388,25 +233,9 @@ function showView(id){
   if(id==='student' || id==='do' || id==='result') $('#btnStudent').classList.add('active');
 }
 function enterRole(role){ showView(role==='teacher'?'teacher':'student'); }
-
 function uid(){ return Math.random().toString(36).slice(2,10); }
-function nowISO(){ return new Date().toISOString(); }
-
-/* Unicode-safe Base64 */
-function b64encode(str){
-  const bytes = new TextEncoder().encode(str);
-  let bin = ""; bytes.forEach(b=>bin += String.fromCharCode(b));
-  return btoa(bin);
-}
-function b64decode(b64){
-  const bin = atob(b64);
-  const bytes = new Uint8Array([...bin].map(ch=>ch.charCodeAt(0)));
-  return new TextDecoder().decode(bytes);
-}
 function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 function debounced(fn, ms=400){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
-
-/* ========= KaTeX auto-render helper ========= */
 function tryRenderKatex(root){
   if(!window.__katexReady || !window.renderMathInElement) return;
   try{
@@ -419,27 +248,40 @@ function tryRenderKatex(root){
     });
   }catch(_){}
 }
+const toast = (msg)=>{ const d=document.createElement('div'); d.className='success'; d.style.position='fixed'; d.style.right='18px'; d.style.bottom='18px'; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(), 1800); };
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+function escapeAttr(s){ return String(s||'').replaceAll('"','&quot;'); }
 
-/* ========= Exam model ========= */
+/* ========= Exam model (client) ========= */
 let exam = {
-  id: uid(),
+  id: null, // s'assigna quan es publica
   title: '',
   desc: '',
   settings: { showScoreToStudent: true, shuffle: false },
-  session: null,
-  questions: [] // sense preguntes d'entrada
+  questions: []
 };
-
 function lazySaveExam(){ saveExam(false); }
 function toggleShuffle(v){
   exam.settings.shuffle = !!v;
-  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
+  localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
+}
+function saveExam(feedback=false){
+  exam.title = $('#examTitle').value.trim();
+  exam.desc = $('#examDesc').value.trim();
+  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
+  localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
+  if(feedback) toast('Prova desada localment.');
+}
+function clearExam(){
+  if(confirm('Vols buidar la prova actual?')){
+    exam = { id:null, title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+    $('#examTitle').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes';
+    $('#examShuffle').checked=false; $('#publishInfo').textContent='';
+    renderQuestions();
+  }
 }
 
-/* ===== Tipus de preguntes suportats =====
-mc, tf, short, num (ans,tol), long (rubric), order (items[]), match (pairs [L,R])
-Cada pregunta pot tenir: media {imgData?, audioData?}
-*/
+/* ===== Tipus de preguntes ===== */
 function baseQuestion(type){
   const q = { id: uid(), type, text:'', points:1, tags:[], media:{} };
   if(type==='mc'){ q.options=[{text:'Opció 1', correct:false},{text:'Opció 2', correct:true}]; }
@@ -448,14 +290,13 @@ function baseQuestion(type){
   if(type==='num'){ q.numAnswer=''; q.tolerance='0'; }
   if(type==='long'){ q.rubric='Criteris d’avaluació (opcional)'; }
   if(type==='order'){ q.items=['A','B','C']; }
-  if(type==='match'){ q.left=['A','B']; q.right=['1','2']; q.pairs=[0,1]; /* posicions correctes */ }
+  if(type==='match'){ q.left=['A','B']; q.right=['1','2']; }
   return q;
 }
 function addQuestion(type){
   exam.questions.push(baseQuestion(type));
   renderQuestions();
 }
-
 function duplicateQuestion(qid){
   const i = exam.questions.findIndex(q=>q.id===qid);
   if(i<0) return;
@@ -476,50 +317,6 @@ function moveQuestion(qid, dir){
 function delQuestion(qid){
   exam.questions = exam.questions.filter(q=>q.id!==qid);
   renderQuestions();
-}
-
-function renderQuestions(){
-  const wrap = $('#questions'); wrap.innerHTML='';
-  const cnt = exam.questions.length;
-  $('#qCount').textContent = cnt ? `Preguntes: ${cnt}` : 'Encara no hi ha preguntes.';
-  exam.questions.forEach((q,idx)=>{
-    const div = document.createElement('div'); div.className='q-item';
-    div.innerHTML = `
-      <div class="q-head">
-        <div><span class="q-type">Q${idx+1} · ${labelType(q.type)}</span></div>
-        <div class="row-inline">
-          <button class="btn small secondary" title="Pujar" onclick="moveQuestion('${q.id}','up')">↑</button>
-          <button class="btn small secondary" title="Baixar" onclick="moveQuestion('${q.id}','down')">↓</button>
-          <button class="btn small secondary" title="Duplicar" onclick="duplicateQuestion('${q.id}')">⎘</button>
-          <span class="help">Punts</span>
-          <input type="number" min="0" step="0.5" value="${q.points}" style="width:90px" oninput="qSet('${q.id}','points', this.value)" />
-          <button class="btn small" onclick="addToBankFromExam('${q.id}')">+ Al banc</button>
-          <button class="btn small bad" onclick="delQuestion('${q.id}')">Eliminar</button>
-        </div>
-      </div>
-      <div class="q-body">
-        <label>Enunciat (admet $\\LaTeX$)</label>
-        <textarea oninput="qSet('${q.id}','text', this.value)" placeholder="Escriu la pregunta...">${escapeHtml(q.text||'')}</textarea>
-
-        <div class="flex">
-          <div>
-            <label>Imatge (opcional)</label>
-            <input type="file" accept="image/*" onchange="loadMedia('${q.id}','img',this.files[0])">
-          </div>
-          <div>
-            <label>Àudio (opcional)</label>
-            <input type="file" accept="audio/*" onchange="loadMedia('${q.id}','audio',this.files[0])">
-          </div>
-        </div>
-
-        ${renderEditorByType(q)}
-        <label>Etiquetes</label>
-        <input type="text" value="${(q.tags||[]).join(', ')}" oninput="qSet('${q.id}','tags', this.value.split(',').map(s=>s.trim()).filter(Boolean))" placeholder="ex: mates, fraccions">
-      </div>
-    `;
-    wrap.appendChild(div);
-  });
-  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
 }
 function labelType(t){
   return t==='mc'?'Opció múltiple':
@@ -552,12 +349,12 @@ function renderEditorByType(q){
   if(q.type==='mc' || q.type==='tf'){
     const opts = (q.options||[]).map((o,i)=>`
       <div class="opt-row">
-        <input type="radio" name="correct-${q.id}" ${o.correct?'checked':''} onclick="setCorrect('${q.id}', ${i})" />
+        <input type="radio" name="correct-${q.id}" ${o.correct?'checked':''} onclick="setCorrect('${q.id}', ${i})" aria-label="Marca com a correcta l'opció ${i+1}" />
         <input type="text" value="${escapeAttr(o.text||'')}" oninput="setOptText('${q.id}', ${i}, this.value)" />
-        ${q.type==='mc'?`<button class="btn small secondary" onclick="delOpt('${q.id}', ${i})">−</button>`:''}
+        ${q.type==='mc'?`<button class="btn small secondary" onclick="delOpt('${q.id}', ${i})" aria-label="Elimina opció ${i+1}">−</button>`:''}
       </div>
     `).join('');
-    const addBtn = q.type==='mc'?`<button class="btn small" onclick="addOpt('${q.id}')">+ Afegir opció</button>`:'';
+    const addBtn = q.type==='mc'?`<button class="btn small" onclick="addOpt('${q.id}')">+ Afegir opció</button>`:''; 
     return `<label>Opcions</label><div class="options">${opts}</div>${addBtn}`;
   }
   if(q.type==='short'){
@@ -593,11 +390,11 @@ function renderEditorByType(q){
   if(q.type==='order'){
     const items = (q.items||[]).map((t,i)=>`
       <div class="opt-row">
-        <span class="drag-hint">≡</span>
+        <span class="help" aria-hidden="true">≡</span>
         <input type="text" value="${escapeAttr(t)}" oninput="setOrderItem('${q.id}', ${i}, this.value)" />
-        <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, -1)">↑</button>
-        <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, 1)">↓</button>
-        <button class="btn small secondary" onclick="delOrderItem('${q.id}', ${i})">−</button>
+        <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, -1)" aria-label="Mou amunt">↑</button>
+        <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, 1)" aria-label="Mou avall">↓</button>
+        <button class="btn small secondary" onclick="delOrderItem('${q.id}', ${i})" aria-label="Elimina element">−</button>
       </div>
     `).join('');
     return `
@@ -634,301 +431,108 @@ function addOrderItem(qid){ const q=exam.questions.find(x=>x.id===qid); if(q){ q
 function delOrderItem(qid,i){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.items.splice(i,1); renderQuestions(); } }
 function swapOrder(qid,i,dir){ const q=exam.questions.find(x=>x.id===qid); if(!q) return; const j=clamp(i+dir,0,q.items.length-1); if(i===j) return; [q.items[i],q.items[j]]=[q.items[j],q.items[i]]; renderQuestions(); }
 
-function updatePoints(qid, v){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.points = Number(v)||0; } }
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
-function escapeAttr(s){ return String(s||'').replaceAll('"','&quot;'); }
+function renderQuestions(){
+  const wrap = $('#questions'); wrap.innerHTML='';
+  const cnt = exam.questions.length;
+  $('#qCount').textContent = cnt ? `Preguntes: ${cnt}` : 'Encara no hi ha preguntes.';
+  exam.questions.forEach((q,idx)=>{
+    const div = document.createElement('div'); div.className='q-item';
+    div.innerHTML = `
+      <div class="q-head">
+        <div><span class="q-type">Q${idx+1} · ${labelType(q.type)}</span></div>
+        <div class="row-inline">
+          <button class="btn small secondary" title="Pujar" onclick="moveQuestion('${q.id}','up')">↑</button>
+          <button class="btn small secondary" title="Baixar" onclick="moveQuestion('${q.id}','down')">↓</button>
+          <button class="btn small secondary" title="Duplicar" onclick="duplicateQuestion('${q.id}')">⎘</button>
+          <span class="help">Punts</span>
+          <input type="number" min="0" step="0.5" value="${q.points}" style="width:90px" oninput="qSet('${q.id}','points', this.value)" />
+          <button class="btn small bad" onclick="delQuestion('${q.id}')">Eliminar</button>
+        </div>
+      </div>
+      <div class="q-body">
+        <label>Enunciat (admet $\\LaTeX$)</label>
+        <textarea oninput="qSet('${q.id}','text', this.value)" placeholder="Escriu la pregunta...">${escapeHtml(q.text||'')}</textarea>
 
-/* Exam Save/Share */
-function saveExam(feedback=false){
-  exam.title = $('#examTitle').value.trim();
-  exam.desc = $('#examDesc').value.trim();
-  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
-  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
-  if(feedback) toast('Prova desada.');
-}
-const toast = (msg)=>{ const d=document.createElement('div'); d.className='success'; d.style.position='fixed'; d.style.right='18px'; d.style.bottom='18px'; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(), 1800); };
+        <div class="flex">
+          <div>
+            <label>Imatge (opcional)</label>
+            <input type="file" accept="image/*" onchange="loadMedia('${q.id}','img',this.files[0])">
+          </div>
+          <div>
+            <label>Àudio (opcional)</label>
+            <input type="file" accept="audio/*" onchange="loadMedia('${q.id}','audio',this.files[0])">
+          </div>
+        </div>
 
-function clearExam(){
-  if(confirm('Vols buidar la prova actual?')){
-    exam = { id:uid(), title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, session:null, questions:[] };
-    $('#examTitle').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes';
-    $('#examShuffle').checked=false;
-    $('#shareLink').value=''; $('#shareCode').value=''; $('#sessionBadge').style.display='none';
-    $('#pinCard').style.display='none';
-    renderQuestions();
-  }
-}
-
-/* Afegit ràpid de diverses preguntes (format senzill) */
-function openQuickAdd(){
-  const tip = `Format ràpid (una per línia):
-- mc; Enunciat? | opció A* | opció B | opció C
-- tf; Enunciat? | vertader  (o "fals")
-- short; Enunciat? | resposta | alternativa1 | alternativa2
-- num; Enunciat? | 3.14 | 0.01   (valor i tolerància)
-- order; Enunciat? | element 1 | element 2 | element 3
-- match; Enunciat? | A - 1 | B - 2 | C - 3
-
-Exemples:
-mc; Capital de França? | París* | Lyon | Marsella
-tf; El 12 és parell | vertader
-short; 5+7 = ? | 12 | dotze
-num; π ≈ ? | 3.1416 | 0.001
-order; Ordena de petit a gran | 2 | 5 | 9
-match; Relaciona | gos - mamífer | granota - amfibi`;
-  const raw = prompt(tip, 'mc; Capital de França? | París* | Lyon | Marsella');
-  if(!raw) return;
-  const lines = raw.split('\n').map(s=>s.trim()).filter(Boolean);
-  lines.forEach(line=>{
-    const [typePart, rest] = line.split(';');
-    if(!rest) return;
-    const type = (typePart||'').trim().toLowerCase();
-    const chunks = rest.split('|').map(s=>s.trim()).filter(Boolean);
-    const enunciat = chunks.shift() || '';
-    if(type==='mc'){
-      const opts = chunks.map(t=>{
-        const correct = /\*$/.test(t);
-        return {text: t.replace(/\*$/,''), correct};
-      });
-      if(!opts.some(o=>o.correct) && opts.length>0) opts[0].correct=true;
-      exam.questions.push({id:uid(), type:'mc', text:enunciat, points:1, options:opts, tags:[], media:{}});
-    } else if(type==='tf'){
-      const v = (chunks[0]||'').toLowerCase();
-      const correctIsTrue = v.startsWith('v'); // vertader
-      exam.questions.push({id:uid(), type:'tf', text:enunciat, points:1, options:[
-        {text:'Vertader', correct:correctIsTrue},
-        {text:'Fals', correct:!correctIsTrue}
-      ], tags:[], media:{}});
-    } else if(type==='short'){
-      const ans = chunks.shift()||'';
-      exam.questions.push({id:uid(), type:'short', text:enunciat, points:1, answerText:ans, accepts:chunks, tags:[], media:{}});
-    } else if(type==='num'){
-      const val = chunks.shift()||'';
-      const tol = chunks.shift()||'0';
-      exam.questions.push({id:uid(), type:'num', text:enunciat, points:1, numAnswer:val, tolerance:tol, tags:[], media:{}});
-    } else if(type==='order'){
-      exam.questions.push({id:uid(), type:'order', text:enunciat, points:1, items:chunks, tags:[], media:{}});
-    } else if(type==='match'){
-      const pairs = chunks.map(s=>s.split('-').map(x=>x.trim())).filter(p=>p.length===2);
-      const left = pairs.map(p=>p[0]), right=pairs.map(p=>p[1]);
-      exam.questions.push({id:uid(), type:'match', text:enunciat, points:1, left, right, tags:[], media:{}});
-    }
+        ${renderEditorByType(q)}
+        <label>Etiquetes</label>
+        <input type="text" value="${(q.tags||[]).join(', ')}" oninput="qSet('${q.id}','tags', this.value.split(',').map(s=>s.trim()).filter(Boolean))" placeholder="ex: mates, fraccions">
+      </div>
+    `;
+    wrap.appendChild(div);
   });
-  renderQuestions();
+  localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
 }
 
-/* ====== Generar/parsejar codi EXAM ====== */
-function buildExamCode(obj){
-  const json = JSON.stringify(obj);
-  const b64 = b64encode(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/,'');
-  return 'EXAM:' + b64;
-}
-
-/* ====== Sessió amb PIN + QR ====== */
-function generateSession(){
-  // Valida i desa
+/* ========= Publicació al servidor ========= */
+async function publishExam(){
+  // Validació
   exam.title = $('#examTitle').value.trim();
   exam.desc = $('#examDesc').value.trim();
   exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
-  if(!exam.title || exam.questions.length===0){
+  if(!exam.title || (exam.questions||[]).length===0){
     alert('Cal un títol i almenys una pregunta.'); return;
   }
-  // Crea sessió
-  exam.session = Math.floor(100000 + Math.random()*900000).toString();
-  const code = buildExamCode(exam);
-  const url = location.origin + location.pathname + '#' + code;
 
-  $('#shareLink').value = url;
-  $('#shareCode').value = code;
-  $('#sessionBadge').style.display='inline-block';
-  $('#sessionBadge').textContent = 'Sessió ' + exam.session;
-
-  // Targeta PIN + QR
-  $('#pinCard').style.display='grid';
-  $('#pinBig').textContent = codePinFormat(exam.session);
-  drawQR($('#qr'), url);
-
-  $('#aggSummary').innerHTML = `<span class="success">Sessió creada. Comparteix l’enllaç o el codi.</span>`;
-
-  localStorage.setItem('focusPrimaria_exam', JSON.stringify(exam));
-}
-function codePinFormat(pin){ return pin.replace(/(...)(...)/,'$1 $2'); }
-function copyShareLink(){
-  const el = $('#shareLink'); if(!el.value){ alert('Primer crea una sessió'); return; }
-  navigator.clipboard.writeText(el.value).then(()=>{ toast('Enllaç copiat!'); });
-}
-function copyShareCode(){
-  const el = $('#shareCode'); if(!el.value){ alert('Primer crea una sessió'); return; }
-  navigator.clipboard.writeText(el.value).then(()=>{ toast('Codi copiat!'); });
-}
-function downloadExam(){
-  exam.title = $('#examTitle').value.trim();
-  exam.desc = $('#examDesc').value.trim();
-  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
-  if(!exam.title || exam.questions.length===0){
-    alert('Cal un títol i almenys una pregunta.'); return;
-  }
-  const blob = new Blob([JSON.stringify(exam,null,2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = (exam.title||'prova')+'.exam.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-/* ========= Collector ========= */
-let collected = []; // {exam_id, exam_title, session, student:{name,group}, totals, responses, submitted_at}
-function evDragOver(e){ e.preventDefault(); }
-function evDrop(e){ e.preventDefault(); importResultsFiles(e.dataTransfer.files); }
-function importResultsFiles(files){
-  const arr = Array.from(files||[]);
-  if(arr.length===0) return;
-  let done=0, ok=0, bad=0;
-  arr.forEach(f=>{
-    const fr = new FileReader();
-    fr.onload = ()=>{
-      try{
-        const obj = JSON.parse(fr.result);
-        if(obj && obj.type==='focus-result' && obj.totals){
-          collected.push(obj);
-          ok++;
-        } else bad++;
-      }catch(err){ bad++; }
-      done++; if(done===arr.length){ renderResults(); $('#aggSummary').innerHTML = `<span class="success">${ok} resultats importats</span> ${bad?` · <span class="warn">${bad} descartats</span>`:''}`; }
-    };
-    fr.readAsText(f);
-  });
-}
-function renderResults(){
-  if(collected.length===0){ $('#resultsTable').innerHTML=''; return; }
-  const maxQ = Math.max(...collected.map(r=>r.responses.length));
-  let thead = `<tr>
-    <th>Alumne</th><th>Grup</th><th>Prova</th><th>Sessió</th>
-    <th>Puntuació</th><th>Màx</th><th>%</th><th>Data</th>`;
-  for(let i=1;i<=maxQ;i++) thead += `<th>Q${i}</th>`;
-  thead += `</tr>`;
-  let rows = '';
-  collected.forEach(r=>{
-    const pct = (100*r.totals.score/r.totals.max).toFixed(1);
-    let qs = '';
-    r.responses.forEach((ans,idx)=>{
-      const tag = ans.correct===true?'✅':(ans.correct===false?'❌':'—');
-      qs += `<td title="${escapeHtml(ans.answer)}">${tag}</td>`;
+  try{
+    const res = await fetch(API_BASE + '/api/exams', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(exam)
     });
-    for(let k=r.responses.length;k<maxQ;k++) qs += `<td>—</td>`;
-    rows += `<tr>
-      <td>${escapeHtml(r.student.name||'')}</td>
-      <td>${escapeHtml(r.student.group||'')}</td>
-      <td>${escapeHtml(r.exam_title||'')}</td>
-      <td>${escapeHtml(r.session||'')}</td>
-      <td>${r.totals.score}</td>
-      <td>${r.totals.max}</td>
-      <td>${pct}%</td>
-      <td>${new Date(r.submitted_at).toLocaleString()}</td>
-      ${qs}
-    </tr>`;
-  });
-  $('#resultsTable').innerHTML = `<thead>${thead}</thead><tbody>${rows}</tbody>`;
+    if(!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    exam.id = data.examId;
+    localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
+    $('#publishInfo').innerHTML = `<span class="success">Publicat! PIN: <strong>${data.pin}</strong> &middot; examId: <span class="mono">${data.examId}</span></span>`;
+    $('#examIdLookup').value = data.examId;
+  }catch(e){
+    $('#publishInfo').innerHTML = `<span class="warn">Error en publicar: ${escapeHtml(e.message||'desconegut')}</span>`;
+  }
 }
-function exportCSV(){
-  if(collected.length===0){ alert('No hi ha resultats.'); return; }
-  const maxQ = Math.max(...collected.map(r=>r.responses.length));
-  const head = ['Alumne','Grup','Prova','Sessió','Puntuació','Max','Percent','Data', ...Array.from({length:maxQ},(_,i)=>`Q${i+1}`)];
-  const lines = [head.join(',')];
-  collected.forEach(r=>{
-    const pct = (100*r.totals.score/r.totals.max).toFixed(1);
-    const base = [
-      csv(r.student.name||''), csv(r.student.group||''), csv(r.exam_title||''), csv(r.session||''),
-      r.totals.score, r.totals.max, pct, csv(new Date(r.submitted_at).toLocaleString())
-    ];
-    const qcells = r.responses.map(ans=>csv(ans.correct===true?'OK':(ans.correct===false?'KO':'NA')));
-    while(qcells.length<maxQ) qcells.push('');
-    lines.push([...base, ...qcells].join(','));
-  });
-  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'resultats.csv';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function csv(s){ return `"${String(s).replaceAll('"','""')}"`; }
 
 /* ========= Student flow ========= */
 let loadedExam = null;
+let loadedPin = null;
 
-function parseExamFromHash(){
-  const h = (location.hash||'').trim();
-  if(!h) return;
-  const raw = h.startsWith('#') ? h.slice(1) : h;
+async function loadExamByPin(){
+  const pin = ($('#pinInput').value||'').trim();
+  if(!/^\d{6}$/.test(pin)){ alert('Escriu un PIN de 6 dígits.'); return; }
   try{
-    const obj = parseAnyExamCode(raw);
+    const res = await fetch(API_BASE + '/api/exams/pin/' + encodeURIComponent(pin));
+    if(!res.ok) throw new Error('PIN no trobat');
+    const obj = await res.json();
     loadedExam = obj;
-    $('#loadStatus').innerHTML = `<span class="success">Prova carregada des de l’enllaç.</span>`;
-    showExamDetails(obj);
-  }catch(e){
-    $('#loadStatus').innerHTML = `<span class="warn">No s’ha pogut llegir l’enllaç (#EXAM...).</span>`;
-  }
-}
-function loadFromCode(){
-  const txt0 = $('#pasteCode').value.trim();
-  if(!txt0){ alert('Enganxa l’enllaç o el codi EXAM:...'); return; }
-  let txt = txt0;
-  try{
-    if(/https?:\/\//i.test(txt0) || txt0.includes('#')){
-      const u = new URL(txt0, location.href);
-      txt = (u.hash||'').replace(/^#/, '');
-    }
-  }catch(_){}
-  try{
-    const obj = parseAnyExamCode(txt);
-    loadedExam = obj;
+    loadedPin = pin;
     showExamDetails(obj);
     $('#loadStatus').innerHTML = `<span class="success">Prova carregada!</span>`;
   }catch(e){
-    alert('Codi o enllaç invàlid. Assegura’t que comença per EXAM: o que enganxes l’enllaç complet.');
+    $('#loadStatus').innerHTML = `<span class="warn">${escapeHtml(e.message||'No s’ha pogut carregar la prova')}</span>`;
   }
-}
-function parseAnyExamCode(s){
-  let payload = s.trim();
-  if(payload.startsWith('EXAM:')) payload = payload.slice(5);
-  payload = payload.replace(/-/g,'+').replace(/_/g,'/');
-  const m = payload.length % 4;
-  if(m===2) payload += '==';
-  else if(m===3) payload += '=';
-  else if(m!==0 && m!==2 && m!==3){
-    if(payload.startsWith('#EXAM:')) return parseAnyExamCode(payload.slice(1));
-    throw new Error('Bad base64 length');
-  }
-  const json = b64decode(payload);
-  const obj = JSON.parse(json);
-  if(!obj || !Array.isArray(obj.questions)) throw new Error('No questions');
-  return obj;
-}
-function importExamFile(file){
-  const fr = new FileReader();
-  fr.onload = ()=>{
-    try{
-      const obj = JSON.parse(fr.result);
-      if(obj && obj.questions){ loadedExam = obj; showExamDetails(obj); $('#loadStatus').textContent='Prova carregada de fitxer.'; }
-      else throw new Error();
-    }catch(e){ alert('Arxiu invàlid.'); }
-  };
-  fr.readAsText(file);
 }
 function showExamDetails(x){
   $('#examDetails').innerHTML = `
     <div><strong>Títol:</strong> ${escapeHtml(x.title||'')}</div>
     <div><strong>Instruccions:</strong> ${escapeHtml(x.desc||'')}</div>
     <div><strong>Preguntes:</strong> ${x.questions?x.questions.length:0}</div>
-    <div><strong>Sessió:</strong> ${escapeHtml(x.session||'(no definida)')}</div>
+    <div><strong>PIN:</strong> ${escapeHtml(x.pin||'(no definit)')}</div>
+    <div><strong>examId:</strong> <span class="mono">${escapeHtml(x.id||'')}</span></div>
   `;
 }
-
-/* ===== Render examen (alumne) ===== */
 function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+
 function startExam(){
-  if(!loadedExam){ alert('Carrega primer una prova.'); return; }
+  if(!loadedExam){ alert('Carrega primer una prova per PIN.'); return; }
   const name = $('#studentName').value.trim();
   const group = $('#studentGroup').value.trim();
   if(!name){ alert('Escriu el teu nom.'); return; }
@@ -963,20 +567,19 @@ function startExam(){
       const shuffled = [...(q.items||[])]; shuffleArray(shuffled);
       body = `<div id="ord-${q.id}">` + shuffled.map((t,i)=>`
         <div class="opt-row">
-          <span class="drag-hint">≡</span>
+          <span class="help" aria-hidden="true">≡</span>
           <input type="text" value="${escapeAttr(t)}" data-i="${i}" readonly />
           <button class="btn small secondary" onclick="ordSwap('${q.id}', ${i}, -1)">↑</button>
           <button class="btn small secondary" onclick="ordSwap('${q.id}', ${i}, 1)">↓</button>
         </div>`).join('') + `</div>`;
-      // guardem estado inicial
       q.__runtimeOrder = shuffled;
     } else if(q.type==='match'){
       const left = q.left||[], right = [...(q.right||[])]; shuffleArray(right);
-      const selects = left.map((L,idx)=>`
+      const selects = left.map((L,ii)=>`
         <div class="opt-row">
-          <span style="min-width:24px">${idx+1}.</span>
+          <span style="min-width:24px">${ii+1}.</span>
           <span style="flex:1">${escapeHtml(L)}</span>
-          <select id="match-${q.id}-${idx}">
+          <select id="match-${q.id}-${ii}">
             ${right.map((R,i)=>`<option value="${i}">${escapeHtml(R)}</option>`).join('')}
           </select>
         </div>`).join('');
@@ -995,12 +598,11 @@ function startExam(){
     host.appendChild(el);
   });
 
-  // Render KaTeX si disponible
   tryRenderKatex(host);
 
   loadedExam.__runtimeOrder = questions.map(q=>q.id);
   loadedExam.__qmap = Object.fromEntries((loadedExam.questions||[]).map(q=>[q.id,q]));
-  loadedExam.__rendered = Object.fromEntries(questions.map(q=>[q.id,q])); // accés a runtime metadata
+  loadedExam.__rendered = Object.fromEntries(questions.map(q=>[q.id,q]));
   showView('do');
 }
 function ordSwap(qid,i,dir){
@@ -1010,8 +612,9 @@ function ordSwap(qid,i,dir){
   if(dir===1) wrap.insertBefore(rows[j], rows[i]);
   else wrap.insertBefore(rows[i], rows[j]);
 }
+
 let lastResult = null;
-function submitExam(){
+async function submitExam(){
   const answers = [];
   let score=0, max=0;
 
@@ -1044,8 +647,7 @@ function submitExam(){
       answers.push({qid:q.id, type:q.type, answer: valRaw, correct: ok});
     } else if(q.type==='long'){
       const val = ($('#ans-'+q.id)?.value||'').trim();
-      answers.push({qid:q.id, type:q.type, answer: val, correct: null}); // manual
-      // no suma automàtica
+      answers.push({qid:q.id, type:q.type, answer: val, correct: null});
     } else if(q.type==='order'){
       const wrap = $('#ord-'+q.id);
       const got = Array.from(wrap.querySelectorAll('input[type="text"]')).map(i=>i.value);
@@ -1055,7 +657,6 @@ function submitExam(){
     } else if(q.type==='match'){
       const left = q.left||[], right = rq.__runtimeRight || (q.right||[]);
       const picks = left.map((_,i)=>Number(($('#match-'+q.id+'-'+i)?.value||0)));
-      // és correcte si per a cada i, picks[i] apunta a l’ítem que coincideix amb right.indexOf(q.right[i]) (posició del dret original dins del runtime right)
       let okAll = true;
       left.forEach((_,i)=>{
         const correctR = q.right[i];
@@ -1069,228 +670,151 @@ function submitExam(){
 
   const name = $('#studentName').value.trim();
   const group = $('#studentGroup').value.trim();
+
   lastResult = {
-    type:'focus-result',
-    exam_id: loadedExam.id,
-    exam_title: loadedExam.title,
-    session: loadedExam.session || '',
+    examId: loadedExam.id,
+    pin: loadedPin,
     student:{name, group},
-    submitted_at: nowISO(),
     totals:{score, max},
     responses: answers
   };
   const showScore = loadedExam.settings?.showScoreToStudent !== false;
-  $('#studentScoreInfo').innerHTML = showScore ? 
+  $('#studentScoreInfo').innerHTML = showScore ?
     `Has fet <strong>${score}</strong> de <strong>${max}</strong> punts.` :
     `S’han guardat les respostes. El/la mestre/a veurà la teva nota.`;
-  showView('result');
-}
-function downloadResult(){
-  if(!lastResult) return;
-  const base = `result_${(lastResult.session||'sessio')}_${(lastResult.student.name||'alumne').replace(/\s+/g,'_')}`;
-  const blob = new Blob([JSON.stringify(lastResult,null,2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = base+'.result.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
 
-/* ========= Banc de preguntes ========= */
-let BANK = []; // [{id,type,text,meta... , tags:[], fav:boolean}]
-function saveBank(){ localStorage.setItem('focusPrimaria_bank', JSON.stringify(BANK)); }
-function loadBank(){
-  try{ BANK = JSON.parse(localStorage.getItem('focusPrimaria_bank')||'[]'); }catch(_){ BANK=[]; }
-}
-function openBank(){ $('#dlgBank').showModal(); renderBankList(); }
-function closeBank(){ $('#dlgBank').close(); }
-let bankFilter = 'all';
-function setBankFilter(f){ bankFilter=f; $('#bankTabAll').classList.toggle('active', f==='all'); $('#bankTabFav').classList.toggle('active', f==='fav'); renderBankList(); }
-function renderBankList(){
-  const q = ($('#bankSearch').value||'').toLowerCase();
-  const host = $('#bankList'); host.innerHTML='';
-  BANK.filter(item=>{
-    if(bankFilter==='fav' && !item.fav) return false;
-    const text = (item.text||'') + ' ' + (item.tags||[]).join(' ');
-    return text.toLowerCase().includes(q);
-  }).forEach(item=>{
-    const row = document.createElement('div'); row.className='q-item';
-    row.innerHTML = `
-      <div class="q-head">
-        <div><span class="q-type">${labelType(item.type)}</span> · <strong>${escapeHtml(item.text.slice(0,80))}</strong></div>
-        <div class="row-inline">
-          <span class="fav" title="Favorit" onclick="toggleFav('${item.id}')">${item.fav?'⭐':'☆'}</span>
-          <button class="btn small" onclick="useFromBank('${item.id}')">Afegeix</button>
-        </div>
-      </div>
-      <div class="help">Etiquetes: ${(item.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join(' ')||'(cap)'}</div>
-    `;
-    host.appendChild(row);
-  });
-}
-function toggleFav(id){ const it=BANK.find(x=>x.id===id); if(!it) return; it.fav=!it.fav; saveBank(); renderBankList(); renderBankManage(); }
-function useFromBank(id){
-  const it=BANK.find(x=>x.id===id); if(!it) return;
-  const q = JSON.parse(JSON.stringify(it));
-  q.id = uid(); delete q.fav; // nova instància
-  exam.questions.push(q);
-  renderQuestions(); toast('Afegida al test.');
-}
-function addToBankFromExam(qid){
-  const src=exam.questions.find(x=>x.id===qid); if(!src) return;
-  const it = JSON.parse(JSON.stringify(src)); it.id=uid(); it.fav=false;
-  BANK.unshift(it); saveBank(); toast('Afegida al banc.');
-}
-
-function openBankManage(){ $('#dlgBankManage').showModal(); renderBankManage(); }
-function closeBankManage(){ $('#dlgBankManage').close(); }
-function bankAdd(){
-  const t = $('#bmTitle').value.trim(); if(!t){ alert('Posa un títol/enunciat.'); return; }
-  const type = $('#bmType').value;
-  const body = $('#bmBody').value.trim();
-  const A = $('#bmA').value; const B = $('#bmB').value;
-  const tags = ($('#bmTags').value||'').split(',').map(s=>s.trim()).filter(Boolean);
-
-  let q = baseQuestion(type);
-  q.text = body; q.tags = tags;
-
-  if(type==='mc'){
-    const lines = A.split('\n').map(s=>s.trim()).filter(Boolean);
-    q.options = lines.map(s=>({ text:s.replace(/\*$/,''), correct:/\*$/.test(s) }));
-    if(!q.options.some(o=>o.correct) && q.options.length>0) q.options[0].correct=true;
-  } else if(type==='tf'){
-    const v = (A.split('\n')[0]||'').toLowerCase();
-    const correctIsTrue = v.startsWith('v');
-    q.options = [{text:'Vertader', correct:correctIsTrue},{text:'Fals', correct:!correctIsTrue}];
-  } else if(type==='short'){
-    const lines = A.split('\n').map(s=>s.trim()).filter(Boolean);
-    q.answerText = lines.shift()||''; q.accepts = lines;
-  } else if(type==='num'){
-    q.numAnswer = (A||'').trim();
-    q.tolerance = (B||'0').trim();
-  } else if(type==='order'){
-    q.items = A.split('\n').map(s=>s.trim()).filter(Boolean);
-  } else if(type==='match'){
-    q.left = A.split('\n').map(s=>s.trim()).filter(Boolean);
-    q.right = B.split('\n').map(s=>s.trim()).filter(Boolean);
-    if(q.left.length!==q.right.length){ alert('Match: esquerra i dreta han de tenir el mateix nombre d’elements.'); return; }
-  } else if(type==='long'){
-    q.rubric = B||'';
-  }
-
-  q.id = uid(); q.fav=false;
-  BANK.unshift(q); saveBank(); renderBankManage();
-  $('#bmTitle').value=''; $('#bmBody').value=''; $('#bmA').value=''; $('#bmB').value=''; $('#bmTags').value='';
-  toast('Afegit al banc.');
-}
-function renderBankManage(){
-  const host = $('#bankManageList'); if(!host) return; host.innerHTML='';
-  BANK.forEach(item=>{
-    const div = document.createElement('div'); div.className='q-item';
-    div.innerHTML = `
-      <div class="q-head">
-        <div><span class="q-type">${labelType(item.type)}</span> · <strong>${escapeHtml(item.text.slice(0,80))}</strong></div>
-        <div class="row-inline">
-          <span class="fav" onclick="toggleFav('${item.id}')">${item.fav?'⭐':'☆'}</span>
-          <button class="btn small" onclick="useFromBank('${item.id}')">Afegeix al test</button>
-          <button class="btn small bad" onclick="delFromBank('${item.id}')">Eliminar</button>
-        </div>
-      </div>
-      <div class="help">Etiquetes: ${(item.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join(' ')||'(cap)'}</div>
-    `;
-    host.appendChild(div);
-  });
-}
-function delFromBank(id){ BANK = BANK.filter(x=>x.id!==id); saveBank(); renderBankManage(); renderBankList(); }
-function exportBank(){
-  const blob = new Blob([JSON.stringify(BANK,null,2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'banc_preguntes.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function importBankFile(file){
-  const fr = new FileReader();
-  fr.onload = ()=>{
-    try{
-      const arr = JSON.parse(fr.result);
-      if(Array.isArray(arr)){ BANK = arr; saveBank(); renderBankManage(); toast('Banc importat.'); }
-      else throw new Error();
-    }catch(e){ alert('Arxiu de banc invàlid.'); }
-  };
-  fr.readAsText(file);
-}
-
-/* ===== QR generator (micro-llibreria incorporada) ===== */
-/* Basat en QRCode for JavaScript (Kazuhiko Arase) minificat i adaptat a canvas.
-   (Versió molt reduïda per ús docent; només nivell L i mode byte) */
-!function(){
-  // Minified qrcode alg (extremadament retallat per brevetat)
-  // Per simplicitat i mida, aquí fem servir una funció helper que delega en una implementació compacta.
-  // Si vols una qualitat superior/versions, podem separar en mòdul.
-  function QR(text){ this.text=text; this.size=180; this.padding=10; }
-  QR.prototype.draw = function(canvas){
-    // Implementació molt simple via una API pública petita:
-    // Use a lightweight encoder injected below:
-    const modules = qre(textToUtf8Bytes(this.text));
-    const n = modules.length;
-    const ctx = canvas.getContext('2d');
-    const S = Math.floor((this.size - 2*this.padding)/n);
-    canvas.width = canvas.height = this.size;
-    ctx.fillStyle='#fff'; ctx.fillRect(0,0,this.size,this.size);
-    ctx.fillStyle='#000';
-    for(let y=0;y<n;y++){
-      for(let x=0;x<n;x++){
-        if(modules[y][x]) ctx.fillRect(this.padding+x*S, this.padding+y*S, S, S);
-      }
-    }
-  };
-  function textToUtf8Bytes(s){ return new TextEncoder().encode(s); }
-  // Placeholder encoder: per simplicitat, fem servir una matriu “fake” si encoder real no disponible.
-  // ATENCIÓ: Per a ús real, substitueix 'qre' per un encoder QR complet. Aquí n’incloem un
-  // patró determinista que funciona com a marcador visual (NO és escanejable universalment).
-  // Si vols QR 100% escanejable, et poso la versió completa (més extensa).
-  function qre(bytes){
-    const n=29; // mida fixa demo
-    const m=Array.from({length:n},()=>Array(n).fill(false));
-    // Finder patterns
-    const fp=(ox,oy)=>{for(let y=0;y<7;y++)for(let x=0;x<7;x++){const on=(x===0||x===6||y===0||y===6||(x>1&&x<5&&y>1&&y<5)); m[oy+y][ox+x]=on;}}
-    fp(0,0); fp(n-7,0); fp(0,n-7);
-    // Dummy data pattern (no real QR ECC) – només per visualitzar.
-    let k=0; for(let y=8;y<n-8;y++){ for(let x=(y%2?8:9);x<n-8;x+=2){ m[y][x] = ((bytes[k++%bytes.length] + x + y) % 3)==0; } }
-    return m;
-  }
-  window.__QR = QR;
-}();
-
-function drawQR(canvas, text){
   try{
-    const qr = new __QR(text); qr.size=180; qr.padding=8; qr.draw(canvas);
+    const res = await fetch(API_BASE + '/api/results', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(lastResult)
+    });
+    if(!res.ok) throw new Error(await res.text());
+    showView('result');
   }catch(e){
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillText('QR error', 10, 20);
+    alert('No s’ha pogut enviar el resultat: ' + (e.message||''));
   }
+}
+
+/* ========= Resultats (mestre) ========= */
+async function fetchResults(){
+  const examId = ($('#examIdLookup').value||'').trim();
+  if(!examId){ alert('Escriu un examId.'); return; }
+  try{
+    const res = await fetch(API_BASE + '/api/results/' + encodeURIComponent(examId));
+    if(!res.ok) throw new Error(await res.text());
+    const bag = await res.json();
+    renderResultsTable(bag.items||[]);
+  }catch(e){
+    $('#aggSummary').innerHTML = `<span class="warn">Error: ${escapeHtml(e.message||'')}</span>`;
+  }
+}
+function renderResultsTable(items){
+  const tbl = $('#resultsTable');
+  if(!items.length){ tbl.innerHTML=''; $('#aggSummary').textContent='Sense resultats.'; return; }
+  const maxQ = items.reduce((m,r)=>Math.max(m, r.responses?.length||0), 0);
+  let thead = `<tr>
+    <th>Alumne</th><th>Grup</th><th>Puntuació</th><th>Màx</th><th>%</th><th>Data</th>`;
+  for(let i=1;i<=maxQ;i++) thead += `<th>Q${i}</th>`;
+  thead += `</tr>`;
+  let rows = '';
+  items.forEach(r=>{
+    const pct = r.totals?.max ? (100*r.totals.score/r.totals.max).toFixed(1) : '';
+    let qs = '';
+    (r.responses||[]).forEach(ans=>{
+      const tag = ans.correct===true?'✅':(ans.correct===false?'❌':'—');
+      qs += `<td title="${escapeHtml(ans.answer)}">${tag}</td>`;
+    });
+    for(let k=(r.responses||[]).length;k<maxQ;k++) qs += `<td>—</td>`;
+    rows += `<tr>
+      <td>${escapeHtml(r.student?.name||'')}</td>
+      <td>${escapeHtml(r.student?.group||'')}</td>
+      <td>${r.totals?.score??''}</td>
+      <td>${r.totals?.max??''}</td>
+      <td>${pct? pct+'%':''}</td>
+      <td>${new Date(r.submittedAt).toLocaleString()}</td>
+      ${qs}
+    </tr>`;
+  });
+  tbl.innerHTML = `<thead>${thead}</thead><tbody>${rows}</tbody>`;
+  $('#aggSummary').textContent = `${items.length} resultats`;
+}
+function downloadCSV(){
+  const examId = ($('#examIdLookup').value||'').trim();
+  if(!examId){ alert('Escriu un examId.'); return; }
+  const a = document.createElement('a');
+  a.href = `/api/results/${encodeURIComponent(examId)}/csv`;
+  a.click();
+}
+
+/* ========= Afegit ràpid ========= */
+function openQuickAdd(){
+  const tip = `Format ràpid (una per línia):
+- mc; Enunciat? | opció A* | opció B | opció C
+- tf; Enunciat? | vertader  (o "fals")
+- short; Enunciat? | resposta | alternativa1 | alternativa2
+- num; Enunciat? | 3.14 | 0.01
+- order; Enunciat? | element 1 | element 2 | element 3
+- match; Enunciat? | A - 1 | B - 2 | C - 3
+
+Exemples:
+mc; Capital de França? | París* | Lyon | Marsella
+tf; El 12 és parell | vertader
+short; 5+7 = ? | 12 | dotze
+num; π ≈ ? | 3.1416 | 0.001
+order; Ordena de petit a gran | 2 | 5 | 9
+match; Relaciona | gos - mamífer | granota - amfibi`;
+  const raw = prompt(tip, 'mc; Capital de França? | París* | Lyon | Marsella');
+  if(!raw) return;
+  const lines = raw.split('\n').map(s=>s.trim()).filter(Boolean);
+  lines.forEach(line=>{
+    const [typePart, rest] = line.split(';');
+    if(!rest) return;
+    const type = (typePart||'').trim().toLowerCase();
+    const chunks = rest.split('|').map(s=>s.trim()).filter(Boolean);
+    const enunciat = chunks.shift() || '';
+    if(type==='mc'){
+      const opts = chunks.map(t=>{
+        const correct = /\*$/.test(t);
+        return {text: t.replace(/\*$/,''), correct};
+      });
+      if(!opts.some(o=>o.correct) && opts.length>0) opts[0].correct=true;
+      exam.questions.push({id:uid(), type:'mc', text:enunciat, points:1, options:opts, tags:[], media:{}});
+    } else if(type==='tf'){
+      const v = (chunks[0]||'').toLowerCase();
+      const correctIsTrue = v.startsWith('v');
+      exam.questions.push({id:uid(), type:'tf', text:enunciat, points:1, options:[
+        {text:'Vertader', correct:correctIsTrue},
+        {text:'Fals', correct:!correctIsTrue}
+      ], tags:[], media:{}});
+    } else if(type==='short'){
+      const ans = chunks.shift()||'';
+      exam.questions.push({id:uid(), type:'short', text:enunciat, points:1, answerText:ans, accepts:chunks, tags:[], media:{}});
+    } else if(type==='num'){
+      const val = chunks.shift()||'';
+      const tol = chunks.shift()||'0';
+      exam.questions.push({id:uid(), type:'num', text:enunciat, points:1, numAnswer:val, tolerance:tol, tags:[], media:{}});
+    } else if(type==='order'){
+      exam.questions.push({id:uid(), type:'order', text:enunciat, points:1, items:chunks, tags:[], media:{}});
+    } else if(type==='match'){
+      const pairs = chunks.map(s=>s.split('-').map(x=>x.trim())).filter(p=>p.length===2);
+      const left = pairs.map(p=>p[0]), right=pairs.map(p=>p[1]);
+      exam.questions.push({id:uid(), type:'match', text:enunciat, points:1, left, right, tags:[], media:{}});
+    }
+  });
+  renderQuestions();
 }
 
 /* ========= Init ========= */
 function restoreExam(){
   try{
-    const raw = localStorage.getItem('focusPrimaria_exam');
+    const raw = localStorage.getItem('focusSrv_exam');
     if(raw){
       exam = JSON.parse(raw);
       $('#examTitle').value = exam.title||'';
       $('#examDesc').value = exam.desc||'';
       $('#examShowScore').value = exam.settings?.showScoreToStudent===false?'no':'yes';
       $('#examShuffle').checked = !!exam.settings?.shuffle;
-      if(exam.session){
-        $('#sessionBadge').style.display='inline-block';
-        $('#sessionBadge').textContent='Sessió '+exam.session;
-      }
-      const code = buildExamCode(exam);
-      $('#shareLink').value = location.origin + location.pathname + '#'+code;
-      $('#shareCode').value = code;
       renderQuestions();
     } else {
       renderQuestions();
@@ -1298,9 +822,7 @@ function restoreExam(){
   }catch(e){ renderQuestions(); }
 }
 window.addEventListener('load', ()=>{
-  loadBank();
   restoreExam();
-  parseExamFromHash();
 });
 </script>
 </body>
