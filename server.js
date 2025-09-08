@@ -61,7 +61,7 @@ app.get("/api/exams/pin/:pin", (req, res) => {
   res.status(404).json({ error: "Examen no trobat" });
 });
 
-// 🔹 Guardar resultats d’un alumne
+// 🔹 Guardar resultats d’un alumne (amb examId a la URL)
 app.post("/api/results/:examId", (req, res) => {
   const { examId } = req.params;
   const result = req.body;
@@ -70,6 +70,26 @@ app.post("/api/results/:examId", (req, res) => {
     return res.status(400).json({ error: "Resultat invàlid" });
   }
 
+  const file = path.join(DATA_DIR, `results_${examId}.json`);
+  let results = [];
+  if (fs.existsSync(file)) {
+    results = JSON.parse(fs.readFileSync(file, "utf-8"));
+  }
+
+  results.push({ ...result, submittedAt: new Date().toISOString() });
+  fs.writeFileSync(file, JSON.stringify(results, null, 2));
+
+  res.json({ ok: true });
+});
+
+// 🔹 Guardar resultats d’un alumne (versió genèrica: examId al body)
+app.post("/api/results", (req, res) => {
+  const result = req.body;
+  if (!result || !result.examId || !result.student || !result.responses) {
+    return res.status(400).json({ error: "Falten camps obligatoris (examId, student, responses)" });
+  }
+
+  const examId = result.examId;
   const file = path.join(DATA_DIR, `results_${examId}.json`);
   let results = [];
   if (fs.existsSync(file)) {
