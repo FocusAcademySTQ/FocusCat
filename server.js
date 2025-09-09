@@ -61,6 +61,20 @@ app.get("/api/exams/pin/:pin", (req, res) => {
   res.status(404).json({ error: "Examen no trobat" });
 });
 
+// 🔹 Llistar tots els exàmens (biblioteca del mestre)
+app.get("/api/exams", (req, res) => {
+  const files = fs.readdirSync(DATA_DIR).filter(f => f.startsWith("exam_"));
+  const exams = files.map(file => {
+    const exam = JSON.parse(fs.readFileSync(path.join(DATA_DIR, file), "utf-8"));
+    return {
+      examId: exam.examId,
+      pin: exam.pin,
+      title: exam.title || "(Sense títol)"
+    };
+  });
+  res.json(exams);
+});
+
 // 🔹 Guardar resultats d’un alumne (amb examId a la URL)
 app.post("/api/results/:examId", (req, res) => {
   const { examId } = req.params;
