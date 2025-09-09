@@ -58,7 +58,6 @@
   .table th, .table td{padding:10px 12px; border-bottom:1px solid var(--hair); text-align:left; font-size:14px; vertical-align:top}
   .table th{background:#f8fafc; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
   .help{font-size:13px; color:#475569}
-  .right{margin-left:auto}
   .success{color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:8px 10px; border-radius:10px; display:inline-block}
   .warn{color:#92400e; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:10px; display:inline-block}
   .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
@@ -97,67 +96,72 @@
   <section id="view-teacher" class="grid grid-2" style="display:none">
     <div class="card">
       <h2 class="title">Creador de Proves</h2>
-      <p class="muted">Títol, instruccions i preguntes. Quan estigui a punt, <strong>Publica</strong> i obtindràs un PIN.</p>
-
-      <!-- ... editor (mateix que abans) ... -->
-
-      <div class="hr"></div>
-      <div class="flex">
-        <button class="btn good" onclick="publishExam()">Publica al servidor</button>
-        <button class="btn secondary" onclick="clearExam()">Buida</button>
-      </div>
+      <label for="examTitle">Títol de la prova</label>
+      <input id="examTitle" type="text" />
+      <button class="btn good" onclick="publishExam()">Publica al servidor</button>
       <p id="publishInfo" class="help"></p>
     </div>
 
     <div class="card">
-      <h3 class="title">Biblioteca d’Exàmens</h3>
-      <p class="muted">Llista d’exàmens publicats al servidor (títol, examId i PIN).</p>
+      <h3 class="title">Biblioteca d’exàmens</h3>
       <button class="btn small" onclick="loadExamLibrary()">Carrega biblioteca</button>
-      <div class="hr"></div>
-      <div style="max-height:360px; overflow:auto; margin-top:10px">
-        <table class="table" id="libraryTable"></table>
-      </div>
+      <table class="table" id="examLibrary"></table>
     </div>
   </section>
 
-  <!-- ALTRES SECCIONS: student, do exam, result... -->
+  <!-- STUDENT -->
+  <section id="view-student" class="grid" style="display:none">
+    <div class="card">
+      <h2 class="title">Accés amb PIN</h2>
+      <label for="pinInput">PIN (6 dígits)</label>
+      <input id="pinInput" type="text" />
+      <button class="btn small" onclick="loadExamByPin()">Carrega prova</button>
+      <div id="examDetails" class="help"></div>
+    </div>
+  </section>
 </main>
 
 <script>
 const API_BASE = '';
-const $ = sel => document.querySelector(sel);
+const $ = s => document.querySelector(s);
 function showView(id){
   for(const el of document.querySelectorAll('main > section')) el.style.display='none';
   $('#view-'+id).style.display='';
-  for(const b of document.querySelectorAll('nav .pill')) b.classList.remove('active');
-  if(id==='home') $('#btnHome').classList.add('active');
-  if(id==='teacher') $('#btnTeacher').classList.add('active');
-  if(id==='student' || id==='do' || id==='result') $('#btnStudent').classList.add('active');
 }
-function enterRole(role){ showView(role==='teacher'?'teacher':'student'); }
+function enterRole(r){ showView(r==='teacher'?'teacher':'student'); }
 
-/* ==== Biblioteca ==== */
-async function loadExamLibrary(){
-  try{
-    const res = await fetch(API_BASE + '/api/exams');
-    if(!res.ok) throw new Error(await res.text());
-    const exams = await res.json();
-    renderLibrary(exams);
-  }catch(e){
-    alert('Error carregant biblioteca: ' + (e.message||''));
-  }
+let exam = { examId:null, title:'', questions:[] };
+
+async function publishExam(){
+  exam.title = $('#examTitle').value.trim();
+  if(!exam.title){ alert('Cal un títol'); return; }
+  const res = await fetch(API_BASE+'/api/exams',{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(exam)
+  });
+  const data = await res.json();
+  exam.examId = data.examId;
+  $('#publishInfo').innerHTML = `PIN: <b>${data.pin}</b> &middot; examId: <span class="mono">${data.examId}</span>`;
 }
-function renderLibrary(exams){
-  const tbl = $('#libraryTable');
-  if(!exams.length){ tbl.innerHTML='<tr><td>No hi ha exàmens</td></tr>'; return; }
-  let head = `<tr><th>Títol</th><th>examId</th><th>PIN</th></tr>`;
-  let rows = exams.map(ex=>`
-    <tr>
-      <td>${ex.title||'(sense títol)'}</td>
-      <td><span class="mono">${ex.examId}</span></td>
-      <td><span class="mono">${ex.pin}</span></td>
-    </tr>`).join('');
-  tbl.innerHTML = `<thead>${head}</thead><tbody>${rows}</tbody>`;
+
+async function loadExamLibrary(){
+  const res = await fetch(API_BASE+'/api/exams');
+  const exams = await res.json();
+  let rows = `<tr><th>PIN</th><th>examId</th><th>Títol</th></tr>`;
+  exams.forEach(e=>{
+    rows += `<tr><td>${e.pin}</td><td class="mono">${e.examId}</td><td>${e.title}</td></tr>`;
+  });
+  $('#examLibrary').innerHTML = rows;
+}
+
+let loadedExam=null;
+async function loadExamByPin(){
+  const pin = $('#pinInput').value.trim();
+  const res = await fetch(API_BASE+'/api/exams/pin/'+encodeURIComponent(pin));
+  if(!res.ok){ alert('PIN no trobat'); return; }
+  const data = await res.json();
+  loadedExam=data;
+  $('#examDetails').innerHTML=`Títol: ${data.title}<br>examId: <span class="mono">${data.examId}</span>`;
 }
 </script>
 </body>
