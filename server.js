@@ -102,12 +102,24 @@ app.post("/api/results", (req, res) => {
   res.json({ ok: true });
 });
 
-// 🔹 Recuperar tots els resultats d’un examen
+// 🔹 Recuperar tots els resultats d’un examen (via :examId)
 app.get("/api/results/:examId", (req, res) => {
   const { examId } = req.params;
   const file = path.join(DATA_DIR, `results_${examId}.json`);
 
   if (!fs.existsSync(file)) return res.json([]);
+  const results = JSON.parse(fs.readFileSync(file, "utf-8"));
+  res.json(results);
+});
+
+// 🔹 Recuperar tots els resultats d’un examen (via ?examId=...)
+app.get("/api/results", (req, res) => {
+  const examId = req.query.examId;
+  if (!examId) return res.status(400).json({ error: "Falta examId" });
+
+  const file = path.join(DATA_DIR, `results_${examId}.json`);
+  if (!fs.existsSync(file)) return res.json([]);
+
   const results = JSON.parse(fs.readFileSync(file, "utf-8"));
   res.json(results);
 });
