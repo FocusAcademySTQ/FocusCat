@@ -1,167 +1,167 @@
+
 <!DOCTYPE html>
 <html lang="ca">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Focus · Proves (Mestre/Alumne)</title>
-<meta name="description" content="Crea proves, publica al servidor i accedeix per PIN. Resultats centralitzats." />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
-  onload="window.__katexReady=true"></script>
+<title>Focus · Proves</title>
+<meta name="description" content="Crea proves, publica-les i fes-les per PIN." />
 <style>
-  :root{
-    --bg:#f7f7fb; --card:#fff; --ink:#0f172a; --muted:#64748b;
-    --p1:#7aa2ff; --p2:#22c55e; --bad:#ef4444; --hair:#e5e7eb;
-    --shadow:0 12px 28px rgba(15,23,42,.10); --radius:18px;
-    --focus:0 0 0 3px rgba(122,162,255,.35);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-       background:linear-gradient(180deg,#f7f7fb, #f1f5ff 35%, #f7f7fb 70%); color:var(--ink)}
-  header{position:sticky; top:0; z-index:5; background:rgba(255,255,255,.8); backdrop-filter: blur(8px); border-bottom:1px solid var(--hair)}
-  .wrap{max-width:1200px; margin:0 auto; padding:14px 16px;}
-  .row{display:flex; align-items:center; gap:14px; justify-content:space-between}
-  .brand{display:flex; align-items:center; gap:12px}
-  .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#fff;box-shadow:var(--shadow);font-weight:900}
-  h1{font-size:18px; margin:0}
-  nav .pill{border:none; padding:10px 14px; border-radius:999px; background:#fff; box-shadow: var(--shadow); cursor:pointer; font-weight:600}
-  nav .pill.active{background:var(--p1); color:#fff}
-  main{max-width:1200px; margin:24px auto; padding:0 16px 48px}
-  .grid{display:grid; gap:16px}
-  @media(min-width:960px){ .grid-2{grid-template-columns: 2fr 1.2fr} }
-  .card{background:var(--card); border:1px solid var(--hair); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
-  .title{font-size:18px; font-weight:800; margin:0 0 8px}
-  .muted{color:var(--muted); font-size:14px; margin:0 0 16px}
-  label{display:block; font-weight:700; margin:12px 0 6px}
-  input[type="text"], input[type="number"], textarea, select{
-    width:100%; padding:10px 12px; border:1px solid var(--hair); border-radius:12px; font-size:16px; background:#fff;
-  }
-  textarea{min-height:88px; resize:vertical}
-  .row-inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-  .btn{appearance:none; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; background:var(--p1); color:#fff; box-shadow: var(--shadow)}
-  .btn.secondary{background:#fff; color:var(--ink); border:1px solid var(--hair)}
-  .btn.good{background:var(--p2); color:#073b14}
-  .btn.bad{background:#fff; color:#b91c1c; border:1px solid #fecaca}
-  .btn.small{padding:6px 10px; font-weight:600; border-radius:10px}
-  .badge{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700; font-size:12px}
-  .q-item{border:1px dashed var(--hair); border-radius:14px; padding:12px; margin:10px 0; background:#fafbff}
-  .q-head{display:flex; align-items:center; gap:8px; justify-content:space-between}
-  .q-type{font-size:12px; font-weight:800; color:#334155}
-  .q-body{margin-top:8px}
-  .options{display:grid; gap:8px; margin-top:8px}
-  .opt-row{display:flex; gap:8px; align-items:center}
-  .hr{height:1px; background:var(--hair); margin:12px 0}
-  .flex{display:flex; gap:10px; flex-wrap:wrap}
-  .table{width:100%; border-collapse: collapse; background:#fff; border-radius:12px; overflow:hidden; border:1px solid var(--hair)}
-  .table th, .table td{padding:10px 12px; border-bottom:1px solid var(--hair); text-align:left; font-size:14px; vertical-align:top}
-  .table th{background:#f8fafc; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
-  .help{font-size:13px; color:#475569}
-  .success{color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:8px 10px; border-radius:10px; display:inline-block}
-  .warn{color:#92400e; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:10px; display:inline-block}
-  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  :root{--bg:#f7f7fb;--card:#fff;--ink:#0f172a;--muted:#64748b;
+    --p1:#7aa2ff;--p2:#22c55e;--bad:#ef4444;--hair:#e5e7eb;
+    --shadow:0 12px 28px rgba(15,23,42,.08);--radius:16px}
+  *{box-sizing:border-box}body{margin:0;font-family:sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:#fff;box-shadow:var(--shadow);padding:10px 16px;position:sticky;top:0}
+  nav button{border:none;background:#fff;padding:8px 12px;border-radius:999px;margin:0 4px;cursor:pointer}
+  nav button.active{background:var(--p1);color:#fff}
+  main{max-width:1100px;margin:20px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--hair);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+  .title{margin:0 0 12px;font-size:18px;font-weight:bold}
+  .muted{color:var(--muted);font-size:14px;margin:0 0 12px}
+  label{font-weight:600;display:block;margin:10px 0 4px}
+  input,textarea,select{width:100%;padding:8px;border:1px solid var(--hair);border-radius:10px;font-size:15px}
+  textarea{min-height:60px}
+  .btn{border:none;border-radius:10px;padding:8px 12px;font-weight:bold;cursor:pointer}
+  .btn.primary{background:var(--p1);color:#fff}
+  .btn.good{background:var(--p2);color:#073b14}
+  .btn.small{font-size:13px;padding:5px 10px}
+  .q-item{border:1px dashed var(--hair);border-radius:10px;padding:10px;margin:10px 0;background:#fafbff}
+  .q-head{display:flex;justify-content:space-between;align-items:center}
+  .q-type{font-size:13px;font-weight:700}
+  table{border-collapse:collapse;width:100%;margin-top:8px}
+  th,td{border:1px solid var(--hair);padding:6px;font-size:14px;text-align:left}
+  th{background:#f8fafc;font-size:12px}
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap row">
-    <div class="brand">
-      <div class="logo" aria-hidden="true">FQ</div>
-      <h1>Focus · Proves</h1>
-      <span class="badge">PIN via servidor</span>
-    </div>
-    <nav class="right">
-      <button class="pill" id="btnHome" onclick="showView('home')">Inici</button>
-      <button class="pill" id="btnTeacher" onclick="enterRole('teacher')">Mestre</button>
-      <button class="pill" id="btnStudent" onclick="enterRole('student')">Alumne</button>
-    </nav>
-  </div>
+  <nav>
+    <button id="btnHome" onclick="showView('home')">Inici</button>
+    <button id="btnTeacher" onclick="showView('teacher')">Mestre</button>
+    <button id="btnStudent" onclick="showView('student')">Alumne</button>
+  </nav>
 </header>
 
 <main>
   <!-- HOME -->
-  <section id="view-home" class="grid">
+  <section id="view-home">
     <div class="card">
-      <h2 class="title">Com funciona</h2>
-      <p class="muted">El/la mestre/a crea una prova i la <strong>publica al servidor</strong>. El servidor retorna un <strong>PIN</strong>. L’alumne entra el PIN i fa la prova. Els resultats es guarden al servidor.</p>
-      <div class="flex">
-        <button class="btn" onclick="enterRole('teacher')">Sóc Mestre</button>
-        <button class="btn secondary" onclick="enterRole('student')">Sóc Alumne</button>
-      </div>
+      <h2 class="title">Benvingut</h2>
+      <p class="muted">El mestre crea una prova i el sistema retorna un PIN. Els alumnes introdueixen el PIN per accedir-hi i els resultats es guarden al servidor.</p>
     </div>
   </section>
 
   <!-- TEACHER -->
-  <section id="view-teacher" class="grid grid-2" style="display:none">
+  <section id="view-teacher" style="display:none">
     <div class="card">
-      <h2 class="title">Creador de Proves</h2>
-      <label for="examTitle">Títol de la prova</label>
-      <input id="examTitle" type="text" />
-      <button class="btn good" onclick="publishExam()">Publica al servidor</button>
-      <p id="publishInfo" class="help"></p>
+      <h2 class="title">Creador d’exàmens</h2>
+      <label>Títol</label>
+      <input id="examTitle" type="text" placeholder="Ex: Equacions 1r Batx"/>
+      <label>Instruccions</label>
+      <textarea id="examDesc" placeholder="Ex: Respon totes les preguntes."></textarea>
+
+      <div id="questions"></div>
+      <button class="btn small" onclick="addQuestion('mc')">+ Opció múltiple</button>
+      <button class="btn small" onclick="addQuestion('tf')">+ Vertader/Fals</button>
+      <button class="btn small" onclick="addQuestion('short')">+ Resposta curta</button>
+      <button class="btn small" onclick="addQuestion('num')">+ Numèrica</button>
+
+      <div style="margin-top:12px">
+        <button class="btn good" onclick="publishExam()">Publica</button>
+      </div>
+      <p id="publishInfo" class="muted"></p>
     </div>
 
     <div class="card">
       <h3 class="title">Biblioteca d’exàmens</h3>
       <button class="btn small" onclick="loadExamLibrary()">Carrega biblioteca</button>
-      <table class="table" id="examLibrary"></table>
+      <table id="examLibrary"></table>
     </div>
   </section>
 
   <!-- STUDENT -->
-  <section id="view-student" class="grid" style="display:none">
+  <section id="view-student" style="display:none">
     <div class="card">
       <h2 class="title">Accés amb PIN</h2>
-      <label for="pinInput">PIN (6 dígits)</label>
-      <input id="pinInput" type="text" />
-      <button class="btn small" onclick="loadExamByPin()">Carrega prova</button>
-      <div id="examDetails" class="help"></div>
+      <label>PIN</label>
+      <input id="pinInput" type="text" placeholder="Ex: 482917"/>
+      <button class="btn primary" onclick="loadExamByPin()">Carrega prova</button>
+      <div id="examDetails" class="muted"></div>
     </div>
   </section>
 </main>
 
 <script>
-const API_BASE = '';
-const $ = s => document.querySelector(s);
+const API_BASE='';
+const $=s=>document.querySelector(s);
 function showView(id){
-  for(const el of document.querySelectorAll('main > section')) el.style.display='none';
+  for(const el of document.querySelectorAll('main>section')) el.style.display='none';
   $('#view-'+id).style.display='';
+  document.querySelectorAll('header nav button').forEach(b=>b.classList.remove('active'));
+  if(id==='home') $('#btnHome').classList.add('active');
+  if(id==='teacher') $('#btnTeacher').classList.add('active');
+  if(id==='student') $('#btnStudent').classList.add('active');
 }
-function enterRole(r){ showView(r==='teacher'?'teacher':'student'); }
 
-let exam = { examId:null, title:'', questions:[] };
+/* ===== Creador d’examens ===== */
+let exam={examId:null,title:'',desc:'',questions:[]};
+
+function addQuestion(type){
+  let q={id:Math.random().toString(36).slice(2,8),type,text:'',options:[]};
+  if(type==='mc'){q.options=[{text:'Opció 1',correct:false},{text:'Opció 2',correct:true}];}
+  if(type==='tf'){q.options=[{text:'Vertader',correct:true},{text:'Fals',correct:false}];}
+  exam.questions.push(q); renderQuestions();
+}
+function renderQuestions(){
+  const wrap=$('#questions');wrap.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const div=document.createElement('div');div.className='q-item';
+    let opts='';
+    if(q.type==='mc'||q.type==='tf'){
+      opts=q.options.map((o,j)=>`
+        <label><input type="radio" name="c${q.id}" ${o.correct?'checked':''} onchange="setCorrect('${q.id}',${j})"> 
+        <input type="text" value="${o.text}" oninput="setOptText('${q.id}',${j},this.value)"></label>`).join('');
+    }
+    div.innerHTML=`
+      <div class="q-head"><span class="q-type">Q${i+1} (${q.type})</span></div>
+      <label>Enunciat</label>
+      <input type="text" value="${q.text||''}" oninput="setQText('${q.id}',this.value)">
+      ${opts}`;
+    wrap.appendChild(div);
+  });
+}
+function setQText(id,val){const q=exam.questions.find(x=>x.id===id);if(q)q.text=val;}
+function setOptText(id,i,val){const q=exam.questions.find(x=>x.id===id);if(q)q.options[i].text=val;}
+function setCorrect(id,i){const q=exam.questions.find(x=>x.id===id);if(q)q.options.forEach((o,j)=>o.correct=j===i);}
 
 async function publishExam(){
-  exam.title = $('#examTitle').value.trim();
-  if(!exam.title){ alert('Cal un títol'); return; }
-  const res = await fetch(API_BASE+'/api/exams',{
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(exam)
-  });
-  const data = await res.json();
-  exam.examId = data.examId;
-  $('#publishInfo').innerHTML = `PIN: <b>${data.pin}</b> &middot; examId: <span class="mono">${data.examId}</span>`;
+  exam.title=$('#examTitle').value.trim();
+  exam.desc=$('#examDesc').value.trim();
+  if(!exam.title||exam.questions.length===0){alert("Cal títol i preguntes");return;}
+  const res=await fetch(API_BASE+'/api/exams',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(exam)});
+  const data=await res.json();
+  exam.examId=data.examId;
+  $('#publishInfo').innerHTML=`Publicat! PIN <b>${data.pin}</b> · examId <span class="mono">${data.examId}</span>`;
 }
 
+/* ===== Biblioteca ===== */
 async function loadExamLibrary(){
-  const res = await fetch(API_BASE+'/api/exams');
-  const exams = await res.json();
-  let rows = `<tr><th>PIN</th><th>examId</th><th>Títol</th></tr>`;
-  exams.forEach(e=>{
-    rows += `<tr><td>${e.pin}</td><td class="mono">${e.examId}</td><td>${e.title}</td></tr>`;
-  });
-  $('#examLibrary').innerHTML = rows;
+  const res=await fetch(API_BASE+'/api/exams');
+  const exams=await res.json();
+  let rows='<tr><th>PIN</th><th>examId</th><th>Títol</th></tr>';
+  exams.forEach(e=>{rows+=`<tr><td>${e.pin}</td><td class="mono">${e.examId}</td><td>${e.title}</td></tr>`});
+  $('#examLibrary').innerHTML=rows;
 }
 
+/* ===== Alumne ===== */
 let loadedExam=null;
 async function loadExamByPin(){
-  const pin = $('#pinInput').value.trim();
-  const res = await fetch(API_BASE+'/api/exams/pin/'+encodeURIComponent(pin));
-  if(!res.ok){ alert('PIN no trobat'); return; }
-  const data = await res.json();
+  const pin=$('#pinInput').value.trim();
+  const res=await fetch(API_BASE+'/api/exams/pin/'+encodeURIComponent(pin));
+  if(!res.ok){alert("PIN no trobat");return;}
+  const data=await res.json();
   loadedExam=data;
-  $('#examDetails').innerHTML=`Títol: ${data.title}<br>examId: <span class="mono">${data.examId}</span>`;
+  $('#examDetails').innerHTML=`<b>${data.title}</b><br>examId: <span class="mono">${data.examId}</span>`;
 }
 </script>
 </body>
