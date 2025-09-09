@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Focus · Proves (Mestre/Alumne)</title>
+<meta name="description" content="Crea proves, publica al servidor i accedeix per PIN. Resultats centralitzats." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="window.__katexReady=true"></script>
+<style>
+  :root{
+    --bg:#f7f7fb; --card:#fff; --ink:#0f172a; --muted:#64748b;
+    --p1:#7aa2ff; --p2:#22c55e; --bad:#ef4444; --hair:#e5e7eb;
+    --shadow:0 8px 22px rgba(15,23,42,.10); --radius:18px;
+    --focus:0 0 0 3px rgba(122,162,255,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background:linear-gradient(180deg,#f7f7fb, #f1f5ff 35%, #f7f7fb 70%);
+    color:var(--ink)
+  }
+  header{position:sticky; top:0; z-index:5; background:#fff; backdrop-filter: blur(8px); border-bottom:1px solid var(--hair)}
+  .wrap{max-width:1200px; margin:0 auto; padding:14px 16px;}
+  .row{display:flex; align-items:center; gap:14px; justify-content:space-between}
+  .brand{display:flex; align-items:center; gap:12px}
+  .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#fff;box-shadow:var(--shadow);font-weight:900}
+  h1{font-size:18px; margin:0}
+  nav .pill{border:none; padding:10px 14px; border-radius:999px; background:#fff; box-shadow: var(--shadow); cursor:pointer; font-weight:600}
+  nav .pill.active{background:var(--p1); color:#fff}
+  main{max-width:1200px; margin:24px auto; padding:0 16px 48px}
+  .grid{display:grid; gap:16px}
+  @media(min-width:960px){ .grid-2{grid-template-columns: 2fr 1.2fr} }
+  .card{background:var(--card); border:1px solid var(--hair); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+  .title{font-size:18px; font-weight:800; margin:0 0 8px}
+  .muted{color:var(--muted); font-size:14px; margin:0 0 16px}
+  label{display:block; font-weight:700; margin:12px 0 6px}
+  input[type="text"], input[type="number"], textarea, select{
+    width:100%; padding:10px 12px; border:1px solid var(--hair); border-radius:12px; font-size:16px; background:#fff;
+  }
+  textarea{min-height:88px; resize:vertical}
+  .row-inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .btn{appearance:none; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; background:var(--p1); color:#fff; box-shadow: var(--shadow)}
+  .btn.secondary{background:#fff; color:var(--ink); border:1px solid var(--hair)}
+  .btn.good{background:var(--p2); color:#073b14}
+  .btn.bad{background:#fff; color:#b91c1c; border:1px solid #fecaca}
+  .btn.small{padding:6px 10px; font-weight:600; border-radius:10px}
+  .badge{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700; font-size:12px}
+  .q-item{border:1px dashed var(--hair); border-radius:14px; padding:12px; margin:10px 0; background:#fafbff}
+  .q-head{display:flex; align-items:center; gap:8px; justify-content:space-between}
+  .q-type{font-size:12px; font-weight:800; color:#334155}
+  .q-body{margin-top:8px}
+  .options{display:grid; gap:8px; margin-top:8px}
+  .opt-row{display:flex; gap:8px; align-items:center}
+  .hr{height:1px; background:var(--hair); margin:12px 0}
+  .flex{display:flex; gap:10px; flex-wrap:wrap}
+  .table{width:100%; border-collapse: collapse; background:#fff; border-radius:12px; overflow:hidden; border:1px solid var(--hair)}
+  .table th, .table td{padding:10px 12px; border-bottom:1px solid var(--hair); text-align:left; font-size:14px; vertical-align:top}
+  .table th{background:#f8fafc; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
+  .help{font-size:13px; color:#475569}
+  .right{margin-left:auto}
+  .success{color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:8px 10px; border-radius:10px; display:inline-block}
+  .warn{color:#92400e; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:10px; display:inline-block}
+  .code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f1f5f9; border:1px solid var(--hair); padding:6px 8px; border-radius:8px}
+  .center{text-align:center}
+  .pill-tab{display:inline-flex; gap:6px; border:1px solid var(--hair); border-radius:999px; padding:4px; background:#fff}
+  .pill-tab button{border:none; background:none; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700}
+  .pill-tab button.active{background:#eef2ff}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap row">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">FQ</div>
+      <h1>Focus · Proves</h1>
+      <span class="badge">PIN via servidor</span>
+    </div>
+    <nav class="right">
+      <button class="pill" id="btnHome" onclick="showView('home')">Inici</button>
+      <button class="pill" id="btnTeacher" onclick="enterRole('teacher')">Mestre</button>
+      <button class="pill" id="btnStudent" onclick="enterRole('student')">Alumne</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section id="view-home" class="grid">
+    <div class="card">
+      <h2 class="title">Com funciona</h2>
+      <p class="muted">El/la mestre/a crea una prova i la <strong>publica al servidor</strong>. El servidor retorna un <strong>PIN</strong>. L’alumne entra el PIN i fa la prova. Els resultats es guarden al servidor.</p>
+      <div class="flex">
+        <button class="btn" onclick="enterRole('teacher')">Sóc Mestre</button>
+        <button class="btn secondary" onclick="enterRole('student')">Sóc Alumne</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEACHER -->
+  <section id="view-teacher" class="grid grid-2" style="display:none">
+    <div class="card">
+      <h2 class="title">Creador de Proves</h2>
+      <p class="muted">Afegeix preguntes i configura l’examen. Quan estigui a punt, <strong>Publica</strong> i obtindràs un PIN.</p>
+
+      <label for="examTitle">Títol de la prova</label>
+      <input id="examTitle" type="text" placeholder="Ex: Comprensió lectora · 4t" />
+
+      <label for="examDesc">Instruccions</label>
+      <textarea id="examDesc" placeholder="Llegeix atentament i respon."></textarea>
+
+      <div class="row-inline">
+        <label>Mostrar nota a l’alumne?</label>
+        <select id="examShowScore">
+          <option value="yes">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <label class="right row-inline">
+          <input type="checkbox" id="examShuffle" /> <span class="help">Barrejar preguntes</span>
+        </label>
+      </div>
+
+      <div class="row-inline">
+        <label>Temps límit (minuts, opcional)</label>
+        <input type="number" id="examTime" min="0" placeholder="0 = sense límit" />
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row-inline">
+        <div class="pill-tab">
+          <button onclick="addQuestion('mc')">Opció múltiple</button>
+          <button onclick="addQuestion('tf')">Vertader/Fals</button>
+          <button onclick="addQuestion('short')">Resposta curta</button>
+          <button onclick="addQuestion('num')">Numèrica ± tol</button>
+          <button onclick="addQuestion('long')">Resposta llarga</button>
+          <button onclick="addQuestion('order')">Ordenar</button>
+          <button onclick="addQuestion('match')">Correspondències</button>
+        </div>
+        <button class="btn small" onclick="openQuickAdd()">Afegit ràpid…</button>
+      </div>
+
+      <div id="qCount" class="help"></div>
+      <div id="questions"></div>
+
+      <div class="hr"></div>
+      <div class="flex">
+        <button class="btn good" onclick="publishExam()">Publica</button>
+        <button class="btn secondary" onclick="clearExam()">Buida</button>
+      </div>
+      <p id="publishInfo" class="help"></p>
+    </div>
+
+    <div class="card">
+      <h3 class="title">Biblioteca d’exàmens</h3>
+      <p class="muted">Pins i exàmens creats fins ara.</p>
+      <div class="flex">
+        <button class="btn small" onclick="fetchExams()">Carrega exàmens</button>
+      </div>
+      <div class="hr"></div>
+      <table class="table" id="examLibrary"></table>
+
+      <div class="hr"></div>
+      <h3 class="title">Resultats</h3>
+      <label for="examIdLookup">examId</label>
+      <input id="examIdLookup" type="text" placeholder="Ex: 9f3a2b1c..." />
+      <div class="flex">
+        <button class="btn small" onclick="fetchResults()">Carrega resultats</button>
+      </div>
+      <div id="aggSummary" class="help"></div>
+      <table class="table" id="resultsTable"></table>
+    </div>
+  </section>
+
+  <!-- STUDENT -->
+  <section id="view-student" class="grid" style="display:none">
+    <div class="card">
+      <h2 class="title">Accés amb PIN</h2>
+      <label for="pinInput">PIN</label>
+      <input id="pinInput" type="text" placeholder="123456" />
+      <button class="btn" onclick="loadExamByPin()">Carrega prova</button>
+      <div id="loadStatus" class="help"></div>
+    </div>
+    <div class="card">
+      <h3 class="title">Identificació</h3>
+      <label>Nom</label><input id="studentName" type="text" />
+      <label>Grup</label><input id="studentGroup" type="text" />
+      <button class="btn good" onclick="startExam()">Començar</button>
+      <div id="examDetails" class="help"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+// config bàsica
+const API_BASE = '';
+const $ = sel => document.querySelector(sel);
+function showView(id){
+  for(const el of document.querySelectorAll('main > section')) el.style.display='none';
+  $('#view-'+id).style.display='';
+  for(const b of document.querySelectorAll('nav .pill')) b.classList.remove('active');
+  if(id==='home') $('#btnHome').classList.add('active');
+  if(id==='teacher') $('#btnTeacher').classList.add('active');
+  if(id==='student') $('#btnStudent').classList.add('active');
+}
+function enterRole(r){ showView(r==='teacher'?'teacher':'student'); }
+
+// exam model
+let exam={title:'',desc:'',questions:[],settings:{showScore:true,shuffle:false,time:0}};
+function addQuestion(type){
+  const q={id:Math.random().toString(36).slice(2,10),type,points:1,text:''};
+  if(type==='mc') q.options=[{text:'Opció A',correct:true},{text:'Opció B',correct:false}];
+  if(type==='tf') q.options=[{text:'Vertader',correct:true},{text:'Fals',correct:false}];
+  if(type==='short') q.answerText='';
+  if(type==='num') q.numAnswer=''; q.tolerance=0;
+  if(type==='order') q.items=['A','B','C'];
+  if(type==='match') {q.left=['A','B'];q.right=['1','2'];}
+  exam.questions.push(q); renderQuestions();
+}
+function renderQuestions(){
+  const wrap=$('#questions'); wrap.innerHTML='';
+  $('#qCount').textContent= exam.questions.length?`Preguntes: ${exam.questions.length}`:'Cap pregunta';
+  exam.questions.forEach((q,i)=>{
+    const div=document.createElement('div'); div.className='q-item';
+    div.innerHTML=`<div class="q-head"><span>Q${i+1} · ${q.type}</span></div>
+      <div class="q-body"><textarea placeholder="Enunciat...">${q.text}</textarea></div>`;
+    wrap.appendChild(div);
+  });
+}
+
+// publicar
+async function publishExam(){
+  exam.title=$('#examTitle').value;
+  exam.desc=$('#examDesc').value;
+  exam.settings.showScore=$('#examShowScore').value==='yes';
+  exam.settings.shuffle=$('#examShuffle').checked;
+  exam.settings.time=Number($('#examTime').value||0);
+  const res=await fetch(API_BASE+'/api/exams',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(exam)});
+  const data=await res.json();
+  $('#publishInfo').textContent=`Publicat! PIN ${data.pin} examId ${data.examId}`;
+}
+
+// biblioteca
+async function fetchExams(){
+  const res=await fetch(API_BASE+'/api/exams');
+  const data=await res.json();
+  const tbl=$('#examLibrary');
+  tbl.innerHTML='<tr><th>Títol</th><th>PIN</th><th>examId</th></tr>'+
+    data.map(x=>`<tr><td>${x.title}</td><td>${x.pin}</td><td>${x.examId}</td></tr>`).join('');
+}
+
+// resultats
+async function fetchResults(){
+  const id=$('#examIdLookup').value.trim();
+  const res=await fetch(API_BASE+'/api/results/'+id);
+  const data=await res.json();
+  $('#aggSummary').textContent=data.length+' resultats';
+  $('#resultsTable').innerHTML=data.map(r=>`<tr><td>${r.student?.name||''}</td><td>${r.totals?.score||0}</td></tr>`).join('');
+}
+</script>
+</body>
+</html>
