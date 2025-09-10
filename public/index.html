@@ -158,7 +158,6 @@
       <div class="flex">
         <button class="btn small" onclick="fetchResults()">Carrega resultats</button>
         <button class="btn small secondary" onclick="downloadCSV()">Descarrega CSV</button>
-        <button class="btn small secondary" onclick="loadExamById(($('#examIdLookup').value||'').trim())">Carrega a l’editor</button>
       </div>
       <div class="hr"></div>
       <div id="aggSummary" class="help" style="margin-top:10px"></div>
@@ -805,31 +804,6 @@ match; Relaciona | gos - mamífer | granota - amfibi`;
   });
   renderQuestions();
 }
-
-  /* ========= Biblioteca (mestre) ========= */
-async function loadExamById(id){
-  id = String(id || '').trim();
-  if(!id){ alert('Escriu un examId per carregar.'); return; }
-  try{
-    const res = await fetch(API_BASE + '/api/exams/' + encodeURIComponent(id));
-    if(!res.ok) throw new Error('Examen no trobat');
-    const data = await res.json();
-
-    // Carrega al model i sincronitza UI
-    exam = data || {};
-    $('#examTitle').value = exam.title || '';
-    $('#examDesc').value  = exam.desc  || '';
-    $('#examShowScore').value = (exam.settings && exam.settings.showScoreToStudent===false) ? 'no' : 'yes';
-    $('#examShuffle').checked = !!(exam.settings && exam.settings.shuffle);
-
-    renderQuestions();
-    localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
-    toast('Examen carregat a l’editor');
-  }catch(e){
-    alert('No s’ha pogut carregar l’examen: ' + (e.message || ''));
-  }
-}
-
 
 /* ========= Init ========= */
 function restoreExam(){
