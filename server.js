@@ -86,6 +86,16 @@ app.put('/api/exams/:examId', (req, res) => {
   res.json({ ok: true });
 });
 
+// Llista d’exàmens (només info bàsica)
+app.get('/api/exams', (req, res) => {
+  const files = fs.readdirSync(EXAMS_DIR).filter(f => f.endsWith('.json'));
+  const exams = files.map(f => {
+    const ex = readJSON(path.join(EXAMS_DIR, f), null);
+    return ex ? { id: ex.id, title: ex.title, createdAt: ex.createdAt, pin: ex.pin } : null;
+  }).filter(Boolean);
+  res.json(exams);
+});
+
 // Obté examen per PIN (per als alumnes)
 app.get('/api/exams/pin/:pin', (req, res) => {
   const { pin } = req.params;
