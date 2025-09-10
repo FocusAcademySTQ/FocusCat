@@ -499,6 +499,14 @@ async function publishExam(){
     $('#publishInfo').innerHTML = `<span class="warn">Error en publicar: ${escapeHtml(e.message||'desconegut')}</span>`;
   }
 }
+  async function loadExamById(id){
+  const res = await fetch(API_BASE + '/api/exams/' + id);
+  const data = await res.json();
+  exam = data;
+  $('#examTitle').value = exam.title;
+  $('#examDesc').value = exam.desc;
+  renderQuestions();
+}
 
 /* ========= Student flow ========= */
 let loadedExam = null;
@@ -518,6 +526,7 @@ async function loadExamByPin(){
   }catch(e){
     $('#loadStatus').innerHTML = `<span class="warn">${escapeHtml(e.message||'No s’ha pogut carregar la prova')}</span>`;
   }
+
 }
 function showExamDetails(x){
   $('#examDetails').innerHTML = `
