@@ -3,306 +3,248 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Focus · Proves</title>
+<title>Focus · Proves (Mestre/Alumne)</title>
 <meta name="description" content="Crea proves, publica al servidor i accedeix per PIN. Resultats centralitzats." />
-
-<!-- TailwindCSS (CDN, sense build) -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          brand: { 50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' },
-          ink: '#0f172a'
-        },
-        boxShadow: { soft:'0 12px 28px rgba(2,6,23,.10)' },
-        borderRadius: { xl:'18px', '2xl':'24px' }
-      }
-    }
-  }
-</script>
-
-<!-- KaTeX per fórmules -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="window.__katexReady=true"></script>
-
-<!-- Lucide icons -->
-<script src="https://unpkg.com/lucide@latest"></script>
-
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="window.__katexReady=true"></script>
 <style>
+  :root{
+    --bg:#f7f7fb; --card:#fff; --ink:#0f172a; --muted:#64748b;
+    --p1:#7aa2ff; --p2:#22c55e; --bad:#ef4444; --hair:#e5e7eb;
+    --shadow:0 12px 28px rgba(15,23,42,.10); --radius:18px;
+    --focus:0 0 0 3px rgba(122,162,255,.35);
+  }
+  *{box-sizing:border-box}
   html,body{height:100%}
-  .k-card{ @apply bg-white border border-slate-200/70 rounded-xl shadow-soft; }
-  .k-btn{ @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition active:scale-[.98]; }
-  .k-btn-brand{ @apply bg-brand-600 text-white hover:bg-brand-700; }
-  .k-btn-ghost{ @apply bg-white border border-slate-200 hover:bg-slate-50; }
-  .k-badge{ @apply inline-block px-3 py-1 rounded-full text-xs font-bold bg-brand-50 text-brand-700 border border-brand-100; }
-  .k-input{ @apply w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-brand-200; }
-  .k-select{ @apply w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-4 focus:ring-brand-200; }
-  .q-item{ @apply border border-slate-200 rounded-xl p-4 bg-slate-50; }
-  .q-head{ @apply flex items-center justify-between gap-3; }
-  .q-actions .k-btn{ @apply px-2 py-1; }
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+       background:linear-gradient(180deg,#f7f7fb, #f1f5ff 35%, #f7f7fb 70%); color:var(--ink)}
+  header{position:sticky; top:0; z-index:5; background:rgba(255,255,255,.8); backdrop-filter: blur(8px); border-bottom:1px solid var(--hair)}
+  .wrap{max-width:1200px; margin:0 auto; padding:14px 16px;}
+  .row{display:flex; align-items:center; gap:14px; justify-content:space-between}
+  .brand{display:flex; align-items:center; gap:12px}
+  .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#fff;box-shadow:var(--shadow);font-weight:900}
+  h1{font-size:18px; margin:0}
+  nav .pill{border:none; padding:10px 14px; border-radius:999px; background:#fff; box-shadow: var(--shadow); cursor:pointer; font-weight:600}
+  nav .pill.active{background:var(--p1); color:#fff}
+  main{max-width:1200px; margin:24px auto; padding:0 16px 48px}
+  .grid{display:grid; gap:16px}
+  @media(min-width:960px){ .grid-2{grid-template-columns: 2fr 1.2fr} }
+  .card{background:var(--card); border:1px solid var(--hair); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+  .title{font-size:18px; font-weight:800; margin:0 0 8px}
+  .muted{color:var(--muted); font-size:14px; margin:0 0 16px}
+  label{display:block; font-weight:700; margin:12px 0 6px}
+  input[type="text"], input[type="number"], textarea, select{
+    width:100%; padding:10px 12px; border:1px solid var(--hair); border-radius:12px; font-size:16px; background:#fff;
+  }
+  textarea{min-height:88px; resize:vertical}
+  .row-inline{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .btn{appearance:none; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; background:var(--p1); color:#fff; box-shadow: var(--shadow)}
+  .btn.secondary{background:#fff; color:#0f172a; border:1px solid var(--hair)}
+  .btn.good{background:var(--p2); color:#073b14}
+  .btn.bad{background:#fff; color:#b91c1c; border:1px solid #fecaca}
+  .btn.small{padding:6px 10px; font-weight:600; border-radius:10px}
+  .badge{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700; font-size:12px}
+  .q-item{border:1px dashed var(--hair); border-radius:14px; padding:12px; margin:10px 0; background:#fafbff}
+  .q-head{display:flex; align-items:center; gap:8px; justify-content:space-between}
+  .q-type{font-size:12px; font-weight:800; color:#334155}
+  .q-body{margin-top:8px}
+  .options{display:grid; gap:8px; margin-top:8px}
+  .opt-row{display:flex; gap:8px; align-items:center}
+  .hr{height:1px; background:var(--hair); margin:12px 0}
+  .flex{display:flex; gap:10px; flex-wrap:wrap}
+  .table{width:100%; border-collapse: collapse; background:#fff; border-radius:12px; overflow:hidden; border:1px solid var(--hair)}
+  .table th, .table td{padding:10px 12px; border-bottom:1px solid var(--hair); text-align:left; font-size:14px; vertical-align:top}
+  .table th{background:#f8fafc; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
+  .help{font-size:13px; color:#475569}
+  .right{margin-left:auto}
+  .success{color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:8px 10px; border-radius:10px; display:inline-block}
+  .warn{color:#92400e; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:10px; display:inline-block}
+  .code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f1f5f9; border:1px solid var(--hair); padding:6px 8px; border-radius:8px}
+  .center{text-align:center}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  .pill-tab{display:inline-flex; gap:6px; border:1px solid var(--hair); border-radius:999px; padding:4px; background:#fff}
+  .pill-tab button{border:none; background:none; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700}
+  .pill-tab button.active{background:#eef2ff}
 </style>
 </head>
-
-<body class="bg-gradient-to-b from-slate-50 via-indigo-50/50 to-slate-50 text-ink">
-  <!-- Header -->
-  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl grid place-items-center bg-white shadow-soft font-black text-brand-700">FQ</div>
-        <div>
-          <h1 class="text-lg font-extrabold">Focus · Proves</h1>
-          <div class="k-badge">PIN via servidor</div>
-        </div>
-      </div>
-      <nav class="ml-auto flex gap-2">
-        <button class="k-btn k-btn-ghost" id="tabHome" onclick="showView('home')"><i data-lucide="house"></i> Inici</button>
-        <button class="k-btn k-btn-ghost" id="tabTeacher" onclick="showView('teacher')"><i data-lucide="pen-square"></i> Mestre</button>
-        <button class="k-btn k-btn-ghost" id="tabLibrary" onclick="showView('library')"><i data-lucide="library"></i> Biblioteca</button>
-        <button class="k-btn k-btn-ghost" id="tabResults" onclick="showView('results')"><i data-lucide="table"></i> Resultats</button>
-        <button class="k-btn k-btn-brand" id="tabStudent" onclick="showView('student')"><i data-lucide="log-in"></i> Alumne</button>
-      </nav>
+<body>
+<header>
+  <div class="wrap row">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">FQ</div>
+      <h1>Focus · Proves</h1>
+      <span class="badge">PIN via servidor</span>
     </div>
-  </header>
+    <nav class="right">
+      <button class="pill" id="btnHome" onclick="showView('home')">Inici</button>
+      <button class="pill" id="btnTeacher" onclick="enterRole('teacher')">Mestre</button>
+      <button class="pill" id="btnStudent" onclick="enterRole('student')">Alumne</button>
+    </nav>
+  </div>
+</header>
 
-  <!-- Main -->
-  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
-
-    <!-- HOME -->
-    <section id="view-home" class="grid lg:grid-cols-2 gap-4">
-      <div class="k-card p-6">
-        <h2 class="text-xl font-extrabold mb-2">Com funciona</h2>
-        <p class="text-slate-600 mb-4">Crea la prova, <b>publica al servidor</b> i rebràs un <b>PIN</b>. L’alumne entra el PIN i fa la prova. Els resultats queden centralitzats.</p>
-        <div class="flex gap-2">
-          <button class="k-btn k-btn-brand" onclick="showView('teacher')"><i data-lucide="wand-2"></i> Crear una prova</button>
-          <button class="k-btn k-btn-ghost" onclick="showView('student')"><i data-lucide="log-in"></i> Entrar com alumne</button>
-        </div>
+<main>
+  <!-- HOME -->
+  <section id="view-home" class="grid">
+    <div class="card">
+      <h2 class="title">Com funciona</h2>
+      <p class="muted">El/la mestre/a crea una prova i la <strong>publica al servidor</strong>. El servidor retorna un <strong>PIN</strong>. L’alumne entra el PIN i fa la prova. Els resultats es guarden al servidor.</p>
+      <div class="flex">
+        <button class="btn" onclick="enterRole('teacher')">Sóc Mestre</button>
+        <button class="btn secondary" onclick="enterRole('student')">Sóc Alumne</button>
       </div>
-      <div class="k-card p-6">
-        <h3 class="text-lg font-bold mb-2">Consells ràpids</h3>
-        <ul class="list-disc pl-5 space-y-1 text-slate-700">
-          <li>Utilitza “Afegit ràpid” per escriure diverses preguntes d’una vegada.</li>
-          <li>A “Biblioteca” pots <b>reutilitzar</b> i <b>clonar</b> exàmens antics.</li>
-          <li>Les imatges es <b>comprimeixen automàticament</b> per pujar més ràpid.</li>
-        </ul>
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- TEACHER (Editor) -->
-    <section id="view-teacher" class="hidden space-y-4">
-      <div class="k-card p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-xl font-extrabold">Creador de Proves</h2>
-            <p class="text-slate-600">Dissenya la prova i <b>Publica</b> per obtenir un PIN.</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <button class="k-btn k-btn-ghost" onclick="openQuickAdd()"><i data-lucide="plus"></i> Afegit ràpid</button>
-            <button class="k-btn k-btn-brand" onclick="publishExam()"><i data-lucide="upload-cloud"></i> Publica</button>
-          </div>
-        </div>
+  <!-- TEACHER -->
+  <section id="view-teacher" class="grid grid-2" style="display:none">
+    <div class="card">
+      <h2 class="title">Creador de Proves</h2>
+      <p class="muted">Títol, instruccions i preguntes. Pots barrejar tipus de pregunta. Quan estigui a punt, <strong>Publica</strong> i obtindràs un PIN.</p>
 
-        <div class="grid lg:grid-cols-3 gap-4">
-          <div class="lg:col-span-2 space-y-4">
-            <div>
-              <label class="font-bold block mb-1">Títol de la prova</label>
-              <input id="examTitle" class="k-input" type="text" placeholder="Ex: Comprensió lectora · 4t" oninput="lazySaveExam()">
-            </div>
-            <div>
-              <label class="font-bold block mb-1">Instruccions</label>
-              <textarea id="examDesc" class="k-input min-h-[90px]" placeholder="Llegeix atentament i respon." oninput="lazySaveExam()"></textarea>
-            </div>
+      <label for="examTitle">Títol de la prova</label>
+      <input id="examTitle" type="text" placeholder="Ex: Comprensió lectora · 4t" oninput="lazySaveExam()" />
 
-            <div class="grid md:grid-cols-3 gap-3">
-              <div>
-                <label class="font-bold block mb-1">Mostrar nota a l’alumne?</label>
-                <select id="examShowScore" class="k-select" onchange="lazySaveExam()">
-                  <option value="yes">Sí</option>
-                  <option value="no">No</option>
-                </select>
-              </div>
-              <div class="md:col-span-2 flex items-center gap-2 pt-7">
-                <input id="examShuffle" type="checkbox" class="w-4 h-4" onchange="toggleShuffle(this.checked)">
-                <span class="text-slate-700">Barrejar ordre de preguntes</span>
-              </div>
-            </div>
+      <label for="examDesc">Instruccions per a l’alumnat</label>
+      <textarea id="examDesc" placeholder="Llegeix atentament i respon." oninput="lazySaveExam()"></textarea>
 
-            <div class="border-t border-slate-200 pt-4 flex items-center justify-between">
-              <div class="flex flex-wrap gap-2">
-                <button class="k-btn k-btn-ghost" onclick="addQuestion('mc')"><i data-lucide="list"></i> Opció múltiple</button>
-                <button class="k-btn k-btn-ghost" onclick="addQuestion('tf')"><i data-lucide="check-circle-2"></i> Vertader/Fals</button>
-                <button class="k-btn k-btn-ghost" onclick="addQuestion('short')"><i data-lucide="message-square"></i> Resposta curta</button>
-                <button class="k-btn k-btn-ghost" onclick="addQuestion('num')"><i data-lucide="calculator"></i> Numèrica ± tol</button>
-                <button class="k-btn k-btn-ghost" onclick="addQuestion('long')"><i data-lucide="file-text"></i> Resposta llarga</button>
-                <button class="k-btn k-btn-ghost" onclick="addQuestion('order')"><i data-lucide="arrow-up-down"></i> Ordenar llista</button>
-                <button class="k-btn k-btn-ghost" onclick="addQuestion('match')"><i data-lucide="link-2"></i> Correspondències</button>
-              </div>
-              <div id="qCount" class="text-sm text-slate-600"></div>
-            </div>
-
-            <div id="questions" class="space-y-3"></div>
-
-            <div class="flex gap-2 pt-2">
-              <button class="k-btn k-btn-brand" onclick="publishExam()"><i data-lucide="upload-cloud"></i> Publica al servidor</button>
-              <button class="k-btn k-btn-ghost" onclick="clearExam()"><i data-lucide="trash-2"></i> Buida</button>
-            </div>
-            <p id="publishInfo" class="text-sm text-slate-600"></p>
-          </div>
-
-          <aside class="space-y-4">
-            <div class="k-card p-4">
-              <h3 class="font-bold mb-2">Trucs d’edició</h3>
-              <ul class="text-sm text-slate-700 space-y-1">
-                <li>Utilitza $\\LaTeX$ a l’enunciat.</li>
-                <li>Carrega una imatge (es comprimeix sola).</li>
-                <li>Duplica preguntes per anar més ràpid.</li>
-              </ul>
-            </div>
-            <div class="k-card p-4">
-              <h3 class="font-bold mb-2">Publicació</h3>
-              <p class="text-sm text-slate-700">En publicar, rebràs <b>PIN</b> i <b>examId</b>. Comparteix el PIN amb l’alumnat.</p>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <!-- LIBRARY -->
-    <section id="view-library" class="hidden space-y-4">
-      <div class="k-card p-6">
-        <div class="flex items-center justify-between gap-3 mb-4">
-          <div>
-            <h2 class="text-xl font-extrabold">Biblioteca d’exàmens</h2>
-            <p class="text-slate-600">Reutilitza o clona exàmens guardats al servidor.</p>
-          </div>
-          <div class="flex gap-2">
-            <input id="libSearch" class="k-input w-56" placeholder="Cerca per títol o examId…" oninput="filterLibrary()">
-            <button id="libRefreshBtn" class="k-btn k-btn-ghost" onclick="listExams()"><i data-lucide="refresh-ccw"></i> Actualitza</button>
-          </div>
-        </div>
-        <div class="overflow-auto max-h-[420px]">
-          <table class="min-w-full text-sm">
-            <thead class="sticky top-0 bg-white border-b">
-              <tr class="text-left text-slate-500 uppercase">
-                <th class="px-3 py-2">Títol</th>
-                <th class="px-3 py-2">PIN</th>
-                <th class="px-3 py-2">examId</th>
-                <th class="px-3 py-2">Creat</th>
-                <th class="px-3 py-2">Accions</th>
-              </tr>
-            </thead>
-            <tbody id="libraryTable"></tbody>
-          </table>
-        </div>
-        <p id="libraryInfo" class="text-sm text-slate-600 mt-2"></p>
-      </div>
-    </section>
-
-    <!-- RESULTS -->
-    <section id="view-results" class="hidden space-y-4">
-      <div class="k-card p-6">
-        <h2 class="text-xl font-extrabold mb-3">Resultats (del servidor)</h2>
-        <div class="grid md:grid-cols-[1fr_auto_auto] gap-3 items-end">
-          <div>
-            <label class="font-bold block mb-1">examId</label>
-            <input id="examIdLookup" class="k-input" type="text" placeholder="Ex: 9f3a2b1c...">
-          </div>
-          <button class="k-btn k-btn-brand" onclick="fetchResults()"><i data-lucide="download"></i> Carrega resultats</button>
-          <button class="k-btn k-btn-ghost" onclick="downloadCSV()"><i data-lucide="file-down"></i> Descarrega CSV</button>
-        </div>
-        <div class="border-t my-4"></div>
-        <div id="aggSummary" class="text-sm text-slate-600"></div>
-        <div class="overflow-auto max-h-[420px] mt-2 border rounded-xl">
-          <table class="min-w-full text-sm" id="resultsTable"></table>
-        </div>
-        <div class="mt-3">
-          <button class="k-btn k-btn-ghost" onclick="loadExamById(($('#examIdLookup').value||'').trim())"><i data-lucide="edit-3"></i> Carrega a l’editor</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- STUDENT -->
-    <section id="view-student" class="hidden space-y-4">
-      <div class="k-card p-6">
-        <h2 class="text-xl font-extrabold mb-2">Accés amb PIN</h2>
-        <p class="text-slate-600 mb-4">Introdueix el <b>PIN</b> per carregar la prova.</p>
-
-        <div class="grid md:grid-cols-[1fr_auto] gap-3 items-end">
-          <div>
-            <label class="font-bold block mb-1">PIN (6 dígits)</label>
-            <input id="pinInput" class="k-input" type="text" placeholder="Ex: 482917">
-          </div>
-          <button class="k-btn k-btn-brand" onclick="loadExamByPin()"><i data-lucide="search"></i> Carrega prova</button>
-        </div>
-        <p id="loadStatus" class="text-sm text-slate-600 mt-3"></p>
-
-        <div class="border-t my-4"></div>
-        <h3 class="font-bold mb-2">Identificació</h3>
-        <div class="grid md:grid-cols-3 gap-3">
-          <div>
-            <label class="font-bold block mb-1">Nom i cognoms</label>
-            <input id="studentName" class="k-input" type="text" placeholder="Ex: Marta Puig">
-          </div>
-          <div>
-            <label class="font-bold block mb-1">Grup / Classe</label>
-            <input id="studentGroup" class="k-input" type="text" placeholder="Ex: 5è A">
-          </div>
-          <div class="flex items-end"><button class="k-btn k-btn-brand w-full" onclick="startExam()"><i data-lucide="play"></i> Començar</button></div>
-        </div>
+      <div class="row-inline" style="align-items:center">
+        <label for="examShowScore" style="margin:0">Mostrar nota a l’alumne en enviar?</label>
+        <select id="examShowScore" onchange="lazySaveExam()">
+          <option value="yes">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <label class="right row-inline" style="margin-left:auto">
+          <input type="checkbox" id="examShuffle" onchange="toggleShuffle(this.checked)" />
+          <span class="help">Barrejar ordre de preguntes</span>
+        </label>
       </div>
 
-      <div class="k-card p-6">
-        <h3 class="text-lg font-bold mb-2">Detalls de la Prova</h3>
-        <div id="examDetails" class="text-sm text-slate-600">Encara no hi ha cap prova carregada.</div>
-      </div>
-    </section>
+      <div class="hr"></div>
 
-    <!-- DO EXAM -->
-    <section id="view-do" class="hidden">
-      <div class="k-card p-6">
-        <h2 class="text-xl font-extrabold" id="doTitle">Prova</h2>
-        <p class="text-slate-600 mb-4" id="doDesc"></p>
-        <div id="doQuestions" class="space-y-3"></div>
-        <div class="border-t mt-4 pt-4 flex items-center justify-between">
-          <span id="doNotice" class="text-sm text-slate-600"></span>
-          <button class="k-btn k-btn-brand" onclick="submitExam()"><i data-lucide="send"></i> Envia respostes</button>
+      <div class="row-inline">
+        <div class="pill-tab" role="tablist" aria-label="Afegeix pregunta">
+          <button class="active" onclick="addQuestion('mc')">Opció múltiple</button>
+          <button onclick="addQuestion('tf')">Vertader/Fals</button>
+          <button onclick="addQuestion('short')">Resposta curta</button>
+          <button onclick="addQuestion('num')">Numèrica ± tol</button>
+          <button onclick="addQuestion('long')">Resposta llarga</button>
+          <button onclick="addQuestion('order')">Ordenar llista</button>
+          <button onclick="addQuestion('match')">Correspondències</button>
         </div>
+        <button class="btn small" onclick="openQuickAdd()">Afegit ràpid…</button>
       </div>
-    </section>
 
-    <!-- RESULT -->
-    <section id="view-result" class="hidden">
-      <div class="k-card p-8 text-center">
-        <h2 class="text-xl font-extrabold">Resultats enviats</h2>
-        <p class="text-slate-600 mt-2" id="studentScoreInfo"></p>
-        <div class="mt-4">
-          <button class="k-btn k-btn-ghost" onclick="showView('student')"><i data-lucide="corner-down-left"></i> Tornar</button>
-        </div>
+      <div id="qCount" class="help" style="margin-top:6px"></div>
+      <div id="questions"></div>
+
+      <div class="hr"></div>
+      <div class="flex">
+        <button class="btn good" onclick="publishExam()">Publica al servidor</button>
+        <button class="btn secondary" onclick="clearExam()">Buida</button>
       </div>
-    </section>
+      <p id="publishInfo" class="help"></p>
+    </div>
 
-  </main>
+    <div class="card">
+      <h3 class="title">Resultats (del servidor)</h3>
+      <p class="muted">Consulta els resultats per a l’<strong>examId</strong> que rebràs en publicar.</p>
+
+      <label for="examIdLookup">examId</label>
+      <input id="examIdLookup" type="text" placeholder="Ex: 9f3a2b1c..." />
+      <div class="flex">
+        <button class="btn small" onclick="fetchResults()">Carrega resultats</button>
+        <button class="btn small secondary" onclick="downloadCSV()">Descarrega CSV</button>
+        <button class="btn small secondary" onclick="loadExamById(($('#examIdLookup').value||'').trim())">Carrega a l’editor</button>
+      </div>
+      <div class="hr"></div>
+      <div id="aggSummary" class="help" style="margin-top:10px"></div>
+      <div style="max-height:360px; overflow:auto; margin-top:10px">
+        <table class="table" id="resultsTable"></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="title">Biblioteca d’exàmens</h3>
+      <p class="muted">Exàmens guardats al servidor per reutilitzar-los o clonar-los amb un nou PIN.</p>
+      <div class="row-inline">
+        <input id="libSearch" type="text" placeholder="Cerca per títol o examId…" oninput="filterLibrary()" />
+        <button class="btn small" id="libRefreshBtn" onclick="listExams()">Actualitza</button>
+      </div>
+      <div class="hr"></div>
+      <div style="max-height:360px; overflow:auto; margin-top:10px">
+        <table class="table" id="libraryTable"></table>
+      </div>
+      <p id="libraryInfo" class="help"></p>
+    </div>
+  </section>
+
+  <!-- STUDENT -->
+  <section id="view-student" class="grid grid-2" style="display:none">
+    <div class="card">
+      <h2 class="title">Accés amb PIN</h2>
+      <p class="muted">Introdueix el <strong>PIN</strong> que t’ha donat el/la mestre/a per carregar la prova des del servidor.</p>
+      <label for="pinInput">PIN (6 dígits)</label>
+      <input id="pinInput" type="text" placeholder="Ex: 482917" />
+      <div class="flex">
+        <button class="btn small" onclick="loadExamByPin()">Carrega prova</button>
+      </div>
+      <p id="loadStatus" class="help"></p>
+
+      <div class="hr"></div>
+      <h3 class="title">Identificació</h3>
+      <label for="studentName">Nom i cognoms</label>
+      <input id="studentName" type="text" placeholder="Ex: Marta Puig" />
+      <label for="studentGroup">Grup / Classe</label>
+      <input id="studentGroup" type="text" placeholder="Ex: 5è A" />
+      <button class="btn" onclick="startExam()">Començar</button>
+    </div>
+
+    <div class="card">
+      <h3 class="title">Detalls de la Prova</h3>
+      <div id="examDetails" class="help">Encara no hi ha cap prova carregada.</div>
+    </div>
+  </section>
+
+  <!-- DO EXAM -->
+  <section id="view-do" class="grid" style="display:none">
+    <div class="card">
+      <h2 class="title" id="doTitle">Prova</h2>
+      <p class="muted" id="doDesc"></p>
+      <div id="doQuestions"></div>
+      <div class="hr"></div>
+      <button class="btn good" onclick="submitExam()">Enviar respostes</button>
+      <span id="doNotice" class="help"></span>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="view-result" class="grid" style="display:none">
+    <div class="card center">
+      <h2 class="title">Resultats enviats</h2>
+      <p class="muted" id="studentScoreInfo"></p>
+      <div class="flex center" style="justify-content:center">
+        <button class="btn secondary" onclick="showView('student')">Tornar</button>
+      </div>
+    </div>
+  </section>
+</main>
 
 <script>
 /* ========= Config ========= */
-const API_BASE = ''; // mateix host
+const API_BASE = ''; // mateix host (reverse proxy / estàtic). Si cal: 'http://localhost:3000'
+
 /* ========= Utils ========= */
 const $ = sel => document.querySelector(sel);
-function setActiveTab(tab){
-  for(const el of document.querySelectorAll('header nav .k-btn')) el.classList.remove('ring','ring-brand-200','bg-brand-600','text-white');
-  const b = $('#tab' + tab.charAt(0).toUpperCase()+tab.slice(1));
-  if(b) b.classList.add('ring','ring-brand-200');
-}
 function showView(id){
-  for(const el of document.querySelectorAll('main > section')) el.classList.add('hidden');
-  $('#view-'+id).classList.remove('hidden');
-  setActiveTab(id);
-  if(id==='teacher'){ listExamsDebounced(); }
-  if(id==='library'){ listExams(); }
-  if(id==='results'){ /* stay */ }
-  if(window.lucide) lucide.createIcons();
+  for(const el of document.querySelectorAll('main > section')) el.style.display='none';
+  $('#view-'+id).style.display='';
+  for(const b of document.querySelectorAll('nav .pill')) b.classList.remove('active');
+  if(id==='home') $('#btnHome').classList.add('active');
+  if(id==='teacher'){ $('#btnTeacher').classList.add('active'); listExams(); }
+  if(id==='student' || id==='do' || id==='result') $('#btnStudent').classList.add('active');
 }
 function enterRole(role){ showView(role==='teacher'?'teacher':'student'); }
 function uid(){ return Math.random().toString(36).slice(2,10); }
@@ -320,16 +262,19 @@ function tryRenderKatex(root){
     });
   }catch(_){}
 }
-const toast = (msg, ok=true)=>{
-  const d=document.createElement('div');
-  d.className = `fixed right-4 bottom-4 z-[100] px-4 py-3 rounded-xl shadow-soft border ${ok?'bg-emerald-50 border-emerald-200 text-emerald-800':'bg-amber-50 border-amber-200 text-amber-900'}`;
-  d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(), 1800);
-};
+const toast = (msg)=>{ const d=document.createElement('div'); d.className='success'; d.style.position='fixed'; d.style.right='18px'; d.style.bottom='18px'; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(), 1800); };
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
 function escapeAttr(s){ return String(s||'').replaceAll('"','&quot;'); }
+function formatDate(s){ try{ return new Date(s).toLocaleString(); }catch(_){ return s||''; } }
 
 /* ========= Exam model (client) ========= */
-let exam = { id:null, title:'', desc:'', settings:{ showScoreToStudent:true, shuffle:false }, questions:[] };
+let exam = {
+  id: null,
+  title: '',
+  desc: '',
+  settings: { showScoreToStudent: true, shuffle: false },
+  questions: []
+};
 function lazySaveExam(){ saveExam(false); }
 function toggleShuffle(v){
   exam.settings.shuffle = !!v;
@@ -345,7 +290,8 @@ function saveExam(feedback=false){
 function clearExam(){
   if(confirm('Vols buidar la prova actual?')){
     exam = { id:null, title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
-    $('#examTitle').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes'; $('#examShuffle').checked=false; $('#publishInfo').textContent='';
+    $('#examTitle').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes';
+    $('#examShuffle').checked=false; $('#publishInfo').textContent='';
     renderQuestions();
   }
 }
@@ -362,24 +308,45 @@ function baseQuestion(type){
   if(type==='match'){ q.left=['A','B']; q.right=['1','2']; }
   return q;
 }
-function addQuestion(type){ exam.questions.push(baseQuestion(type)); renderQuestions(); }
+function addQuestion(type){
+  exam.questions.push(baseQuestion(type));
+  renderQuestions();
+}
 function duplicateQuestion(qid){
-  const i = exam.questions.findIndex(q=>q.id===qid); if(i<0) return;
-  const clone = JSON.parse(JSON.stringify(exam.questions[i])); clone.id=uid();
-  exam.questions.splice(i+1,0,clone); renderQuestions();
+  const i = exam.questions.findIndex(q=>q.id===qid);
+  if(i<0) return;
+  const clone = JSON.parse(JSON.stringify(exam.questions[i]));
+  clone.id = uid();
+  exam.questions.splice(i+1, 0, clone);
+  renderQuestions();
 }
 function moveQuestion(qid, dir){
-  const i = exam.questions.findIndex(q=>q.id===qid); if(i<0) return;
-  const j = clamp(i + (dir==='up'?-1:1), 0, exam.questions.length-1); if(i===j) return;
-  const [q] = exam.questions.splice(i,1); exam.questions.splice(j,0,q); renderQuestions();
+  const i = exam.questions.findIndex(q=>q.id===qid);
+  if(i<0) return;
+  const j = clamp(i + (dir==='up'?-1:1), 0, exam.questions.length-1);
+  if(i===j) return;
+  const [q] = exam.questions.splice(i,1);
+  exam.questions.splice(j,0,q);
+  renderQuestions();
 }
-function delQuestion(qid){ exam.questions = exam.questions.filter(q=>q.id!==qid); renderQuestions(); }
+function delQuestion(qid){
+  exam.questions = exam.questions.filter(q=>q.id!==qid);
+  renderQuestions();
+}
 function labelType(t){
-  return t==='mc'?'Opció múltiple': t==='tf'?'Vertader/Fals': t==='short'?'Resposta curta': t==='num'?'Numèrica ± tol': t==='long'?'Resposta llarga': t==='order'?'Ordenar llista': t==='match'?'Correspondències': t;
+  return t==='mc'?'Opció múltiple':
+         t==='tf'?'Vertader/Fals':
+         t==='short'?'Resposta curta':
+         t==='num'?'Numèrica ± tol':
+         t==='long'?'Resposta llarga':
+         t==='order'?'Ordenar llista':
+         t==='match'?'Correspondències': t;
 }
 function qSet(id, key, val){
   const q=exam.questions.find(x=>x.id===id); if(!q) return;
-  if(key==='points') q.points = Number(val)||0; else q[key]=val; lazySaveExam();
+  if(key==='points') q.points = Number(val)||0;
+  else q[key]=val;
+  lazySaveExam();
 }
 
 /* ===== Imatge (compressió) ===== */
@@ -387,102 +354,113 @@ function compressImage(file, maxW=1400, maxH=1400, quality=0.85){
   return new Promise((resolve,reject)=>{
     const reader = new FileReader();
     reader.onload = e=>{
-      const img = new Image(); img.onload = ()=>{
-        let w=img.width, h=img.height;
-        const r = Math.min(maxW/w, maxH/h, 1); const cw=Math.round(w*r), ch=Math.round(h*r);
-        const canvas = document.createElement('canvas'); canvas.width=cw; canvas.height=ch;
-        const ctx = canvas.getContext('2d'); ctx.drawImage(img,0,0,cw,ch);
-        try{ resolve(canvas.toDataURL('image/jpeg', quality)); }catch(err){ reject(err); }
-      }; img.onerror = reject; img.src = e.target.result;
+      const img = new Image();
+      img.onload = ()=>{
+        let {width:w, height:h} = img;
+        const ratio = Math.min(maxW/w, maxH/h, 1);
+        const cw = Math.round(w*ratio), ch = Math.round(h*ratio);
+        const canvas = document.createElement('canvas');
+        canvas.width = cw; canvas.height = ch;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0,cw,ch);
+        try{
+          const data = canvas.toDataURL('image/jpeg', quality);
+          resolve(data);
+        }catch(err){ reject(err); }
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
     };
-    reader.onerror = reject; reader.readAsDataURL(file);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
-async function loadMedia(qid, file){
-  if(!file) return;
+async function loadMedia(qid, kind, file){
+  if(!file || kind!=='img') return;
   try{
     const data = await compressImage(file);
     const q=exam.questions.find(x=>x.id===qid); if(!q) return;
-    q.media.imgData = data; renderQuestions();
-  }catch(e){ toast('No s’ha pogut carregar la imatge.', false); }
+    q.media.imgData = data;
+    renderQuestions();
+  }catch(e){
+    alert('No s’ha pogut carregar la imatge.');
+  }
 }
 
 /* ===== Editor per tipus ===== */
 function renderEditorByType(q){
   if(q.type==='mc' || q.type==='tf'){
     const opts = (q.options||[]).map((o,i)=>`
-      <div class="flex items-center gap-2">
-        <input type="radio" name="correct-${q.id}" ${o.correct?'checked':''} onclick="setCorrect('${q.id}', ${i})" class="w-4 h-4" />
-        <input type="text" value="${escapeAttr(o.text||'')}" oninput="setOptText('${q.id}', ${i}, this.value)" class="k-input">
-        ${q.type==='mc'?`<button class="k-btn k-btn-ghost" onclick="delOpt('${q.id}', ${i})" title="Eliminar">−</button>`:''}
+      <div class="opt-row">
+        <input type="radio" name="correct-${q.id}" ${o.correct?'checked':''} onclick="setCorrect('${q.id}', ${i})" aria-label="Marca com a correcta l'opció ${i+1}" />
+        <input type="text" value="${escapeAttr(o.text||'')}" oninput="setOptText('${q.id}', ${i}, this.value)" />
+        ${q.type==='mc'?`<button class="btn small secondary" onclick="delOpt('${q.id}', ${i})" aria-label="Elimina opció ${i+1}">−</button>`:''}
       </div>
     `).join('');
-    const addBtn = q.type==='mc'?`<button class="k-btn k-btn-ghost mt-2" onclick="addOpt('${q.id}')"><i data-lucide="plus"></i> Afegeix opció</button>`:'';
-    return `<label class="font-bold block mb-1">Opcions</label><div class="space-y-2">${opts}</div>${addBtn}`;
+    const addBtn = q.type==='mc'?`<button class="btn small" onclick="addOpt('${q.id}')">+ Afegir opció</button>`:''; 
+    return `<label>Opcions</label><div class="options">${opts}</div>${addBtn}`;
   }
   if(q.type==='short'){
     return `
-      <label class="font-bold block mb-1">Resposta correcta (text)</label>
-      <input class="k-input" type="text" value="${escapeAttr(q.answerText||'')}" oninput="qSet('${q.id}','answerText', this.value)" />
-      <label class="font-bold block mt-3 mb-1">Altres respostes acceptables (separades per ; )</label>
-      <input class="k-input" type="text" value="${escapeAttr((q.accepts||[]).join('; '))}" oninput="qSet('${q.id}','accepts', this.value.split(';').map(s=>s.trim()).filter(Boolean))" />
-      <p class="text-sm text-slate-600 mt-1">Correcció sense diferència de majúscules i espais extres.</p>
+      <label>Resposta correcta (text)</label>
+      <input type="text" value="${escapeAttr(q.answerText||'')}" oninput="qSet('${q.id}','answerText', this.value)" />
+      <label>Altres respostes acceptables (separades per ; )</label>
+      <input type="text" value="${escapeAttr((q.accepts||[]).join('; '))}" oninput="qSet('${q.id}','accepts', this.value.split(';').map(s=>s.trim()).filter(Boolean))" />
+      <p class="help">Correcció sense diferència de majúscules i espais extres.</p>
     `;
   }
   if(q.type==='num'){
     return `
-      <div class="grid md:grid-cols-2 gap-3">
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:8px">
         <div>
-          <label class="font-bold block mb-1">Resposta numèrica</label>
-          <input class="k-input" type="text" value="${escapeAttr(q.numAnswer||'')}" oninput="qSet('${q.id}','numAnswer', this.value)" placeholder="ex: 3.1416" />
+          <label>Resposta numèrica</label>
+          <input type="text" value="${escapeAttr(q.numAnswer||'')}" oninput="qSet('${q.id}','numAnswer', this.value)" placeholder="ex: 3.1416" />
         </div>
         <div>
-          <label class="font-bold block mb-1">Tolerància (±)</label>
-          <input class="k-input" type="number" step="any" value="${Number(q.tolerance||0)}" oninput="qSet('${q.id}','tolerance', this.value)" />
+          <label>Tolerància (±)</label>
+          <input type="number" step="any" value="${Number(q.tolerance||0)}" oninput="qSet('${q.id}','tolerance', this.value)" />
         </div>
       </div>
     `;
   }
   if(q.type==='long'){
     return `
-      <label class="font-bold block mb-1">Rúbrica (visible al docent)</label>
-      <textarea class="k-input min-h-[120px]" oninput="qSet('${q.id}','rubric', this.value)">${escapeHtml(q.rubric||'')}</textarea>
-      <p class="text-sm text-slate-600 mt-1">L’alumne respondrà en un quadre de text llarg. Avaluació manual.</p>
+      <label>Rúbrica (visible al docent)</label>
+      <textarea oninput="qSet('${q.id}','rubric', this.value)">${escapeHtml(q.rubric||'')}</textarea>
+      <p class="help">L’alumne respondrà en un quadre de text llarg. Avaluació manual.</p>
     `;
   }
   if(q.type==='order'){
     const items = (q.items||[]).map((t,i)=>`
-      <div class="flex items-center gap-2">
-        <span class="text-slate-500 select-none">≡</span>
-        <input class="k-input" type="text" value="${escapeAttr(t)}" oninput="setOrderItem('${q.id}', ${i}, this.value)" />
-        <div class="q-actions flex gap-1">
-          <button class="k-btn k-btn-ghost" onclick="swapOrder('${q.id}', ${i}, -1)" title="Amunt">↑</button>
-          <button class="k-btn k-btn-ghost" onclick="swapOrder('${q.id}', ${i}, 1)" title="Avall">↓</button>
-          <button class="k-btn k-btn-ghost" onclick="delOrderItem('${q.id}', ${i})" title="Eliminar">−</button>
-        </div>
+      <div class="opt-row">
+        <span class="help" aria-hidden="true">≡</span>
+        <input type="text" value="${escapeAttr(t)}" oninput="setOrderItem('${q.id}', ${i}, this.value)" />
+        <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, -1)" aria-label="Mou amunt">↑</button>
+        <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, 1)" aria-label="Mou avall">↓</button>
+        <button class="btn small secondary" onclick="delOrderItem('${q.id}', ${i})" aria-label="Elimina element">−</button>
       </div>
     `).join('');
     return `
-      <label class="font-bold block mb-1">Llista en l’ordre correcte</label>
-      <div class="space-y-2">${items}</div>
-      <button class="k-btn k-btn-ghost mt-2" onclick="addOrderItem('${q.id}')"><i data-lucide="plus"></i> Afegeix element</button>
-      <p class="text-sm text-slate-600 mt-1">Guardes aquí l’ordre correcte. A l’alumne li mostrarem la llista barrejada.</p>
+      <label>Llista en l’ordre correcte (l’alumne haurà d’ordenar)</label>
+      <div class="options">${items}</div>
+      <button class="btn small" onclick="addOrderItem('${q.id}')">+ Afegeix element</button>
+      <p class="help">Guardes aquí l’ordre correcte. A l’alumne li mostrarem la llista barrejada.</p>
     `;
   }
   if(q.type==='match'){
     const left = q.left||[], right=q.right||[];
     return `
-      <div class="grid md:grid-cols-2 gap-3">
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:8px">
         <div>
-          <label class="font-bold block mb-1">Llista esquerra</label>
-          <textarea class="k-input min-h-[120px]" oninput="qSet('${q.id}','left', this.value.split('\\n').map(s=>s.trim()).filter(Boolean))">${escapeHtml(left.join('\n'))}</textarea>
+          <label>Llista esquerra</label>
+          <textarea oninput="qSet('${q.id}','left', this.value.split('\\n').map(s=>s.trim()).filter(Boolean))">${escapeHtml(left.join('\n'))}</textarea>
         </div>
         <div>
-          <label class="font-bold block mb-1">Llista dreta</label>
-          <textarea class="k-input min-h-[120px]" oninput="qSet('${q.id}','right', this.value.split('\\n').map(s=>s.trim()).filter(Boolean))">${escapeHtml(right.join('\n'))}</textarea>
+          <label>Llista dreta</label>
+          <textarea oninput="qSet('${q.id}','right', this.value.split('\\n').map(s=>s.trim()).filter(Boolean))">${escapeHtml(right.join('\n'))}</textarea>
         </div>
       </div>
-      <p class="text-sm text-slate-600 mt-1">La correspondència correcta es fa per posició (L[0] → R[0], etc.).</p>
+      <p class="help">La correspondència correcta es fa per posició (L[0] → R[0], etc.).</p>
     `;
   }
   return '';
@@ -502,51 +480,40 @@ function renderQuestions(){
   $('#qCount').textContent = cnt ? `Preguntes: ${cnt}` : 'Encara no hi ha preguntes.';
   exam.questions.forEach((q,idx)=>{
     const div = document.createElement('div'); div.className='q-item';
-    const media = q.media?.imgData ? `<img alt="" src="${q.media.imgData}" class="mt-2 max-w-full rounded-lg border">` : '';
+    const media = q.media?.imgData ? `<div><img alt="" src="${q.media.imgData}" style="max-width:100%; border:1px solid var(--hair); border-radius:12px; margin:6px 0"></div>` : '';
     div.innerHTML = `
       <div class="q-head">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold px-2 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-100">Q${idx+1}</span>
-          <span class="text-sm text-slate-700">${escapeHtml(labelType(q.type))}</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-slate-600">Punts</span>
-          <input type="number" min="0" step="0.5" value="${q.points}" class="k-input w-24" oninput="qSet('${q.id}','points', this.value)" />
-          <div class="q-actions flex gap-1">
-            <button class="k-btn k-btn-ghost" title="Pujar" onclick="moveQuestion('${q.id}','up')">↑</button>
-            <button class="k-btn k-btn-ghost" title="Baixar" onclick="moveQuestion('${q.id}','down')">↓</button>
-            <button class="k-btn k-btn-ghost" title="Duplicar" onclick="duplicateQuestion('${q.id}')">⎘</button>
-            <button class="k-btn k-btn-ghost" title="Eliminar" onclick="delQuestion('${q.id}')"><i data-lucide="trash-2"></i></button>
-          </div>
+        <div><span class="q-type">Q${idx+1} · ${labelType(q.type)}</span></div>
+        <div class="row-inline">
+          <button class="btn small secondary" title="Pujar" onclick="moveQuestion('${q.id}','up')">↑</button>
+          <button class="btn small secondary" title="Baixar" onclick="moveQuestion('${q.id}','down')">↓</button>
+          <button class="btn small secondary" title="Duplicar" onclick="duplicateQuestion('${q.id}')">⎘</button>
+          <span class="help">Punts</span>
+          <input type="number" min="0" step="0.5" value="${q.points}" style="width:90px" oninput="qSet('${q.id}','points', this.value)" />
+          <button class="btn small bad" onclick="delQuestion('${q.id}')">Eliminar</button>
         </div>
       </div>
-      <div class="mt-3 space-y-3">
-        <div>
-          <label class="font-bold block mb-1">Enunciat (admet $\\LaTeX$)</label>
-          <textarea class="k-input min-h-[90px]" oninput="qSet('${q.id}','text', this.value)" placeholder="Escriu la pregunta...">${escapeHtml(q.text||'')}</textarea>
-        </div>
+      <div class="q-body">
+        <label>Enunciat (admet $\\LaTeX$)</label>
+        <textarea oninput="qSet('${q.id}','text', this.value)" placeholder="Escriu la pregunta...">${escapeHtml(q.text||'')}</textarea>
 
-        <div class="grid md:grid-cols-[1fr_auto] gap-3 items-end">
+        <div class="flex">
           <div>
-            <label class="font-bold block mb-1">Imatge (opcional)</label>
-            <input type="file" accept="image/*" class="k-input" onchange="loadMedia('${q.id}', this.files[0])">
-            <p class="text-sm text-slate-600 mt-1">Es comprimeix automàticament per reduir mida.</p>
+            <label>Imatge (opcional)</label>
+            <input type="file" accept="image/*" onchange="loadMedia('${q.id}','img',this.files[0])">
+            <p class="help">La imatge es comprimeix automàticament per reduir mida.</p>
           </div>
-          <div class="text-right">${media}</div>
         </div>
 
+        ${media}
         ${renderEditorByType(q)}
-
-        <div>
-          <label class="font-bold block mb-1">Etiquetes</label>
-          <input class="k-input" type="text" value="${(q.tags||[]).join(', ')}" oninput="qSet('${q.id}','tags', this.value.split(',').map(s=>s.trim()).filter(Boolean))" placeholder="ex: mates, fraccions">
-        </div>
+        <label>Etiquetes</label>
+        <input type="text" value="${(q.tags||[]).join(', ')}" oninput="qSet('${q.id}','tags', this.value.split(',').map(s=>s.trim()).filter(Boolean))" placeholder="ex: mates, fraccions">
       </div>
     `;
     wrap.appendChild(div);
   });
   localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
-  if(window.lucide) lucide.createIcons();
 }
 
 /* ========= Publicació al servidor ========= */
@@ -558,17 +525,20 @@ async function publishExam(){
     alert('Cal un títol i almenys una pregunta.'); return;
   }
   try{
-    const res = await fetch(API_BASE + '/api/exams', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(exam) });
+    const res = await fetch(API_BASE + '/api/exams', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(exam)
+    });
     if(!res.ok) throw new Error(await res.text());
     const data = await res.json();
     exam.id = data.examId;
     localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
-    $('#publishInfo').innerHTML = `<span class="inline-block px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800">Publicat! PIN: <b>${data.pin}</b> · examId: <span class="font-mono">${data.examId}</span></span>`;
+    $('#publishInfo').innerHTML = `<span class="success">Publicat! PIN: <strong>${data.pin}</strong> &middot; examId: <span class="mono">${data.examId}</span></span>`;
     $('#examIdLookup').value = data.examId;
     listExams();
-    toast('Examen publicat!');
   }catch(e){
-    $('#publishInfo').innerHTML = `<span class="inline-block px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-900">Error en publicar: ${escapeHtml(e.message||'desconegut')}</span>`;
+    $('#publishInfo').innerHTML = `<span class="warn">Error en publicar: ${escapeHtml(e.message||'desconegut')}</span>`;
   }
 }
 
@@ -583,23 +553,24 @@ async function loadExamByPin(){
     const res = await fetch(API_BASE + '/api/exams/pin/' + encodeURIComponent(pin));
     if(!res.ok) throw new Error('PIN no trobat');
     const obj = await res.json();
-    loadedExam = obj; loadedPin = pin;
+    loadedExam = obj;
+    loadedPin = pin;
     showExamDetails(obj);
-    $('#loadStatus').innerHTML = `<span class="inline-block px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800">Prova carregada!</span>`;
+    $('#loadStatus').innerHTML = `<span class="success">Prova carregada!</span>`;
   }catch(e){
-    $('#loadStatus').innerHTML = `<span class="inline-block px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-900">${escapeHtml(e.message||'No s’ha pogut carregar la prova')}</span>`;
+    $('#loadStatus').innerHTML = `<span class="warn">${escapeHtml(e.message||'No s’ha pogut carregar la prova')}</span>`;
   }
 }
 function showExamDetails(x){
   $('#examDetails').innerHTML = `
-    <div><b>Títol:</b> ${escapeHtml(x.title||'')}</div>
-    <div><b>Instruccions:</b> ${escapeHtml(x.desc||'')}</div>
-    <div><b>Preguntes:</b> ${x.questions?x.questions.length:0}</div>
-    <div><b>PIN:</b> ${escapeHtml(x.pin||'(no definit)')}</div>
-    <div><b>examId:</b> <span class="font-mono">${escapeHtml(x.id||'')}</span></div>
+    <div><strong>Títol:</strong> ${escapeHtml(x.title||'')}</div>
+    <div><strong>Instruccions:</strong> ${escapeHtml(x.desc||'')}</div>
+    <div><strong>Preguntes:</strong> ${x.questions?x.questions.length:0}</div>
+    <div><strong>PIN:</strong> ${escapeHtml(x.pin||'(no definit)')}</div>
+    <div><strong>examId:</strong> <span class="mono">${escapeHtml(x.id||'')}</span></div>
   `;
 }
-function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
 
 function startExam(){
   if(!loadedExam){ alert('Carrega primer una prova per PIN.'); return; }
@@ -613,43 +584,42 @@ function startExam(){
   $('#doTitle').textContent = loadedExam.title||'Prova';
   $('#doDesc').textContent = loadedExam.desc||'';
   const host = $('#doQuestions'); host.innerHTML='';
-
   questions.forEach((q,idx)=>{
     const el = document.createElement('div'); el.className='q-item';
     let media = '';
-    if(q.media?.imgData) media += `<div><img alt="" src="${q.media.imgData}" class="max-w-full rounded-lg border mt-2"></div>`;
+    if(q.media?.imgData) media += `<div><img alt="" src="${q.media.imgData}" style="max-width:100%; border:1px solid var(--hair); border-radius:12px; margin:6px 0"></div>`;
 
     let body='';
     if(q.type==='mc' || q.type==='tf'){
       body = (q.options||[]).map((o,i)=>`
-        <label class="flex items-center gap-2">
-          <input type="radio" name="ans-${q.id}" value="${i}" class="w-4 h-4" />
+        <label class="opt-row">
+          <input type="radio" name="ans-${q.id}" value="${i}" />
           <span>${escapeHtml(o.text)}</span>
         </label>
       `).join('');
     } else if(q.type==='short'){
-      body = `<input type="text" id="ans-${q.id}" class="k-input" placeholder="Escriu la resposta">`;
+      body = `<input type="text" id="ans-${q.id}" placeholder="Escriu la resposta" />`;
     } else if(q.type==='num'){
-      body = `<div class="flex items-center gap-2"><input type="text" id="ans-${q.id}" class="k-input" placeholder="Ex: 3.14"><span class="text-sm text-slate-600">± ${q.tolerance||0}</span></div>`;
+      body = `<input type="text" id="ans-${q.id}" placeholder="Ex: 3.14" /> <span class="help">± ${q.tolerance||0}</span>`;
     } else if(q.type==='long'){
-      body = `<textarea id="ans-${q.id}" class="k-input min-h-[120px]" placeholder="Resposta de desenvolupament"></textarea>`;
+      body = `<textarea id="ans-${q.id}" placeholder="Resposta de desenvolupament" style="min-height:120px"></textarea>`;
     } else if(q.type==='order'){
       const shuffled = [...(q.items||[])]; shuffleArray(shuffled);
       body = `<div id="ord-${q.id}">` + shuffled.map((t,i)=>`
-        <div class="flex items-center gap-2 mb-1">
-          <span class="text-slate-500 select-none">≡</span>
-          <input type="text" value="${escapeAttr(t)}" data-i="${i}" class="k-input" readonly />
-          <button class="k-btn k-btn-ghost" onclick="ordSwap('${q.id}', ${i}, -1)">↑</button>
-          <button class="k-btn k-btn-ghost" onclick="ordSwap('${q.id}', ${i}, 1)">↓</button>
+        <div class="opt-row">
+          <span class="help" aria-hidden="true">≡</span>
+          <input type="text" value="${escapeAttr(t)}" data-i="${i}" readonly />
+          <button class="btn small secondary" onclick="ordSwap('${q.id}', ${i}, -1)">↑</button>
+          <button class="btn small secondary" onclick="ordSwap('${q.id}', ${i}, 1)">↓</button>
         </div>`).join('') + `</div>`;
       q.__runtimeOrder = shuffled;
     } else if(q.type==='match'){
       const left = q.left||[], right = [...(q.right||[])]; shuffleArray(right);
       const selects = left.map((L,ii)=>`
-        <div class="flex items-center gap-2 mb-2">
-          <span class="w-6">${ii+1}.</span>
-          <span class="flex-1">${escapeHtml(L)}</span>
-          <select id="match-${q.id}-${ii}" class="k-select w-64">
+        <div class="opt-row">
+          <span style="min-width:24px">${ii+1}.</span>
+          <span style="flex:1">${escapeHtml(L)}</span>
+          <select id="match-${q.id}-${ii}">
             ${right.map((R,i)=>`<option value="${i}">${escapeHtml(R)}</option>`).join('')}
           </select>
         </div>`).join('');
@@ -658,14 +628,11 @@ function startExam(){
     }
 
     el.innerHTML = `
-      <div class="q-head">
-        <div class="text-sm font-bold">Q${idx+1}</div>
-        <div class="text-sm text-slate-600">${q.points||1} punt(s)</div>
-      </div>
-      <div class="mt-2 space-y-2">
-        <div class="font-semibold katex-host">${escapeHtml(q.text||'')}</div>
+      <div class="q-head"><div class="q-type">Q${idx+1}</div><div class="help">${q.points||1} punt(s)</div></div>
+      <div class="q-body">
+        <div style="font-weight:700; margin-bottom:6px" class="katex-host">${escapeHtml(q.text||'')}</div>
         ${media}
-        <div class="mt-1 space-y-2">${body}</div>
+        ${body}
       </div>
     `;
     host.appendChild(el);
@@ -680,9 +647,10 @@ function startExam(){
 }
 function ordSwap(qid,i,dir){
   const wrap = $('#ord-'+qid);
-  const rows = Array.from(wrap.querySelectorAll('.flex.items-center')); // our row selector
+  const rows = Array.from(wrap.querySelectorAll('.opt-row'));
   const j = clamp(i+dir,0,rows.length-1); if(i===j) return;
-  if(dir===1) wrap.insertBefore(rows[j], rows[i]); else wrap.insertBefore(rows[i], rows[j]);
+  if(dir===1) wrap.insertBefore(rows[j], rows[i]);
+  else wrap.insertBefore(rows[i], rows[j]);
 }
 
 let lastResult = null;
@@ -752,15 +720,19 @@ async function submitExam(){
   };
   const showScore = loadedExam.settings?.showScoreToStudent !== false;
   $('#studentScoreInfo').innerHTML = showScore ?
-    `Has fet <b>${score}</b> de <b>${max}</b> punts.` :
+    `Has fet <strong>${score}</strong> de <strong>${max}</strong> punts.` :
     `S’han guardat les respostes. El/la mestre/a veurà la teva nota.`;
 
   try{
-    const res = await fetch(API_BASE + '/api/results', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(lastResult) });
+    const res = await fetch(API_BASE + '/api/results', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(lastResult)
+    });
     if(!res.ok) throw new Error(await res.text());
     showView('result');
   }catch(e){
-    alert('No s’ha pogut enviar el resultat: ' + (e.message||'')); 
+    alert('No s’ha pogut enviar el resultat: ' + (e.message||''));
   }
 }
 
@@ -774,43 +746,45 @@ async function fetchResults(){
     const bag = await res.json();
     renderResultsTable(bag.items||[]);
   }catch(e){
-    $('#aggSummary').innerHTML = `<span class="text-amber-900 bg-amber-50 border border-amber-200 px-2 py-1 rounded">${escapeHtml(e.message||'')}</span>`;
+    $('#aggSummary').innerHTML = `<span class="warn">Error: ${escapeHtml(e.message||'')}</span>`;
   }
 }
 function renderResultsTable(items){
   const tbl = $('#resultsTable');
   if(!items.length){ tbl.innerHTML=''; $('#aggSummary').textContent='Sense resultats.'; return; }
   const maxQ = items.reduce((m,r)=>Math.max(m, r.responses?.length||0), 0);
-  let thead = `<thead class="bg-slate-50 border-b"><tr>
-    <th class="text-left px-3 py-2">Alumne</th><th class="text-left px-3 py-2">Grup</th><th class="px-3 py-2">Puntuació</th><th class="px-3 py-2">Màx</th><th class="px-3 py-2">%</th><th class="px-3 py-2">Data</th>`;
-  for(let i=1;i<=maxQ;i++) thead += `<th class="px-3 py-2">Q${i}</th>`;
-  thead += `</tr></thead>`;
+  let thead = `<tr>
+    <th>Alumne</th><th>Grup</th><th>Puntuació</th><th>Màx</th><th>%</th><th>Data</th>`;
+  for(let i=1;i<=maxQ;i++) thead += `<th>Q${i}</th>`;
+  thead += `</tr>`;
   let rows = '';
   items.forEach(r=>{
     const pct = r.totals?.max ? (100*r.totals.score/r.totals.max).toFixed(1) : '';
     let qs = '';
     (r.responses||[]).forEach(ans=>{
       const tag = ans.correct===true?'✅':(ans.correct===false?'❌':'—');
-      qs += `<td class="px-3 py-2" title="${escapeHtml(ans.answer)}">${tag}</td>`;
+      qs += `<td title="${escapeHtml(ans.answer)}">${tag}</td>`;
     });
-    for(let k=(r.responses||[]).length;k<maxQ;k++) qs += `<td class="px-3 py-2">—</td>`;
-    rows += `<tr class="border-b">
-      <td class="px-3 py-2">${escapeHtml(r.student?.name||'')}</td>
-      <td class="px-3 py-2">${escapeHtml(r.student?.group||'')}</td>
-      <td class="px-3 py-2 text-center">${r.totals?.score??''}</td>
-      <td class="px-3 py-2 text-center">${r.totals?.max??''}</td>
-      <td class="px-3 py-2 text-center">${pct? pct+'%':''}</td>
-      <td class="px-3 py-2">${new Date(r.submittedAt).toLocaleString()}</td>
+    for(let k=(r.responses||[]).length;k<maxQ;k++) qs += `<td>—</td>`;
+    rows += `<tr>
+      <td>${escapeHtml(r.student?.name||'')}</td>
+      <td>${escapeHtml(r.student?.group||'')}</td>
+      <td>${r.totals?.score??''}</td>
+      <td>${r.totals?.max??''}</td>
+      <td>${pct? pct+'%':''}</td>
+      <td>${new Date(r.submittedAt).toLocaleString()}</td>
       ${qs}
     </tr>`;
   });
-  tbl.innerHTML = `${thead}<tbody>${rows}</tbody>`;
+  tbl.innerHTML = `<thead>${thead}</thead><tbody>${rows}</tbody>`;
   $('#aggSummary').textContent = `${items.length} resultats`;
 }
 function downloadCSV(){
   const examId = ($('#examIdLookup').value||'').trim();
   if(!examId){ alert('Escriu un examId.'); return; }
-  const a = document.createElement('a'); a.href = `/api/results/${encodeURIComponent(examId)}/csv`; a.click();
+  const a = document.createElement('a');
+  a.href = `/api/results/${encodeURIComponent(examId)}/csv`;
+  a.click();
 }
 
 /* ========= Biblioteca (mestre) ========= */
@@ -824,41 +798,42 @@ async function listExams(){
     renderLibrary(libraryItems);
     $('#libraryInfo').textContent = `${libraryItems.length} exàmens`;
   }catch(e){
-    $('#libraryInfo').innerHTML = `<span class="text-amber-900 bg-amber-50 border border-amber-200 px-2 py-1 rounded">${escapeHtml(e.message||'Error desconegut')}</span>`;
+    $('#libraryInfo').innerHTML = `<span class="warn">${escapeHtml(e.message||'Error desconegut')}</span>`;
     $('#libraryTable').innerHTML = '';
   }finally{
     const btn = $('#libRefreshBtn'); if(btn) btn.disabled = false;
   }
 }
-const listExamsDebounced = debounced(listExams, 300);
 function filterLibrary(){
   const q = ($('#libSearch').value||'').toLowerCase().trim();
-  const filtered = libraryItems.filter(x=> (x.title||'').toLowerCase().includes(q) || (x.id||'').toLowerCase().includes(q) );
+  const filtered = libraryItems.filter(x=>{
+    return (x.title||'').toLowerCase().includes(q) || (x.id||'').toLowerCase().includes(q);
+  });
   renderLibrary(filtered);
 }
-function formatDate(s){ try{ return new Date(s).toLocaleString(); }catch(_){ return s||''; } }
 function renderLibrary(items){
-  const tbody = $('#libraryTable');
-  if(!items.length){ tbody.innerHTML=''; return; }
-  tbody.innerHTML = items.map(x=>`
-    <tr class="border-b">
-      <td class="px-3 py-2">${escapeHtml(x.title||'')}</td>
-      <td class="px-3 py-2">${escapeHtml(x.pin||'')}</td>
-      <td class="px-3 py-2 font-mono">${escapeHtml(x.id||'')}</td>
-      <td class="px-3 py-2">${escapeHtml(formatDate(x.createdAt||''))}</td>
-      <td class="px-3 py-2">
-        <div class="flex flex-wrap gap-2">
-          <button class="k-btn k-btn-brand" onclick="loadExamById('${x.id}')"><i data-lucide="edit-3"></i> Carrega</button>
-          <button class="k-btn k-btn-ghost" onclick="cloneExam('${x.id}')"><i data-lucide="copy"></i> Clona (nou PIN)</button>
-          <button class="k-btn k-btn-ghost" onclick="copyToClipboard('${x.pin||''}')"><i data-lucide="copy"></i> Copia PIN</button>
-        </div>
+  const tbl = $('#libraryTable');
+  if(!items.length){ tbl.innerHTML=''; return; }
+  let thead = `<tr><th>Títol</th><th>PIN</th><th>examId</th><th>Creat</th><th>Accions</th></tr>`;
+  let rows = '';
+  items.forEach(x=>{
+    rows += `<tr>
+      <td>${escapeHtml(x.title||'')}</td>
+      <td>${escapeHtml(x.pin||'')}</td>
+      <td class="mono">${escapeHtml(x.id||'')}</td>
+      <td>${escapeHtml(formatDate(x.createdAt||''))}</td>
+      <td class="flex">
+        <button class="btn small" onclick="loadExamById('${x.id}')">Carrega</button>
+        <button class="btn small secondary" onclick="cloneExam('${x.id}')">Clona (nou PIN)</button>
+        <button class="btn small secondary" onclick="copyToClipboard('${x.pin||''}')">Copia PIN</button>
       </td>
-    </tr>
-  `).join('');
-  if(window.lucide) lucide.createIcons();
+    </tr>`;
+  });
+  tbl.innerHTML = `<thead>${thead}</thead><tbody>${rows}</tbody>`;
 }
 async function loadExamById(id){
-  id = String(id||'').trim(); if(!id){ alert('Falta examId'); return; }
+  id = String(id||'').trim();
+  if(!id){ alert('Falta examId'); return; }
   try{
     const res = await fetch(API_BASE + '/api/exams/' + encodeURIComponent(id));
     if(!res.ok) throw new Error('Examen no trobat (GET /api/exams/:id)');
@@ -870,49 +845,77 @@ async function loadExamById(id){
     $('#examShuffle').checked = !!(exam.settings && exam.settings.shuffle);
     renderQuestions();
     localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
-    showView('teacher'); // torna a l’editor
     toast('Examen carregat a l’editor');
-  }catch(e){ alert('No s’ha pogut carregar l’examen: ' + (e.message||'')); }
+  }catch(e){
+    alert('No s’ha pogut carregar l’examen: ' + (e.message||''));
+  }
 }
 async function cloneExam(id){
   try{
     const res = await fetch(API_BASE + '/api/exams/' + encodeURIComponent(id));
     if(!res.ok) throw new Error('No s’ha trobat l’examen origen');
     const src = await res.json();
-    const body = { title: src.title||'', desc: src.desc||'', settings: src.settings||{showScoreToStudent:true, shuffle:false}, questions: src.questions||[] };
-    const res2 = await fetch(API_BASE + '/api/exams', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    // neteja camps controlats pel servidor
+    const body = {
+      title: src.title||'',
+      desc: src.desc||'',
+      settings: src.settings||{showScoreToStudent:true, shuffle:false},
+      questions: src.questions||[]
+    };
+    const res2 = await fetch(API_BASE + '/api/exams', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
     if(!res2.ok) throw new Error(await res2.text());
     const data = await res2.json();
     toast(`Clonat! Nou PIN: ${data.pin}`);
     $('#examIdLookup').value = data.examId;
     listExams();
-  }catch(e){ alert('Error en clonar: ' + (e.message||'')); }
+  }catch(e){
+    alert('Error en clonar: ' + (e.message||''));
+  }
 }
-async function copyToClipboard(text){ try{ await navigator.clipboard.writeText(text||''); toast('Copiat'); }catch(_){ } }
+async function copyToClipboard(text){
+  try{ await navigator.clipboard.writeText(text||''); toast('Copiat'); }catch(_){ /* ignore */ }
+}
 
 /* ========= Afegit ràpid ========= */
 function openQuickAdd(){
   const tip = `Format ràpid (una per línia):
 - mc; Enunciat? | opció A* | opció B | opció C
-- tf; Enunciat? | vertader (o "fals")
+- tf; Enunciat? | vertader  (o "fals")
 - short; Enunciat? | resposta | alternativa1 | alternativa2
 - num; Enunciat? | 3.14 | 0.01
 - order; Enunciat? | element 1 | element 2 | element 3
-- match; Enunciat? | A - 1 | B - 2 | C - 3`;
+- match; Enunciat? | A - 1 | B - 2 | C - 3
+
+Exemples:
+mc; Capital de França? | París* | Lyon | Marsella
+tf; El 12 és parell | vertader
+short; 5+7 = ? | 12 | dotze
+num; π ≈ ? | 3.1416 | 0.001
+order; Ordena de petit a gran | 2 | 5 | 9
+match; Relaciona | gos - mamífer | granota - amfibi`;
   const raw = prompt(tip, 'mc; Capital de França? | París* | Lyon | Marsella');
   if(!raw) return;
   const lines = raw.split('\n').map(s=>s.trim()).filter(Boolean);
   lines.forEach(line=>{
-    const [typePart, rest] = line.split(';'); if(!rest) return;
+    const [typePart, rest] = line.split(';');
+    if(!rest) return;
     const type = (typePart||'').trim().toLowerCase();
     const chunks = rest.split('|').map(s=>s.trim()).filter(Boolean);
     const enunciat = chunks.shift() || '';
     if(type==='mc'){
-      const opts = chunks.map(t=>({ text: t.replace(/\*$/,''), correct: /\*$/.test(t) }));
+      const opts = chunks.map(t=>{
+        const correct = /\*$/.test(t);
+        return {text: t.replace(/\*$/,''), correct};
+      });
       if(!opts.some(o=>o.correct) && opts.length>0) opts[0].correct=true;
       exam.questions.push({id:uid(), type:'mc', text:enunciat, points:1, options:opts, tags:[], media:{}});
     } else if(type==='tf'){
-      const v = (chunks[0]||'').toLowerCase(); const correctIsTrue = v.startsWith('v');
+      const v = (chunks[0]||'').toLowerCase();
+      const correctIsTrue = v.startsWith('v');
       exam.questions.push({id:uid(), type:'tf', text:enunciat, points:1, options:[
         {text:'Vertader', correct:correctIsTrue},
         {text:'Fals', correct:!correctIsTrue}
@@ -921,7 +924,8 @@ function openQuickAdd(){
       const ans = chunks.shift()||'';
       exam.questions.push({id:uid(), type:'short', text:enunciat, points:1, answerText:ans, accepts:chunks, tags:[], media:{}});
     } else if(type==='num'){
-      const val = chunks.shift()||''; const tol = chunks.shift()||'0';
+      const val = chunks.shift()||'';
+      const tol = chunks.shift()||'0';
       exam.questions.push({id:uid(), type:'num', text:enunciat, points:1, numAnswer:val, tolerance:tol, tags:[], media:{}});
     } else if(type==='order'){
       exam.questions.push({id:uid(), type:'order', text:enunciat, points:1, items:chunks, tags:[], media:{}});
@@ -945,12 +949,14 @@ function restoreExam(){
       $('#examShowScore').value = exam.settings?.showScoreToStudent===false?'no':'yes';
       $('#examShuffle').checked = !!exam.settings?.shuffle;
       renderQuestions();
-    } else renderQuestions();
+    } else {
+      renderQuestions();
+    }
   }catch(e){ renderQuestions(); }
 }
 window.addEventListener('load', ()=>{
   restoreExam();
-  showView('home');
+  // Si la vista inicial és home, no passa res; quan entris a "Mestre" es crida listExams()
 });
 </script>
 </body>
