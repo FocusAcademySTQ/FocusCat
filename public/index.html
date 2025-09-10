@@ -339,7 +339,6 @@ function loadMedia(qid, kind, file){
   reader.onload = ()=>{
     const q=exam.questions.find(x=>x.id===qid); if(!q) return;
     if(kind==='img') q.media.imgData = reader.result;
-    if(kind==='audio') q.media.audioData = reader.result;
     renderQuestions();
   };
   reader.readAsDataURL(file);
@@ -547,7 +546,6 @@ function startExam(){
     const el = document.createElement('div'); el.className='q-item';
     let media = '';
     if(q.media?.imgData) media += `<div><img alt="" src="${q.media.imgData}" style="max-width:100%; border:1px solid var(--hair); border-radius:12px; margin:6px 0"></div>`;
-    if(q.media?.audioData) media += `<div><audio controls src="${q.media.audioData}" style="width:100%"></audio></div>`;
 
     let body='';
     if(q.type==='mc' || q.type==='tf'){
