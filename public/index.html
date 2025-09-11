@@ -719,7 +719,7 @@ async function publishExam(){
     });
     if(!res.ok) throw new Error(await res.text());
     const data = await res.json();
-    exam.id = data.examId;
+    exam._id = data.examId;
     localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
     $('#publishInfo').innerHTML = `<span class="success">Publicat! PIN: <strong>${data.pin}</strong> &middot; examId: <span class="mono">${data.examId}</span></span>`;
     $('#examIdLookup').value = data.examId;
@@ -754,7 +754,7 @@ function showExamDetails(x){
     <div><strong>Instruccions:</strong> ${escapeHtml(x.desc||'')}</div>
     <div><strong>Preguntes:</strong> ${x.questions?x.questions.length:0}</div>
     <div><strong>PIN:</strong> ${escapeHtml(x.pin||'(no definit)')}</div>
-    <div><strong>examId:</strong> <span class="mono">${escapeHtml(x.id||'')}</span></div>
+    <div><strong>examId:</strong> <span class="mono">${escapeHtml(x._id||'')}</span></div>
   `;
 }
 function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
@@ -899,7 +899,7 @@ async function submitExam(){
   const group = $('#studentGroup').value.trim();
 
   lastResult = {
-    examId: loadedExam.id,
+    examId: loadedExam._id,
     pin: loadedPin,
     student:{name, group},
     totals:{score, max},
@@ -994,7 +994,7 @@ async function listExams(){
 function filterLibrary(){
   const q = ($('#libSearch').value||'').toLowerCase().trim();
   const filtered = libraryItems.filter(x=>{
-    return (x.title||'').toLowerCase().includes(q) || (x.id||'').toLowerCase().includes(q);
+    return (x.title||'').toLowerCase().includes(q) || (x_.id||'').toLowerCase().includes(q);
   });
   renderLibrary(filtered);
 }
@@ -1010,8 +1010,8 @@ function renderLibrary(items){
       <td class="mono">${escapeHtml(x.id||'')}</td>
       <td>${escapeHtml(formatDate(x.createdAt||''))}</td>
       <td class="flex">
-        <button class="btn small" onclick="loadExamById('${x.id}')">Carrega</button>
-        <button class="btn small secondary" onclick="cloneExam('${x.id}')">Clona (nou PIN)</button>
+        <button class="btn small" onclick="loadExamById('${x._id}')">Carrega</button>
+        <button class="btn small secondary" onclick="cloneExam('${x._id}')">Clona (nou PIN)</button>
         <button class="btn small secondary" onclick="copyToClipboard('${x.pin||''}')">Copia PIN</button>
       </td>
     </tr>`;
