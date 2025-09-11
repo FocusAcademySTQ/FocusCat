@@ -107,31 +107,15 @@
   .tool{border:1px dashed var(--hair); border-radius:12px; padding:8px 12px; background:#fbfdff; cursor:pointer; font-weight:800}
   .tool:hover{outline: var(--focus)}
   .preview{
-      .preview .title{margin-bottom:4px}
+    background:#fff; border:1px solid var(--hair); border-radius:14px; padding:16px; box-shadow:var(--shadow);
+  }
+  .preview .title{margin-bottom:4px}
   .img-preview{max-width:100%; border:1px solid var(--hair); border-radius:12px; margin:6px 0}
 
   /* Modal senzill per Afegit ràpid */
   .modal{position:fixed; inset:0; background:rgba(15,23,42,.35); display:none; align-items:center; justify-content:center; z-index:50}
   .modal .panel{background:#fff; width:min(880px, 92vw); border-radius:16px; border:1px solid var(--hair); box-shadow:var(--shadow); padding:16px}
-
-  /* --- Millores editor --- */
-  .input-small{
-    width:80px; padding:6px 8px;
-    border:1px solid var(--hair); border-radius:8px;
-  }
-  .option-card{
-    display:flex; gap:8px; align-items:center;
-    padding:8px; border:1px solid var(--hair);
-    border-radius:12px; margin-bottom:6px;
-    background:#f9fafc;
-  }
-  .option-card input[type="text"]{
-    flex:1; border:none; background:transparent;
-    padding:6px 8px; border-radius:8px; outline:none;
-  }
-  .option-card:hover{background:#f1f5ff}
 </style>
-
 </head>
 <body>
 <header>
@@ -560,66 +544,58 @@ function renderSidebar(){
     list.appendChild(div);
   });
 }
-function renderEditor() {
+function renderEditor(){
   const host = $('#qEditor');
-  const q = exam.questions.find(x => x.id === selectedQId);
-  if (!q) {
-    host.innerHTML = '<div class="help">Selecciona una pregunta o afegeix-ne una.</div>';
-    return;
-  }
+  const q = exam.questions.find(x=>x.id===selectedQId);
+  if(!q){ host.innerHTML = '<div class="help">Selecciona una pregunta o afegeix-ne una.</div>'; return; }
 
   // Editors per tipus
   let inner = '';
-  if (q.type === 'mc' || q.type === 'tf') {
-    const opts = (q.options || []).map((o, i) => `
-      <div class="option-card">
-        <input type="radio" name="correct-${q.id}" ${o.correct ? 'checked' : ''} onclick="setCorrect('${q.id}', ${i})" />
-        <input type="text" value="${escapeAttr(o.text || '')}" 
-               oninput="setOptText('${q.id}', ${i}, this.value); markDirty(); renderPreview()" />
-        ${q.type === 'mc' ? `<button class="icon-btn" onclick="delOpt('${q.id}', ${i}); event.stopPropagation()">✖</button>` : ''}
+  if(q.type==='mc' || q.type==='tf'){
+    const opts = (q.options||[]).map((o,i)=>`
+      <div class="row-inline" style="align-items:center; margin-bottom:6px">
+        <input type="radio" name="correct-${q.id}" ${o.correct?'checked':''} onclick="setCorrect('${q.id}', ${i})" />
+        <input type="text" value="${escapeAttr(o.text||'')}" oninput="setOptText('${q.id}', ${i}, this.value); markDirty(); renderPreview()" />
+        ${q.type==='mc'?`<button class="btn small secondary" onclick="delOpt('${q.id}', ${i})">−</button>`:''}
       </div>
     `).join('');
-    const addBtn = q.type === 'mc' ? `<button class="btn small" onclick="addOpt('${q.id}')">+ Afegeix opció</button>` : '';
+    const addBtn = q.type==='mc'?`<button class="btn small" onclick="addOpt('${q.id}')">+ Afegir opció</button>`:'';
     inner = `
       <label>Opcions</label>
       <div>${opts}</div>
       ${addBtn}
     `;
-  } else if (q.type === 'short') {
+  } else if(q.type==='short'){
     inner = `
       <label>Resposta correcta (text)</label>
-      <input type="text" value="${escapeAttr(q.answerText || '')}" oninput="qSet('${q.id}','answerText', this.value)" />
+      <input type="text" value="${escapeAttr(q.answerText||'')}" oninput="qSet('${q.id}','answerText', this.value)" />
       <label>Altres respostes acceptables (separades per ; )</label>
-      <input type="text" value="${escapeAttr((q.accepts || []).join('; '))}" 
-             oninput="qSet('${q.id}','accepts', this.value.split(';').map(s=>s.trim()).filter(Boolean))" />
+      <input type="text" value="${escapeAttr((q.accepts||[]).join('; '))}" oninput="qSet('${q.id}','accepts', this.value.split(';').map(s=>s.trim()).filter(Boolean))" />
       <p class="help">Correcció tolerant a majúscules/espais.</p>
     `;
-  } else if (q.type === 'num') {
+  } else if(q.type==='num'){
     inner = `
       <div class="grid" style="grid-template-columns:1fr 1fr; gap:8px">
         <div>
           <label>Resposta numèrica</label>
-          <input type="text" value="${escapeAttr(q.numAnswer || '')}" 
-                 oninput="qSet('${q.id}','numAnswer', this.value)" placeholder="ex: 3.1416" />
+          <input type="text" value="${escapeAttr(q.numAnswer||'')}" oninput="qSet('${q.id}','numAnswer', this.value)" placeholder="ex: 3.1416" />
         </div>
         <div>
           <label>Tolerància (±)</label>
-          <input type="number" step="any" value="${Number(q.tolerance || 0)}" 
-                 oninput="qSet('${q.id}','tolerance', this.value)" />
+          <input type="number" step="any" value="${Number(q.tolerance||0)}" oninput="qSet('${q.id}','tolerance', this.value)" />
         </div>
       </div>
     `;
-  } else if (q.type === 'long') {
+  } else if(q.type==='long'){
     inner = `
       <label>Rúbrica (visible al docent)</label>
-      <textarea oninput="qSet('${q.id}','rubric', this.value)">${escapeHtml(q.rubric || '')}</textarea>
+      <textarea oninput="qSet('${q.id}','rubric', this.value)">${escapeHtml(q.rubric||'')}</textarea>
       <p class="help">Avaluació manual.</p>
     `;
-  } else if (q.type === 'order') {
-    const items = (q.items || []).map((t, i) => `
+  } else if(q.type==='order'){
+    const items = (q.items||[]).map((t,i)=>`
       <div class="row-inline">
-        <input type="text" value="${escapeAttr(t)}" 
-               oninput="setOrderItem('${q.id}', ${i}, this.value); markDirty(); renderPreview()" />
+        <input type="text" value="${escapeAttr(t)}" oninput="setOrderItem('${q.id}', ${i}, this.value); markDirty(); renderPreview()" />
         <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, -1)">↑</button>
         <button class="btn small secondary" onclick="swapOrder('${q.id}', ${i}, 1)">↓</button>
         <button class="btn small secondary" onclick="delOrderItem('${q.id}', ${i})">−</button>
@@ -631,8 +607,8 @@ function renderEditor() {
       <button class="btn small" onclick="addOrderItem('${q.id}')">+ Afegeix element</button>
       <p class="help">A l’alumne li mostrarem la llista barrejada.</p>
     `;
-  } else if (q.type === 'match') {
-    const left = q.left || [], right = q.right || [];
+  } else if(q.type==='match'){
+    const left = q.left||[], right = q.right||[];
     inner = `
       <div class="grid" style="grid-template-columns:1fr 1fr; gap:8px">
         <div>
@@ -650,16 +626,15 @@ function renderEditor() {
 
   host.innerHTML = `
     <div class="q-item" style="background:#fff">
-      <div class="row-inline" style="justify-content:space-between; margin-bottom:12px">
+      <div class="row-inline" style="justify-content:space-between">
         <span class="mini"><strong>${labelType(q.type)}</strong> · ID: <span class="mono">${q.id}</span></span>
         <div class="row-inline">
           <span class="mini">Punts</span>
-          <input type="number" min="0" step="0.5" value="${q.points}" class="input-small" 
-                 oninput="qSet('${q.id}','points', this.value)" />
+          <input type="number" min="0" step="0.5" value="${q.points}" style="width:100px" oninput="qSet('${q.id}','points', this.value)" />
         </div>
       </div>
       <label>Enunciat (admet $\\LaTeX$)</label>
-      <textarea oninput="qSet('${q.id}','text', this.value)" placeholder="Escriu l’enunciat...">${escapeHtml(q.text || '')}</textarea>
+      <textarea oninput="qSet('${q.id}','text', this.value)">${escapeHtml(q.text||'')}</textarea>
 
       <div class="row-inline" style="align-items:flex-end; gap:16px">
         <div>
@@ -675,14 +650,11 @@ function renderEditor() {
 
       <div class="hr"></div>
       <label>Etiquetes</label>
-      <input type="text" value="${(q.tags || []).join(', ')}" 
-             oninput="qSet('${q.id}','tags', this.value.split(',').map(s=>s.trim()).filter(Boolean))" 
-             placeholder="ex: mates, fraccions">
+      <input type="text" value="${(q.tags||[]).join(', ')}" oninput="qSet('${q.id}','tags', this.value.split(',').map(s=>s.trim()).filter(Boolean))" placeholder="ex: mates, fraccions">
     </div>
   `;
   renderPreview();
 }
-
 function renderPreview(){
   const host = $('#qPreview'); host.innerHTML='';
   const q = exam.questions.find(x=>x.id===selectedQId);
