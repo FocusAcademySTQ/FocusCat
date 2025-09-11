@@ -346,8 +346,15 @@ function showView(id){
   if(id==='student' || id==='do' || id==='result') $('#btnStudent').classList.add('active');
 }
   function askTeacherCode(){
+  // si ja està validat en aquesta sessió, no tornar a demanar
+  if(sessionStorage.getItem('teacherAuth') === 'ok'){
+    enterRole('teacher');
+    return;
+  }
+
   const code = prompt('Introdueix el codi de mestre:');
   if(code === '123'){
+    sessionStorage.setItem('teacherAuth', 'ok'); // guarda que ja s’ha autenticat
     enterRole('teacher');
   } else {
     alert('Codi incorrecte');
