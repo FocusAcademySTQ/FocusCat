@@ -127,7 +127,7 @@
     </div>
     <nav class="right">
       <button class="pill" id="btnHome" onclick="showView('home')">Inici</button>
-      <button class="pill" id="btnTeacher" onclick="enterRole('teacher')">Mestre</button>
+      <button class="pill" id="btnTeacher" onclick="askTeacherCode()">Mestre</button>
       <button class="pill" id="btnStudent" onclick="enterRole('student')">Alumne</button>
     </nav>
   </div>
@@ -140,7 +140,7 @@
       <h2 class="title">Com funciona</h2>
       <p class="muted">El/la mestre/a crea una prova i la <strong>publica al servidor</strong>. El servidor retorna un <strong>PIN</strong>. L’alumne entra el PIN i fa la prova. Els resultats es guarden al servidor.</p>
       <div class="flex">
-        <button class="btn" onclick="enterRole('teacher')">Sóc Mestre</button>
+        <button class="btn" onclick="askTeacherCode()">Sóc Mestre</button>
         <button class="btn secondary" onclick="enterRole('student')">Sóc Alumne</button>
       </div>
     </div>
@@ -280,7 +280,10 @@
       <label for="studentName">Nom i cognoms</label>
       <input id="studentName" type="text" placeholder="Ex: Marta Puig" />
       <label for="studentGroup">Grup / Classe</label>
-      <input id="studentGroup" type="text" placeholder="Ex: 5è A" />
+<select id="studentGroup">
+  <option value="Acadèmia">Acadèmia</option>
+  <option value="Arnau Cadell">Arnau Cadell</option>
+</select>
       <button class="btn" onclick="startExam()">Començar</button>
     </div>
 
@@ -341,6 +344,14 @@ function showView(id){
   if(id==='home') $('#btnHome').classList.add('active');
   if(id==='teacher'){ $('#btnTeacher').classList.add('active'); listExams(); }
   if(id==='student' || id==='do' || id==='result') $('#btnStudent').classList.add('active');
+}
+  function askTeacherCode(){
+  const code = prompt('Introdueix el codi de mestre:');
+  if(code === '123'){
+    enterRole('teacher');
+  } else {
+    alert('Codi incorrecte');
+  }
 }
 function enterRole(role){ showView(role==='teacher'?'teacher':'student'); }
 function uid(){ return Math.random().toString(36).slice(2,10); }
