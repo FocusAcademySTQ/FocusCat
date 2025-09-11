@@ -197,6 +197,7 @@ app.get('/api/results/:examId/csv', async (req, res) => {
     console.error("❌ Error exportant CSV:", err);
     res.status(500).json({ error: 'Error exportant CSV' });
   }
+}); // ✅ clau que faltava
 
 // 📌 Elimina un examen per ID
 app.delete('/api/exams/:examId', async (req, res) => {
