@@ -12,18 +12,12 @@ const client = new MongoClient(process.env.MONGO_URI);
 let exams, results;
 
 async function initDb() {
-  try {
-    await client.connect();
-    const db = client.db('focusExams'); // nom de la BD
-    exams = db.collection('exams');
-    results = db.collection('results');
-    console.log('✅ Connectat a MongoDB Atlas');
-  } catch (err) {
-    console.error('❌ Error connectant a MongoDB:', err);
-    process.exit(1);
-  }
+  await client.connect();
+  const db = client.db('focusExams'); // nom de la BD
+  exams = db.collection('exams');
+  results = db.collection('results');
+  console.log('✅ Connectat a MongoDB Atlas');
 }
-initDb();
 
 /* ==================== Middlewares ==================== */
 app.use(cors());
@@ -55,7 +49,7 @@ app.get('/api/exams/pin/:pin', async (req, res) => {
     const exam = await exams.findOne({ pin: req.params.pin });
     if (!exam) return res.status(404).json({ error: 'PIN no trobat' });
     res.json({
-      _id: exam._id,
+      _id: exam._id, // 👈 molt important per guardar resultats
       title: exam.title,
       desc: exam.desc,
       settings: exam.settings || {},
@@ -98,6 +92,7 @@ app.post('/api/exams', async (req, res) => {
     const result = await exams.insertOne(doc);
     res.json({ examId: result.insertedId, pin });
   } catch (err) {
+    console.error("❌ Error creant examen:", err);
     res.status(500).json({ error: 'Error creant examen' });
   }
 });
@@ -141,6 +136,7 @@ app.post('/api/results', async (req, res) => {
     const result = await results.insertOne(item);
     res.json({ ok: true, resultId: result.insertedId });
   } catch (err) {
+    console.error("❌ Error desant resultat:", err);
     res.status(500).json({ error: 'Error desant resultat' });
   }
 });
@@ -191,6 +187,16 @@ app.get('/api/results/:examId/csv', async (req, res) => {
 });
 
 /* ==================== Server ==================== */
-app.listen(PORT, () => {
-  console.log(`🚀 Server escoltant al port ${PORT}`);
-});
+async function start() {
+  try {
+    await initDb();
+    app.listen(PORT, () => {
+      console.log(`🚀 Server escoltant al port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("❌ No s'ha pogut inicialitzar la DB:", err);
+    process.exit(1);
+  }
+}
+
+start();
