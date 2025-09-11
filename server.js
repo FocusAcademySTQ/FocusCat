@@ -121,9 +121,9 @@ app.post('/api/results', async (req, res) => {
     }
     const exam = await exams.findOne({ _id: new ObjectId(payload.examId) });
     if (!exam) return res.status(404).json({ error: 'Examen no trobat' });
-    if (exam.pin !== payload.pin) {
-      return res.status(400).json({ error: 'PIN incorrecte' });
-    }
+    if (String(exam.pin) !== String(payload.pin)) {
+  return res.status(400).json({ error: 'PIN incorrecte' });
+}
 
     const item = {
       examId: new ObjectId(payload.examId),
