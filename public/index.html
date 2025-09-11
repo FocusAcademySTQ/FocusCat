@@ -710,30 +710,43 @@ function delOrderItem(qid,i){ const q=exam.questions.find(x=>x.id===qid); if(q){
 function swapOrder(qid,i,dir){ const q=exam.questions.find(x=>x.id===qid); if(!q) return; const j=clamp(i+dir,0,q.items.length-1); if(i===j) return; [q.items[i],q.items[j]]=[q.items[j],q.items[i]]; renderAll(); markDirty(); }
 
 /* ========= Publicació ========= */
+m() corregit 👇
+
 async function publishExam(){
   // Validació
   exam.title = $('#examTitle').value.trim();
   exam.desc = $('#examDesc').value.trim();
-  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
-  if(!exam.title || (exam.questions||[]).length===0){
-    alert('Cal un títol i almenys una pregunta.'); return;
+  exam.settings.showScoreToStudent = $('#examShowScore').value === 'yes';
+  if(!exam.title || (exam.questions||[]).length === 0){
+    alert('Cal un títol i almenys una pregunta.');
+    return;
   }
-  try{
+
+  try {
+    // ❌ Eliminem camps locals (_id o id) abans d’enviar
+    const { _id, id, ...cleanExam } = exam;
+
     const res = await fetch(API_BASE + '/api/exams', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(exam)
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify(cleanExam)
     });
     if(!res.ok) throw new Error(await res.text());
+
     const data = await res.json();
+
+    // ✅ Guardem el nou _id assignat per Mongo
     exam._id = data.examId;
     localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
-    $('#publishInfo').innerHTML = `<span class="success">Publicat! PIN: <strong>${data.pin}</strong> &middot; examId: <span class="mono">${data.examId}</span></span>`;
+
+    $('#publishInfo').innerHTML =
+      `<span class="success">Publicat! PIN: <strong>${data.pin}</strong> &middot; examId: <span class="mono">${data.examId}</span></span>`;
     $('#examIdLookup').value = data.examId;
     toast('Prova publicada');
     listExams();
-  }catch(e){
-    $('#publishInfo').innerHTML = `<span class="warn">Error en publicar: ${escapeHtml(e.message||'desconegut')}</span>`;
+  } catch(e) {
+    $('#publishInfo').innerHTML =
+      `<span class="warn">Error en publicar: ${escapeHtml(e.message||'desconegut')}</span>`;
   }
 }
 
