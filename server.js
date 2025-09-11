@@ -55,7 +55,7 @@ app.get('/api/exams/pin/:pin', async (req, res) => {
     const exam = await exams.findOne({ pin: req.params.pin });
     if (!exam) return res.status(404).json({ error: 'PIN no trobat' });
     res.json({
-      id: exam._id,
+      _id: exam._id,
       title: exam.title,
       desc: exam.desc,
       settings: exam.settings || {},
