@@ -1022,7 +1022,7 @@ async function listExams(){
 function filterLibrary(){
   const q = ($('#libSearch').value||'').toLowerCase().trim();
   const filtered = libraryItems.filter(x=>{
-    return (x.title||'').toLowerCase().includes(q) || (x_.id||'').toLowerCase().includes(q);
+    return (x.title||'').toLowerCase().includes(q) || (x._id||'').toLowerCase().includes(q);
   });
   renderLibrary(filtered);
 }
@@ -1035,7 +1035,7 @@ function renderLibrary(items){
     rows += `<tr>
       <td>${escapeHtml(x.title||'')}</td>
       <td>${escapeHtml(x.pin||'')}</td>
-      <td class="mono">${escapeHtml(x.id||'')}</td>
+      <td class="mono">${escapeHtml(x._id||'')}</td>
       <td>${escapeHtml(formatDate(x.createdAt||''))}</td>
       <td class="flex">
         <button class="btn small" onclick="loadExamById('${x._id}')">Carrega</button>
