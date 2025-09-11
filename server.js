@@ -197,6 +197,23 @@ app.get('/api/results/:examId/csv', async (req, res) => {
     console.error("❌ Error exportant CSV:", err);
     res.status(500).json({ error: 'Error exportant CSV' });
   }
+
+// 📌 Elimina un examen per ID
+app.delete('/api/exams/:examId', async (req, res) => {
+  try {
+    const examId = new ObjectId(req.params.examId);
+
+    // Esborrem l'examen
+    await exams.deleteOne({ _id: examId });
+
+    // També esborrem resultats associats
+    await results.deleteMany({ examId });
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("❌ Error eliminant examen:", err);
+    res.status(500).json({ error: 'Error eliminant examen' });
+  }
 });
 
 /* ==================== Server ==================== */
