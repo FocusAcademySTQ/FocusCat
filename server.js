@@ -26,7 +26,6 @@ app.use(morgan('dev'));
 app.use(express.static('public'));
 
 /* ==================== Helpers ==================== */
-const genId = () => crypto.randomBytes(8).toString('hex');
 const genPin = () => String(Math.floor(100000 + Math.random() * 900000));
 
 /* ==================== API ==================== */
@@ -86,7 +85,7 @@ app.post('/api/exams', async (req, res) => {
 
     const doc = {
       ...exam,
-      pin,
+      pin: String(pin), // 👈 assegurem que sempre és string
       createdAt: new Date().toISOString()
     };
     const result = await exams.insertOne(doc);
@@ -122,8 +121,8 @@ app.post('/api/results', async (req, res) => {
     const exam = await exams.findOne({ _id: new ObjectId(payload.examId) });
     if (!exam) return res.status(404).json({ error: 'Examen no trobat' });
     if (String(exam.pin) !== String(payload.pin)) {
-  return res.status(400).json({ error: 'PIN incorrecte' });
-}
+      return res.status(400).json({ error: 'PIN incorrecte' });
+    }
 
     const item = {
       examId: new ObjectId(payload.examId),
