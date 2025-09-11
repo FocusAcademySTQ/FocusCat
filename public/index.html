@@ -1048,6 +1048,7 @@ function renderLibrary(items){
         <button class="btn small" onclick="loadExamById('${x._id}')">Carrega</button>
         <button class="btn small secondary" onclick="cloneExam('${x._id}')">Clona (nou PIN)</button>
         <button class="btn small secondary" onclick="copyToClipboard('${x.pin||''}')">Copia PIN</button>
+        <button class="btn small bad" onclick="deleteExam('${x.id}')">🗑️ Elimina</button>
       </td>
     </tr>`;
   });
@@ -1168,6 +1169,21 @@ function restoreExam(){
   }catch(e){ renderAll(); }
 }
 window.addEventListener('load', ()=>{ restoreExam(); });
+
+/* ========= Eliminar examen ========= */
+async function deleteExam(id) {
+  if (!confirm('Segur que vols eliminar aquest examen?')) return;
+  try {
+    const res = await fetch(API_BASE + '/api/exams/' + encodeURIComponent(id), {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error(await res.text());
+    toast('Examen eliminat');
+    listExams(); // refresca la biblioteca
+  } catch (e) {
+    alert('Error eliminant examen: ' + (e.message || ''));
+  }
+}
 </script>
 </body>
 </html>
