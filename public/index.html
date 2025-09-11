@@ -753,7 +753,7 @@ async function loadExamByPin(){
     
     // ✅ Guardem l’examen i el PIN real que ve del servidor
     loadedExam = obj;
-    loadedPin = obj.pin; 
+    loadedPin = String(obj.pin); 
 
     showExamDetails(obj);
     $('#loadStatus').innerHTML = `<span class="success">Prova carregada!</span>`;
@@ -920,7 +920,7 @@ async function submitExam(){
 
   lastResult = {
     examId: loadedExam._id,   // 👈 Mongo _id
-    pin: loadedPin,           // 👈 el PIN que hem guardat a loadExamByPin()
+    pin: String(loadedPin),           // 👈 el PIN que hem guardat a loadExamByPin()
     student:{name, group},
     totals:{score, max},
     responses: answers
