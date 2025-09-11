@@ -38,6 +38,7 @@ app.get('/api/exams', async (req, res) => {
       .toArray();
     res.json(items);
   } catch (err) {
+    console.error("❌ Error llistant exàmens:", err);
     res.status(500).json({ error: 'Error llistant exàmens' });
   }
 });
@@ -45,7 +46,7 @@ app.get('/api/exams', async (req, res) => {
 // 📌 Obté examen per PIN (alumne)
 app.get('/api/exams/pin/:pin', async (req, res) => {
   try {
-    const exam = await exams.findOne({ pin: req.params.pin });
+    const exam = await exams.findOne({ pin: String(req.params.pin) });
     if (!exam) return res.status(404).json({ error: 'PIN no trobat' });
     res.json({
       _id: exam._id, // 👈 molt important per guardar resultats
@@ -53,9 +54,10 @@ app.get('/api/exams/pin/:pin', async (req, res) => {
       desc: exam.desc,
       settings: exam.settings || {},
       questions: exam.questions || [],
-      pin: exam.pin
+      pin: String(exam.pin) // assegurem que sempre sigui string
     });
   } catch (err) {
+    console.error("❌ Error obtenint examen per PIN:", err);
     res.status(500).json({ error: 'Error obtenint examen per PIN' });
   }
 });
@@ -67,6 +69,7 @@ app.get('/api/exams/:examId', async (req, res) => {
     if (!exam) return res.status(404).json({ error: 'Examen no trobat' });
     res.json(exam);
   } catch (err) {
+    console.error("❌ Error obtenint examen per ID:", err);
     res.status(500).json({ error: 'Error obtenint examen per ID' });
   }
 });
@@ -74,6 +77,7 @@ app.get('/api/exams/:examId', async (req, res) => {
 // 📌 Crea/publica examen
 app.post('/api/exams', async (req, res) => {
   try {
+    console.log("➡️ Rebut nou examen:", req.body); // debug
     const exam = req.body;
     if (!exam?.questions || !exam.questions.length) {
       return res.status(400).json({ error: 'Cal almenys una pregunta' });
@@ -81,7 +85,7 @@ app.post('/api/exams', async (req, res) => {
     let pin;
     do {
       pin = genPin();
-    } while (await exams.findOne({ pin }));
+    } while (await exams.findOne({ pin: String(pin) }));
 
     const doc = {
       ...exam,
@@ -89,9 +93,9 @@ app.post('/api/exams', async (req, res) => {
       createdAt: new Date().toISOString()
     };
     const result = await exams.insertOne(doc);
-    res.json({ examId: result.insertedId, pin });
+    res.json({ examId: result.insertedId, pin: String(pin) });
   } catch (err) {
-    console.error("❌ Error creant examen:", err);
+    console.error("❌ Error creant examen:", err, "Body rebut:", req.body);
     res.status(500).json({ error: 'Error creant examen' });
   }
 });
@@ -107,6 +111,7 @@ app.put('/api/exams/:examId', async (req, res) => {
     );
     res.json({ ok: true });
   } catch (err) {
+    console.error("❌ Error actualitzant examen:", err);
     res.status(500).json({ error: 'Error actualitzant examen' });
   }
 });
@@ -120,7 +125,10 @@ app.post('/api/results', async (req, res) => {
     }
     const exam = await exams.findOne({ _id: new ObjectId(payload.examId) });
     if (!exam) return res.status(404).json({ error: 'Examen no trobat' });
+
+    // 👇 comparem sempre com a string
     if (String(exam.pin) !== String(payload.pin)) {
+      console.warn("⚠️ PIN incorrecte:", { examPin: exam.pin, payloadPin: payload.pin });
       return res.status(400).json({ error: 'PIN incorrecte' });
     }
 
@@ -135,7 +143,7 @@ app.post('/api/results', async (req, res) => {
     const result = await results.insertOne(item);
     res.json({ ok: true, resultId: result.insertedId });
   } catch (err) {
-    console.error("❌ Error desant resultat:", err);
+    console.error("❌ Error desant resultat:", err, "Payload rebut:", req.body);
     res.status(500).json({ error: 'Error desant resultat' });
   }
 });
@@ -147,6 +155,7 @@ app.get('/api/results/:examId', async (req, res) => {
     const items = await results.find({ examId }).toArray();
     res.json({ examId, items });
   } catch (err) {
+    console.error("❌ Error obtenint resultats:", err);
     res.status(500).json({ error: 'Error obtenint resultats' });
   }
 });
@@ -181,6 +190,7 @@ app.get('/api/results/:examId/csv', async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="resultats_${req.params.examId}.csv"`);
     res.send('\uFEFF' + lines.join('\n'));
   } catch (err) {
+    console.error("❌ Error exportant CSV:", err);
     res.status(500).json({ error: 'Error exportant CSV' });
   }
 });
