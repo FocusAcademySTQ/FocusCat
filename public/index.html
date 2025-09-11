@@ -742,13 +742,19 @@ let loadedExam = null;
 let loadedPin = null;
 async function loadExamByPin(){
   const pin = ($('#pinInput').value||'').trim();
-  if(!/^\d{6}$/.test(pin)){ alert('Escriu un PIN de 6 dígits.'); return; }
+  if(!/^\d{6}$/.test(pin)){ 
+    alert('Escriu un PIN de 6 dígits.'); 
+    return; 
+  }
   try{
     const res = await fetch(API_BASE + '/api/exams/pin/' + encodeURIComponent(pin));
     if(!res.ok) throw new Error('PIN no trobat');
     const obj = await res.json();
+    
+    // ✅ Guardem l’examen i el PIN real que ve del servidor
     loadedExam = obj;
-    loadedPin = obj.pin;
+    loadedPin = obj.pin; 
+
     showExamDetails(obj);
     $('#loadStatus').innerHTML = `<span class="success">Prova carregada!</span>`;
   }catch(e){
@@ -850,27 +856,31 @@ function ordSwap(qid,i,dir){
 let lastResult = null;
 async function submitExam(){
   const answers = [];
-  let score=0, max=0;
+  let score = 0, max = 0;
 
   const ids = loadedExam.__runtimeOrder || (loadedExam.questions||[]).map(q=>q.id);
   const qById = loadedExam.__qmap || Object.fromEntries((loadedExam.questions||[]).map(q=>[q.id,q]));
   const rendered = loadedExam.__rendered || {};
 
   ids.forEach(id=>{
-    const q = qById[id]; const rq = rendered[id] || q;
+    const q = qById[id]; 
+    const rq = rendered[id] || q;
     max += Number(q.points)||1;
+
     if(q.type==='mc' || q.type==='tf'){
       const sel = document.querySelector(`input[name="ans-${q.id}"]:checked`);
-      const idx = sel? Number(sel.value): null;
+      const idx = sel ? Number(sel.value) : null;
       const isCorrect = (idx!=null) ? (q.options[idx]?.correct===true) : false;
       if(isCorrect) score += Number(q.points)||1;
       answers.push({qid:q.id, type:q.type, answer: idx!=null ? (q.options[idx]?.text||'') : '', correct:isCorrect});
+
     } else if(q.type==='short'){
       const val = ($('#ans-'+q.id)?.value||'').trim();
       const norm = s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
       const ok = val ? ([q.answerText||'', ...(q.accepts||[])].some(acc=>norm(acc)===norm(val))) : false;
       if(ok) score += Number(q.points)||1;
       answers.push({qid:q.id, type:q.type, answer: val, correct: ok});
+
     } else if(q.type==='num'){
       const valRaw = ($('#ans-'+q.id)?.value||'').trim();
       const val = Number(valRaw.replace(',','.'));
@@ -879,15 +889,18 @@ async function submitExam(){
       const ok = Number.isFinite(val) && Math.abs(val-ans) <= Math.abs(tol);
       if(ok) score += Number(q.points)||1;
       answers.push({qid:q.id, type:q.type, answer: valRaw, correct: ok});
+
     } else if(q.type==='long'){
       const val = ($('#ans-'+q.id)?.value||'').trim();
       answers.push({qid:q.id, type:q.type, answer: val, correct: null});
+
     } else if(q.type==='order'){
       const wrap = $('#ord-'+q.id);
       const got = Array.from(wrap.querySelectorAll('input[type="text"]')).map(i=>i.value);
       const ok = JSON.stringify(got) === JSON.stringify(q.items||[]);
       if(ok) score += Number(q.points)||1;
       answers.push({qid:q.id, type:q.type, answer: got.join(' | '), correct: ok});
+
     } else if(q.type==='match'){
       const left = q.left||[], right = rq.__runtimeRight || (q.right||[]);
       const picks = left.map((_,i)=>Number(($('#match-'+q.id+'-'+i)?.value||0)));
@@ -906,20 +919,20 @@ async function submitExam(){
   const group = $('#studentGroup').value.trim();
 
   lastResult = {
-    examId: loadedExam._id,
-    pin: loadedPin,
+    examId: loadedExam._id,   // 👈 Mongo _id
+    pin: loadedPin,           // 👈 el PIN que hem guardat a loadExamByPin()
     student:{name, group},
     totals:{score, max},
     responses: answers
   };
-  
-  // 👉 DEBUG: comprovar què estem enviant
+
+  // 👉 DEBUG: veure què enviem
   console.log("Enviant resultat:", {
     examId: loadedExam._id,
     pin: loadedPin,
     expectedPin: loadedExam.pin
   });
-  
+
   const showScore = loadedExam.settings?.showScoreToStudent !== false;
   $('#studentScoreInfo').innerHTML = showScore ?
     `Has fet <strong>${score}</strong> de <strong>${max}</strong> punts.` :
