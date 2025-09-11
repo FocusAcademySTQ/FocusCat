@@ -748,7 +748,7 @@ async function loadExamByPin(){
     if(!res.ok) throw new Error('PIN no trobat');
     const obj = await res.json();
     loadedExam = obj;
-    loadedPin = pin;
+    loadedPin = obj.pin;
     showExamDetails(obj);
     $('#loadStatus').innerHTML = `<span class="success">Prova carregada!</span>`;
   }catch(e){
@@ -912,6 +912,14 @@ async function submitExam(){
     totals:{score, max},
     responses: answers
   };
+  
+  // 👉 DEBUG: comprovar què estem enviant
+  console.log("Enviant resultat:", {
+    examId: loadedExam._id,
+    pin: loadedPin,
+    expectedPin: loadedExam.pin
+  });
+  
   const showScore = loadedExam.settings?.showScoreToStudent !== false;
   $('#studentScoreInfo').innerHTML = showScore ?
     `Has fet <strong>${score}</strong> de <strong>${max}</strong> punts.` :
