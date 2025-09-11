@@ -87,12 +87,15 @@ app.post('/api/exams', async (req, res) => {
       pin = genPin();
     } while (await exams.findOne({ pin: String(pin) }));
 
-    const { _id, id, ...rest } = exam;  // ❌ eliminem camps locals que no han d'anar a Mongo
-const doc = {
-  ...rest,
-  pin: String(pin),
-  createdAt: new Date().toISOString()
-};
+    // ❌ eliminem _id i id si vénen del client
+    const { _id, id, ...rest } = exam;
+
+    const doc = {
+      ...rest,
+      pin: String(pin), // 👈 assegurem que sempre és string
+      createdAt: new Date().toISOString()
+    };
+
     const result = await exams.insertOne(doc);
     res.json({ examId: result.insertedId, pin: String(pin) });
   } catch (err) {
