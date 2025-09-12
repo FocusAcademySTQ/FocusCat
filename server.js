@@ -28,18 +28,49 @@ app.use(express.static('public'));
 /* ==================== Helpers ==================== */
 const genPin = () => String(Math.floor(100000 + Math.random() * 900000));
 
+function cleanSubject(s) {
+  if (typeof s !== 'string') return '';
+  return s.trim().slice(0, 64); // límit raonable
+}
+
 /* ==================== API ==================== */
 
-// 📌 Llista d’exàmens (biblioteca)
+// 📌 Llista d’exàmens (biblioteca) amb filtres opcions ?subject= & ?q=
 app.get('/api/exams', async (req, res) => {
   try {
-    const items = await exams.find({}, { projection: { questions: 0 } })
+    const { subject, q } = req.query;
+    const filter = {};
+
+    if (subject) filter.subject = String(subject);
+
+    if (q) {
+      const query = String(q).trim();
+      const or = [{ title: { $regex: query, $options: 'i' } }];
+      if (ObjectId.isValid(query)) or.push({ _id: new ObjectId(query) });
+      filter.$or = or;
+    }
+
+    const items = await exams.find(filter, { projection: { questions: 0 } })
       .sort({ createdAt: -1 })
       .toArray();
+
     res.json(items);
   } catch (err) {
-    console.error("❌ Error llistant exàmens:", err);
+    console.error('❌ Error llistant exàmens:', err);
     res.status(500).json({ error: 'Error llistant exàmens' });
+  }
+});
+
+// 📌 Llista d’assignatures disponibles (distinct)
+app.get('/api/exams/subjects', async (_req, res) => {
+  try {
+    const subjects = (await exams.distinct('subject'))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+    res.json({ subjects });
+  } catch (err) {
+    console.error('❌ Error obtenint assignatures:', err);
+    res.status(500).json({ error: 'Error obtenint assignatures' });
   }
 });
 
@@ -52,12 +83,13 @@ app.get('/api/exams/pin/:pin', async (req, res) => {
       _id: exam._id, // 👈 molt important per guardar resultats
       title: exam.title,
       desc: exam.desc,
+      subject: exam.subject || '',
       settings: exam.settings || {},
       questions: exam.questions || [],
       pin: String(exam.pin) // assegurem que sempre sigui string
     });
   } catch (err) {
-    console.error("❌ Error obtenint examen per PIN:", err);
+    console.error('❌ Error obtenint examen per PIN:', err);
     res.status(500).json({ error: 'Error obtenint examen per PIN' });
   }
 });
@@ -69,7 +101,7 @@ app.get('/api/exams/:examId', async (req, res) => {
     if (!exam) return res.status(404).json({ error: 'Examen no trobat' });
     res.json(exam);
   } catch (err) {
-    console.error("❌ Error obtenint examen per ID:", err);
+    console.error('❌ Error obtenint examen per ID:', err);
     res.status(500).json({ error: 'Error obtenint examen per ID' });
   }
 });
@@ -77,45 +109,53 @@ app.get('/api/exams/:examId', async (req, res) => {
 // 📌 Crea/publica examen
 app.post('/api/exams', async (req, res) => {
   try {
-    console.log("➡️ Rebut nou examen:", req.body); // debug
-    const exam = req.body;
-    if (!exam?.questions || !exam.questions.length) {
+    console.log('➡️ Rebut nou examen:', req.body); // debug
+    const body = req.body;
+
+    if (!body?.questions || !body.questions.length) {
       return res.status(400).json({ error: 'Cal almenys una pregunta' });
     }
+
     let pin;
     do {
       pin = genPin();
     } while (await exams.findOne({ pin: String(pin) }));
 
     // ❌ eliminem _id i id si vénen del client
-    const { _id, id, ...rest } = exam;
+    const { _id, id, ...rest } = body;
 
     const doc = {
       ...rest,
-      pin: String(pin), // 👈 assegurem que sempre és string
+      subject: cleanSubject(rest.subject || ''), // 👈 assignatura
+      pin: String(pin),                          // 👈 sempre string
       createdAt: new Date().toISOString()
     };
 
     const result = await exams.insertOne(doc);
     res.json({ examId: result.insertedId, pin: String(pin) });
   } catch (err) {
-    console.error("❌ Error creant examen:", err, "Body rebut:", req.body);
+    console.error('❌ Error creant examen:', err, 'Body rebut:', req.body);
     res.status(500).json({ error: 'Error creant examen' });
   }
 });
 
-// 📌 Actualitza examen
+// 📌 Actualitza examen (inclou subject)
 app.put('/api/exams/:examId', async (req, res) => {
   try {
     const { examId } = req.params;
     const update = { ...req.body, updatedAt: new Date().toISOString() };
+
+    if ('subject' in update) {
+      update.subject = cleanSubject(update.subject);
+    }
+
     await exams.updateOne(
       { _id: new ObjectId(examId) },
       { $set: update }
     );
     res.json({ ok: true });
   } catch (err) {
-    console.error("❌ Error actualitzant examen:", err);
+    console.error('❌ Error actualitzant examen:', err);
     res.status(500).json({ error: 'Error actualitzant examen' });
   }
 });
@@ -132,7 +172,7 @@ app.post('/api/results', async (req, res) => {
 
     // 👇 comparem sempre com a string
     if (String(exam.pin) !== String(payload.pin)) {
-      console.warn("⚠️ PIN incorrecte:", { examPin: exam.pin, payloadPin: payload.pin });
+      console.warn('⚠️ PIN incorrecte:', { examPin: exam.pin, payloadPin: payload.pin });
       return res.status(400).json({ error: 'PIN incorrecte' });
     }
 
@@ -147,7 +187,7 @@ app.post('/api/results', async (req, res) => {
     const result = await results.insertOne(item);
     res.json({ ok: true, resultId: result.insertedId });
   } catch (err) {
-    console.error("❌ Error desant resultat:", err, "Payload rebut:", req.body);
+    console.error('❌ Error desant resultat:', err, 'Payload rebut:', req.body);
     res.status(500).json({ error: 'Error desant resultat' });
   }
 });
@@ -159,7 +199,7 @@ app.get('/api/results/:examId', async (req, res) => {
     const items = await results.find({ examId }).toArray();
     res.json({ examId, items });
   } catch (err) {
-    console.error("❌ Error obtenint resultats:", err);
+    console.error('❌ Error obtenint resultats:', err);
     res.status(500).json({ error: 'Error obtenint resultats' });
   }
 });
@@ -194,25 +234,22 @@ app.get('/api/results/:examId/csv', async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="resultats_${req.params.examId}.csv"`);
     res.send('\uFEFF' + lines.join('\n'));
   } catch (err) {
-    console.error("❌ Error exportant CSV:", err);
+    console.error('❌ Error exportant CSV:', err);
     res.status(500).json({ error: 'Error exportant CSV' });
   }
 }); // ✅ clau que faltava
 
-// 📌 Elimina un examen per ID
+// 📌 Elimina un examen per ID (i els seus resultats)
 app.delete('/api/exams/:examId', async (req, res) => {
   try {
     const examId = new ObjectId(req.params.examId);
 
-    // Esborrem l'examen
-    await exams.deleteOne({ _id: examId });
-
-    // També esborrem resultats associats
-    await results.deleteMany({ examId });
+    await exams.deleteOne({ _id: examId });      // examen
+    await results.deleteMany({ examId });        // resultats associats
 
     res.json({ ok: true });
   } catch (err) {
-    console.error("❌ Error eliminant examen:", err);
+    console.error('❌ Error eliminant examen:', err);
     res.status(500).json({ error: 'Error eliminant examen' });
   }
 });
