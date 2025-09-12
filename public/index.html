@@ -246,8 +246,8 @@
     <h3 class="title">Biblioteca d’exàmens</h3>
     <p class="muted">Exàmens guardats al servidor per reutilitzar-los o clonar-los amb un nou PIN.</p>
     <div class="row-inline">
-      <input id="libSearch" type="text" placeholder="Cerca per títol o examId…" oninput="filterLibrary()" />
-      <select id="libSubjectFilter" onchange="filterLibrary()">
+      <input id="libSearch" type="text" placeholder="Cerca..." oninput="listExams()" />
+<select id="libSubjectFilter" onchange="listExams()">
         <option value="">Totes les assignatures</option>
         <option value="català">Català</option>
         <option value="castellà">Castellà</option>
@@ -1046,13 +1046,6 @@ async function listExams() {
   }
 }
 
-function filterLibrary(){
-  const q = ($('#libSearch').value||'').toLowerCase().trim();
-  const filtered = libraryItems.filter(x=>{
-    return (x.title||'').toLowerCase().includes(q) || (x._id||'').toLowerCase().includes(q);
-  });
-  renderLibrary(filtered);
-}
 function renderLibrary(items){
   const tbl = $('#libraryTable');
   if(!items.length){ tbl.innerHTML=''; return; }
