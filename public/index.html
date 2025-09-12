@@ -157,6 +157,21 @@
           <input id="examTitle" type="text" placeholder="Ex: Comprensió lectora · 4t" oninput="lazySaveExam(); markDirty()" />
         </div>
         <div>
+  <label for="examSubject" style="margin-top:0">Assignatura</label>
+  <select id="examSubject" onchange="lazySaveExam(); markDirty()">
+    <option value="">— Selecciona —</option>
+    <option value="català">Català</option>
+    <option value="castellà">Castellà</option>
+    <option value="anglès">Anglès</option>
+    <option value="mates">Matemàtiques</option>
+    <option value="fisica">Física</option>
+    <option value="quimica">Química</option>
+    <option value="historia">Història</option>
+    <option value="biologia">Biologia</option>
+    <!-- Pots ampliar segons vulguis -->
+  </select>
+      </div>
+        <div>
           <label for="examShowScore" style="margin-top:0">Mostrar nota a l’alumne?</label>
           <select id="examShowScore" onchange="lazySaveExam(); markDirty()">
             <option value="yes">Sí</option>
@@ -226,21 +241,33 @@
       </div>
 
       <!-- LIBRARY TAB -->
-      <div id="tab-library" class="tab-content">
-        <div class="card">
-          <h3 class="title">Biblioteca d’exàmens</h3>
-          <p class="muted">Exàmens guardats al servidor per reutilitzar-los o clonar-los amb un nou PIN.</p>
-          <div class="row-inline">
-            <input id="libSearch" type="text" placeholder="Cerca per títol o examId…" oninput="filterLibrary()" />
-            <button class="btn small" id="libRefreshBtn" onclick="listExams()">Actualitza</button>
-          </div>
-          <div class="hr"></div>
-          <div style="max-height:420px; overflow:auto; margin-top:10px">
-            <table class="table" id="libraryTable"></table>
-          </div>
-          <p id="libraryInfo" class="help"></p>
-        </div>
-      </div>
+<div id="tab-library" class="tab-content">
+  <div class="card">
+    <h3 class="title">Biblioteca d’exàmens</h3>
+    <p class="muted">Exàmens guardats al servidor per reutilitzar-los o clonar-los amb un nou PIN.</p>
+    <div class="row-inline">
+      <input id="libSearch" type="text" placeholder="Cerca per títol o examId…" oninput="filterLibrary()" />
+      <select id="libSubjectFilter" onchange="filterLibrary()">
+        <option value="">Totes les assignatures</option>
+        <option value="català">Català</option>
+        <option value="castellà">Castellà</option>
+        <option value="anglès">Anglès</option>
+        <option value="mates">Matemàtiques</option>
+        <option value="fisica">Física</option>
+        <option value="quimica">Química</option>
+        <option value="historia">Història</option>
+        <option value="biologia">Biologia</option>
+      </select>
+      <button class="btn small" id="libRefreshBtn" onclick="listExams()">Actualitza</button>
+    </div>
+    <div class="hr"></div>
+    <div style="max-height:420px; overflow:auto; margin-top:10px">
+      <table class="table" id="libraryTable"></table>
+    </div>
+    <p id="libraryInfo" class="help"></p>
+  </div>
+</div>
+
 
       <!-- RESULTS TAB -->
       <div id="tab-results" class="tab-content">
