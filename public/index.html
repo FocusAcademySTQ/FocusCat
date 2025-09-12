@@ -1023,21 +1023,29 @@ function downloadCSV(){
 
 /* ========= Biblioteca (mestre) ========= */
 let libraryItems = [];
-async function listExams(){
-  try{
+async function listExams() {
+  try {
     const btn = $('#libRefreshBtn'); if(btn) btn.disabled = true;
-    const res = await fetch(API_BASE + '/api/exams');
-    if(!res.ok) throw new Error('No s’ha pogut llistar exàmens. Assegura’t que el servidor té GET /api/exams');
+
+    const subj = ($('#libSubjectFilter')?.value || '').trim();
+    const q = ($('#libSearch')?.value || '').trim();
+    const params = new URLSearchParams();
+    if (subj) params.set('subject', subj);
+    if (q) params.set('q', q);
+
+    const res = await fetch(API_BASE + '/api/exams?' + params.toString());
+    if(!res.ok) throw new Error('No s’ha pogut llistar exàmens');
     libraryItems = await res.json();
     renderLibrary(libraryItems);
     $('#libraryInfo').textContent = `${libraryItems.length} exàmens`;
-  }catch(e){
+  } catch (e) {
     $('#libraryInfo').innerHTML = `<span class="warn">${escapeHtml(e.message||'Error desconegut')}</span>`;
     $('#libraryTable').innerHTML = '';
-  }finally{
+  } finally {
     const btn = $('#libRefreshBtn'); if(btn) btn.disabled = false;
   }
 }
+
 function filterLibrary(){
   const q = ($('#libSearch').value||'').toLowerCase().trim();
   const filtered = libraryItems.filter(x=>{
