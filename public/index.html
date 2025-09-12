@@ -1060,7 +1060,7 @@ function renderLibrary(items){
         <button class="btn small" onclick="loadExamById('${x._id}')">Carrega</button>
         <button class="btn small secondary" onclick="cloneExam('${x._id}')">Clona (nou PIN)</button>
         <button class="btn small secondary" onclick="copyToClipboard('${x.pin||''}')">Copia PIN</button>
-        <button class="btn small bad" onclick="deleteExam('${x.id}')">🗑️ Elimina</button>
+        <button class="btn small bad" onclick="deleteExam('${x._id}')">🗑️ Elimina</button>
       </td>
     </tr>`;
   });
