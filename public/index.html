@@ -317,21 +317,6 @@
     </div>
   </section>
 </main>
-
-<!-- Modal Afegit ràpid -->
-<div id="qaModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="qaTitle">
-  <div class="panel">
-    <h3 id="qaTitle" class="title">Afegit ràpid</h3>
-    <p class="muted">Una per línia. Marca la correcta amb * a les de tipus “mc”.</p>
-    <textarea id="qaInput" style="width:100%; min-height:180px" placeholder="mc; Capital de França? | París* | Lyon | Marsella&#10;tf; El 12 és parell | vertader&#10;short; 5+7 = ? | 12 | dotze&#10;num; π ≈ ? | 3.1416 | 0.001&#10;order; Ordena | 2 | 5 | 9&#10;match; Relaciona | gos - mamífer | granota - amfibi"></textarea>
-    <div class="hr"></div>
-    <div class="row-inline" style="justify-content:flex-end">
-      <button class="btn secondary" onclick="closeQuickAddModal()">Cancel·la</button>
-      <button class="btn" onclick="applyQuickAddModal()">Afegeix</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ========= Config ========= */
 const API_BASE = ''; // mateix host (reverse proxy / estàtic). Si cal: 'http://localhost:3000'
