@@ -394,7 +394,7 @@ function escapeAttr(s){ return String(s||'').replaceAll('"','&quot;'); }
 function formatDate(s){ try{ return new Date(s).toLocaleString(); }catch(_){ return s||''; } }
 
 /* ========= Estat i model ========= */
-let exam = { id:null, title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+let exam = { id:null, subject:'', title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
 let selectedQId = null;
 let dirty = false;
 function markDirty(){ dirty = true; $('#saveDot').classList.remove('ok'); $('#saveDot').classList.add('dirty'); }
@@ -439,6 +439,7 @@ function lazySaveExam(){ saveExam(false); }
 function saveExam(feedback=false){
   exam.title = $('#examTitle').value.trim();
   exam.desc = $('#examDesc').value.trim();
+  exam.subject = $('#examSubject').value || ''; 
   exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
   localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
   dirty = false; $('#saveDot').classList.remove('dirty'); $('#saveDot').classList.add('ok');
@@ -453,7 +454,7 @@ function clearExam(){
   if(confirm('Vols buidar la prova actual?')){
     exam = { id:null, title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
     selectedQId = null;
-    $('#examTitle').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes'; $('#examShuffle').checked=false; $('#publishInfo').textContent='';
+    $('#examTitle').value=''; $('#examSubject').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes'; $('#examShuffle').checked=false; $('#publishInfo').textContent='';
     renderAll(); markDirty();
   }
 }
@@ -760,7 +761,7 @@ async function publishExam(){
 let loadedExam = null;
 let loadedPin = null;
 async function loadExamByPin(){
-  const pin = ($('#pinInput').value||'').trim();
+  const pin = ($('#pinInput').value||'').trim(); $('#examSubject').value = exam.subject || '';
   if(!/^\d{6}$/.test(pin)){ 
     alert('Escriu un PIN de 6 dígits.'); 
     return; 
@@ -1097,6 +1098,7 @@ async function cloneExam(id){
     const body = {
       title: src.title||'',
       desc: src.desc||'',
+      subject: src.subject || '', 
       settings: src.settings||{showScoreToStudent:true, shuffle:false},
       questions: src.questions||[]
     };
@@ -1172,6 +1174,7 @@ function restoreExam(){
       exam = JSON.parse(raw);
       $('#examTitle').value = exam.title||'';
       $('#examDesc').value = exam.desc||'';
+      $('#examSubject').value = exam.subject || '';
       $('#examShowScore').value = exam.settings?.showScoreToStudent===false?'no':'yes';
       $('#examShuffle').checked = !!exam.settings?.shuffle;
       selectedQId = (exam.questions[0]||{}).id || null;
