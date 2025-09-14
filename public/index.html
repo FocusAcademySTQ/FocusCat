@@ -127,6 +127,34 @@
   .option.tf-true{background:#dcfce7; color:#166534;}
   .option.tf-false{background:#fee2e2; color:#991b1b;}
   .order-item,.match-item{padding:8px; background:#f1f5f9; border-radius:10px; margin-bottom:6px;}
+
+  /* === Toolbar millorada === */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tool {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #1e293b;
+  }
+  .tool:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+  }
+  .tool.mc     { background:#dbeafe; color:#1e40af; }
+  .tool.tf     { background:#dcfce7; color:#166534; }
+  .tool.short  { background:#f3e8ff; color:#6b21a8; }
+  .tool.num    { background:#ffedd5; color:#9a3412; }
+  .tool.long   { background:#f1f5f9; color:#334155; }
+  .tool.order  { background:#fef9c3; color:#854d0e; }
+  .tool.match  { background:#cffafe; color:#0e7490; }
 </style>
 </head>
 <body>
@@ -223,13 +251,13 @@
               <span id="qCount" class="mini"></span>
             </div>
             <div class="toolbar" style="margin-bottom:10px">
-              <button class="tool" onclick="addQuestion('mc')">+ Opció múltiple</button>
-              <button class="tool" onclick="addQuestion('tf')">V/F</button>
-              <button class="tool" onclick="addQuestion('short')">Curta</button>
-              <button class="tool" onclick="addQuestion('num')">Num</button>
-              <button class="tool" onclick="addQuestion('long')">Llarga</button>
-              <button class="tool" onclick="addQuestion('order')">Ordena</button>
-              <button class="tool" onclick="addQuestion('match')">Match</button>
+              <button class="tool mc" onclick="addQuestion('mc')">+ Opció múltiple</button>
+              <button class="tool tf" onclick="addQuestion('tf')">V/F</button>
+              <button class="tool short" onclick="addQuestion('short')">Curta</button>
+              <button class="tool num" onclick="addQuestion('num')">Num</button>
+              <button class="tool long" onclick="addQuestion('long')">Llarga</button>
+              <button class="tool order" onclick="addQuestion('order')">Ordena</button>
+              <button class="tool match" onclick="addQuestion('match')">Match</button>
             </div>
             <div id="qList"></div>
             <div class="hr"></div>
