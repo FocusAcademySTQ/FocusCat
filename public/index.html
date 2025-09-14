@@ -65,7 +65,6 @@
   .pill-tab button.active{background:#eef2ff}
 
   /* ===== Mestre: layout nou ===== */
-    /* ===== Mestre: layout nou ===== */
 .editor-grid{
   display:grid; gap:20px;
   grid-template-columns: 280px minmax(0,1fr) 360px;
@@ -99,11 +98,9 @@
   padding:20px; box-shadow:0 4px 16px rgba(0,0,0,.08);
 }
 .editor h3.title{
-  font-size:18px;
-  font-weight:700;
+  font-size:18px; font-weight:700;
   margin-bottom:16px;
-  border-bottom:1px solid #e2e8f0;
-  padding-bottom:6px;
+  border-bottom:1px solid #e2e8f0; padding-bottom:6px;
 }
 .editor .section{
   margin-bottom:20px;
@@ -112,12 +109,23 @@
   margin:0 0 8px; font-size:15px; color:#334155;
   border-bottom:1px solid #e2e8f0; padding-bottom:4px;
 }
-.editor textarea, .editor input[type="text"], .editor input[type="number"]{
-  width:100%; padding:10px 12px; border:1px solid #cbd5e1;
-  border-radius:12px; font-size:14px; margin-bottom:10px;
+.editor label{
+  font-size:14px; font-weight:600; margin-top:12px; color:#334155;
 }
-.editor textarea:focus, .editor input:focus{
-  outline:none; border-color:#3b82f6;
+.editor textarea,
+.editor input[type="text"],
+.editor input[type="number"]{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  font-size:14px;
+  margin-bottom:10px;
+}
+.editor textarea:focus,
+.editor input:focus{
+  outline:none;
+  border-color:#3b82f6;
   box-shadow:0 0 0 3px rgba(59,130,246,.2);
 }
 
@@ -125,8 +133,8 @@
 .editor .toolbar{
   display:grid;
   grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
-  gap:10px;
-  margin-bottom:16px;
+  gap:12px;
+  margin-bottom:20px;
 }
 .tool{
   border:none;
@@ -134,15 +142,15 @@
   padding:14px 12px;
   font-weight:600;
   cursor:pointer;
+  text-align:center;
   background:#f1f5f9;
   color:#1e293b;
-  text-align:center;
-  box-shadow:0 2px 6px rgba(0,0,0,.05);
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
   transition:all .2s;
 }
 .tool:hover{
   background:#e2e8f0;
-  transform: translateY(-2px);
+  transform:translateY(-2px);
 }
 .tool.mc{background:#dbeafe; color:#1e3a8a;}    /* Opció múltiple */
 .tool.tf{background:#dcfce7; color:#166534;}     /* Vertader/Fals */
@@ -159,23 +167,28 @@
   padding:20px;
 }
 .preview .title{margin-bottom:8px}
-.q-item{
+.preview .q-item{
   background:#fff; border:1px solid #e2e8f0;
   border-radius:14px; padding:14px; margin-bottom:14px;
 }
-.q-item h4{ margin:0 0 10px; font-size:16px; }
-.option{
+.preview .q-item h4{ margin:0 0 10px; font-size:16px; }
+.preview .option{
+  display:block;
   padding:10px 12px; margin-bottom:8px;
-  border-radius:12px; background:#f1f5f9;
+  border-radius:10px; background:#f1f5f9;
 }
-.option.tf-true{ background:#dcfce7; color:#166534; }
-.option.tf-false{ background:#fee2e2; color:#991b1b; }
-.order-item, .match-item{
-  padding:8px; background:#f1f5f9; border-radius:10px;
-  margin-bottom:6px;
+.preview .option.tf-true{ background:#dcfce7; color:#166534; }
+.preview .option.tf-false{ background:#fee2e2; color:#991b1b; }
+.preview .order-item,
+.preview .match-item{
+  padding:8px; background:#f1f5f9; border-radius:10px; margin-bottom:6px;
 }
-.img-preview{max-width:100%; border:1px solid var(--hair); border-radius:12px; margin:6px 0}
-
+.img-preview{
+  max-width:100%;
+  border:1px solid var(--hair);
+  border-radius:12px;
+  margin:6px 0;
+}
 
   /* Modal senzill per Afegit ràpid */
   .modal{position:fixed; inset:0; background:rgba(15,23,42,.35); display:none; align-items:center; justify-content:center; z-index:50}
