@@ -204,45 +204,6 @@
   .icon-dup   { background:#ede9fe; color:#5b21b6; }
   .icon-del   { background:#fee2e2; color:#991b1b; }
   .icon-btn:hover { opacity: 0.8; }
-  .q-list-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* assegura que badge, info i accions estiguin alineats */
-  gap: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 10px;
-  background: #fff;
-}
-
-.q-badge {
-  flex-shrink: 0; /* que no es redueixi */
-}
-
-.q-info {
-  flex: 1; /* ocupa tot l'espai disponible */
-  min-width: 0; /* permet truncament */
-}
-
-.q-info strong {
-  display: block;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* si és massa llarg, posa "…" */
-}
-
-.q-info .meta {
-  font-size: 12px;
-  color: #475569;
-}
-
-.q-actions {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0; /* que no es comprimeixi */
-}
 </style>
 </head>
 <body>
@@ -339,13 +300,13 @@
               <span id="qCount" class="mini"></span>
             </div>
             <div class="toolbar" style="margin-bottom:10px">
-              <button class="tool mc" onclick="addQuestion('mc')">Opció múltiple</button>
+              <button class="tool mc" onclick="addQuestion('mc')">+ Opció múltiple</button>
               <button class="tool tf" onclick="addQuestion('tf')">V/F</button>
               <button class="tool short" onclick="addQuestion('short')">Curta</button>
+              <button class="tool num" onclick="addQuestion('num')">Num</button>
               <button class="tool long" onclick="addQuestion('long')">Llarga</button>
-              <button class="tool num" onclick="addQuestion('num')">Numèrica</button>
-              <button class="tool order" onclick="addQuestion('order')">Ordenar</button>
-              <button class="tool match" onclick="addQuestion('match')">Relacionar</button>
+              <button class="tool order" onclick="addQuestion('order')">Ordena</button>
+              <button class="tool match" onclick="addQuestion('match')">Match</button>
             </div>
             <div id="qList"></div>
             <div class="hr"></div>
@@ -474,7 +435,7 @@
 </main>
 <script>
 /* ========= Config ========= */
-const API_BASE = 'http://localhost:3000';
+const API_BASE = ''; // mateix host (reverse proxy / estàtic). Si cal: 'http://localhost:3000'
 
 /* ========= Utils ========= */
 const $ = sel => document.querySelector(sel);
@@ -672,18 +633,18 @@ function renderSidebar(){
     div.onclick = ()=>selectQuestion(q.id);
 
     div.innerHTML = `
-  <div class="q-badge q-${q.type}">Q${i+1}</div>
-  <div class="q-info">
-    <strong>${escapeHtml((q.text||'').slice(0,36) || '(sense enunciat)')}</strong>
-    <span class="meta">${labelType(q.type)} · ${q.points||1} pt</span>
-  </div>
-  <div class="q-actions">
-    <button class="icon-btn icon-up" title="Amunt" onclick="event.stopPropagation(); moveQuestion('${q.id}','up')">🔼</button>
-    <button class="icon-btn icon-down" title="Avall" onclick="event.stopPropagation(); moveQuestion('${q.id}','down')">🔽</button>
-    <button class="icon-btn icon-dup" title="Duplica" onclick="event.stopPropagation(); duplicateQuestion('${q.id}')">📄</button>
-    <button class="icon-btn icon-del" title="Elimina" onclick="event.stopPropagation(); delQuestion('${q.id}')">🗑️</button>
-  </div>
-`;
+      <div class="q-badge q-${q.type}">Q${i+1}</div>
+      <div class="q-info">
+        <strong>${escapeHtml((q.text||'').slice(0,36) || '(sense enunciat)')}</strong>
+        <span class="meta">${labelType(q.type)} · ${q.points||1} pt</span>
+      </div>
+      <div class="q-actions">
+        <button class="icon-btn icon-up" title="Amunt" onclick="event.stopPropagation(); moveQuestion('${q.id}','up')">🔼</button>
+        <button class="icon-btn icon-down" title="Avall" onclick="event.stopPropagation(); moveQuestion('${q.id}','down')">🔽</button>
+        <button class="icon-btn icon-dup" title="Duplica" onclick="event.stopPropagation(); duplicateQuestion('${q.id}')">📄</button>
+        <button class="icon-btn icon-del" title="Elimina" onclick="event.stopPropagation(); delQuestion('${q.id}')">🗑️</button>
+      </div>
+    `;
 
     list.appendChild(div);
   });
