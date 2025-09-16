@@ -158,17 +158,16 @@
 
   /* === Sidebar: llista de preguntes === */
   .q-list-item {
-    padding: 14px;
-    border-radius: 14px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid #e2e8f0;
-  }
+  padding: 14px;
+  border-radius: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;   /* centra verticalment badge, info i accions */
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e2e8f0;
+}
   .q-list-item:hover { transform: translateX(2px); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
   .q-list-item.active { outline: var(--focus); background:#eef2ff; }
 
