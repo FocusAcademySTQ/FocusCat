@@ -192,19 +192,23 @@
 
   /* === Botons acció (Amunt, Avall, Duplica, Elimina) === */
   .q-actions {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    margin-left: auto;   /* 🔑 fa que els botons quedin a la dreta dins del recuadre */
-  }
+  display: flex;
+  flex-wrap: wrap;       /* 🔑 permet que passin a la línia de sota */
+  gap: 6px;
+  align-items: center;
+  margin-left: auto;
+  max-width: 80px;       /* controla l’ample total del bloc */
+}
 
-  .icon-btn {
-    border: none;
-    border-radius: 8px;
-    padding: 4px 6px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background 0.2s;
+.icon-btn {
+  flex: 1 1 36px;        /* cada botó ocupa ~50% del contenidor */
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
   }
   .icon-up    { background:#f1f5f9; }
   .icon-down  { background:#f1f5f9; }
