@@ -12,7 +12,7 @@
 <style>
   :root{
     --bg:#f7f7fb; --card:#fff; --ink:#0f172a; --muted:#64748b;
-    --p1:#7aa2ff; --p2:#22c55e; --bad:#ef4444; --hair:#e5e7eb;
+    --p1:#7aa2ff; --p2:#22c55e; --bad:#ef4444; --hair:#e2e8f0;
     --shadow:0 12px 28px rgba(15,23,42,.10); --radius:18px;
     --focus:0 0 0 3px rgba(122,162,255,.35);
   }
@@ -90,6 +90,7 @@
     padding:14px; border-radius:14px;
     display:flex; align-items:center; gap:12px; margin-bottom:12px;
     cursor:pointer; transition:all 0.2s;
+    border: 1px solid #e2e8f0;
   }
   .q-list-item:hover{ transform:translateX(2px); box-shadow:0 2px 8px rgba(0,0,0,.08); }
   .q-list-item.active{ outline:var(--focus); background:#eef2ff; }
@@ -158,16 +159,16 @@
 
   /* === Sidebar: llista de preguntes === */
   .q-list-item {
-  padding: 14px;
-  border-radius: 14px;
-  display: flex;
-  gap: 12px;
-  align-items: center;   /* centra verticalment badge, info i accions */
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid #e2e8f0;
-}
+    padding: 14px;
+    border-radius: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;   /* centra verticalment badge, info i accions */
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #e2e8f0;
+  }
   .q-list-item:hover { transform: translateX(2px); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
   .q-list-item.active { outline: var(--focus); background:#eef2ff; }
 
@@ -190,21 +191,21 @@
   .q-info .meta { font-size: 12px; color: #475569; }
 
   /* === Botons acció (Amunt, Avall, Duplica, Elimina) === */
-.q-actions {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-left: auto;   /* 🔑 fa que els botons quedin a la dreta dins del recuadre */
-}
+  .q-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: auto;   /* 🔑 fa que els botons quedin a la dreta dins del recuadre */
+  }
 
-.icon-btn {
-  border: none;
-  border-radius: 8px;
-  padding: 4px 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
+  .icon-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
   .icon-up    { background:#f1f5f9; }
   .icon-down  { background:#f1f5f9; }
   .icon-dup   { background:#ede9fe; color:#5b21b6; }
