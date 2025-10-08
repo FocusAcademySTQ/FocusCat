@@ -307,7 +307,7 @@
           <span id="saveDot" class="status-dot ok" title="Desat"></span>
           <span id="saveStatusText" class="mini">Desat</span>
           <span id="saveTimestamp" class="mini"></span>
-          <button class="btn bad" onclick="clearExam()">Buida</button>
+          <button class="btn secondary" onclick="startNewExam()">Comença examen nou</button>
           <button class="btn good" onclick="publishExam()">Publica</button>
         </div>
       </div>
@@ -714,17 +714,50 @@ function toggleShuffle(v){
   renderPreview();
 }
 
-function clearExam(){
-  if(confirm('Vols buidar la prova actual?')){
-    exam = { id:null, subject:'', title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
-    selectedQId = null;
-    previewShuffle = false;
-    $('#examTitle').value=''; $('#examSubject').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes'; $('#examShuffle').checked=false; $('#publishInfo').textContent='';
-    renderAll();
-    refreshTagSuggestions();
-    setLastSavedAt(null);
-    markDirty();
+function startNewExam(){
+  const hasExistingData = dirty || !!exam._id || (exam.questions||[]).length > 0 ||
+    Boolean((exam.title||'').trim()) || Boolean((exam.desc||'').trim()) || Boolean((exam.subject||'').trim());
+  if(hasExistingData){
+    const confirmMsg = exam._id
+      ? 'Deixaràs d’editar l’examen carregat del servidor. Vols començar un examen nou en blanc?'
+      : 'Vols començar un examen nou en blanc? Es perdran els canvis actuals.';
+    if(!confirm(confirmMsg)) return;
   }
+
+  if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
+  if(validationTimer){ clearTimeout(validationTimer); validationTimer = null; }
+
+  exam = { id:null, subject:'', title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+  selectedQId = null;
+  previewShuffle = false;
+  dirty = false;
+
+  $('#examTitle').value='';
+  $('#examSubject').value='';
+  $('#examDesc').value='';
+  $('#examShowScore').value='yes';
+  $('#examShuffle').checked=false;
+
+  try{ localStorage.removeItem('focusSrv_exam'); }
+  catch(_){ /* ignore */ }
+  setLastSavedAt(null);
+  setSaveStatus('ok', 'Nova prova en blanc');
+  lastValidationSignature = '';
+
+  renderAll();
+  refreshTagSuggestions();
+  refreshValidationState({force:true});
+
+  const editorTabBtn = document.querySelector('.tab-btn[data-tab="tab-editor"]');
+  if(editorTabBtn && !editorTabBtn.classList.contains('active')) editorTabBtn.click();
+
+  const titleInput = $('#examTitle');
+  if(titleInput){
+    titleInput.focus();
+    if(typeof titleInput.select === 'function') titleInput.select();
+  }
+
+  toast('Nova prova preparada');
 }
 
 function handleSubjectInput(value){
