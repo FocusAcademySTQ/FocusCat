@@ -49,6 +49,7 @@
   .btn.bad{background:#fff; color:#b91c1c; border:1px solid #fecaca}
   .btn.small{padding:6px 10px; font-weight:600; border-radius:10px}
   .badge{display:inline-block; padding:4px 10px; border-radius:999px; background:#eef2ff; color:#3730a3; font-weight:700; font-size:12px}
+  .btn.icon-only{padding:6px; width:32px; height:32px; display:grid; place-items:center;}
   .q-item{border:1px dashed var(--hair); border-radius:14px; padding:12px; margin:10px 0; background:#fafbff}
   .hr{height:1px; background:var(--hair); margin:12px 0}
   .flex{display:flex; gap:10px; flex-wrap:wrap}
@@ -56,6 +57,7 @@
   .table th, .table td{padding:10px 12px; border-bottom:1px solid var(--hair); text-align:left; font-size:14px; vertical-align:top}
   .table th{background:#f8fafc; font-size:12px; text-transform:uppercase; letter-spacing:.03em}
   .help{font-size:13px; color:#475569}
+  .mini{font-size:12px; color:#64748b}
   .right{margin-left:auto}
   .success{color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:8px 10px; border-radius:10px; display:inline-block}
   .warn{color:#92400e; background:#fffbeb; border:1px solid #fde68a; padding:8px 10px; border-radius:10px; display:inline-block}
@@ -63,6 +65,28 @@
   .pill-tab{display:inline-flex; gap:6px; border:1px solid var(--hair); border-radius:999px; padding:4px; background:#fff}
   .pill-tab button{border:none; background:none; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700}
   .pill-tab button.active{background:#eef2ff}
+
+  .status-dot{width:12px; height:12px; border-radius:50%; display:inline-block; background:#94a3b8; box-shadow:0 0 0 1px rgba(0,0,0,.1);}
+  .status-dot.ok{background:#22c55e;}
+  .status-dot.dirty{background:#f97316; animation:pulse 1.2s infinite;}
+  .status-dot.saving{background:#3b82f6; animation:pulse 1s infinite;}
+  .status-dot.error{background:#ef4444;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(59,130,246,.35);}70%{box-shadow:0 0 0 8px rgba(59,130,246,0);}100%{box-shadow:0 0 0 0 rgba(59,130,246,0);}}
+
+  .subject-picker{display:flex; align-items:center; gap:8px;}
+  .subject-picker input{min-width:180px;}
+  .subject-picker button{white-space:nowrap;}
+
+  .tag-editor{display:flex; flex-wrap:wrap; gap:6px; padding:6px; border:1px solid #cbd5e1; border-radius:12px; background:#f8fafc;}
+  .tag-chip{display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; background:#e0e7ff; color:#312e81; font-weight:600; font-size:13px;}
+  .tag-chip button{background:none; border:none; cursor:pointer; font-size:14px; line-height:1; color:#312e81;}
+  .tag-input{border:none; outline:none; min-width:120px; background:transparent; font-size:14px; padding:4px 2px;}
+
+  .preview-header{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;}
+  .preview-hint{font-size:12px; color:#475569; margin-bottom:12px;}
+
+  .match-row{display:grid; grid-template-columns:1fr auto 1fr; gap:6px; align-items:center; margin-bottom:6px;}
+  .match-row span{display:block;}
 
   /* ===== Mestre: layout nou ===== */
   .tabs{display:flex; gap:8px; margin-bottom:12px}
@@ -127,6 +151,7 @@
   .option{padding:10px 12px; margin-bottom:8px; border-radius:12px; background:#f1f5f9;}
   .option.tf-true{background:#dcfce7; color:#166534;}
   .option.tf-false{background:#fee2e2; color:#991b1b;}
+  .option.option-correct{border:1px solid #22c55e; background:#ecfdf5; color:#166534; display:flex; align-items:center; gap:8px;}
   .order-item,.match-item{padding:8px; background:#f1f5f9; border-radius:10px; margin-bottom:6px;}
 
   /* === Toolbar millorada === */
@@ -254,40 +279,35 @@
       <div class="teacher-topbar">
         <div style="flex:1; min-width:260px">
           <label for="examTitle" style="margin-top:0">Títol de la prova</label>
-          <input id="examTitle" type="text" placeholder="Ex: Comprensió lectora · 4t" oninput="lazySaveExam(); markDirty()" />
+          <input id="examTitle" type="text" placeholder="Ex: Comprensió lectora · 4t" oninput="lazySaveExam()" />
         </div>
         <div>
-  <label for="examSubject" style="margin-top:0">Assignatura</label>
-  <select id="examSubject" onchange="lazySaveExam(); markDirty()">
-    <option value="">— Selecciona —</option>
-    <option value="català">Català</option>
-    <option value="castellà">Castellà</option>
-    <option value="anglès">Anglès</option>
-    <option value="mates">Matemàtiques</option>
-    <option value="fisica">Física</option>
-    <option value="quimica">Química</option>
-    <option value="historia">Història</option>
-    <option value="biologia">Biologia</option>
-    <!-- Pots ampliar segons vulguis -->
-  </select>
-      </div>
+          <label for="examSubject" style="margin-top:0">Assignatura</label>
+          <div class="subject-picker">
+            <input id="examSubject" type="text" list="subjectSuggestions" placeholder="Escriu o selecciona" oninput="handleSubjectInput(this.value)" onblur="commitSubjectValue(this.value)" />
+            <datalist id="subjectSuggestions"></datalist>
+            <button class="btn small secondary" type="button" onclick="promptNewSubject()">+ Nova</button>
+          </div>
+        </div>
         <div>
           <label for="examShowScore" style="margin-top:0">Mostrar nota a l’alumne?</label>
-          <select id="examShowScore" onchange="lazySaveExam(); markDirty()">
+          <select id="examShowScore" onchange="lazySaveExam()">
             <option value="yes">Sí</option>
             <option value="no">No</option>
           </select>
         </div>
         <div class="row-inline" style="align-items:center">
           <label style="margin:0">
-            <input type="checkbox" id="examShuffle" onchange="toggleShuffle(this.checked); markDirty()" />
+            <input type="checkbox" id="examShuffle" onchange="toggleShuffle(this.checked)" />
             <span class="help">Barrejar preguntes</span>
           </label>
         </div>
-        <div class="right row-inline">
+        <div class="right row-inline" style="align-items:center">
           <span class="mini">Estat:</span>
           <span id="saveDot" class="status-dot ok" title="Desat"></span>
-          <button class="btn bad" onclick="clearExam()">Buida</button>
+          <span id="saveStatusText" class="mini">Desat</span>
+          <span id="saveTimestamp" class="mini"></span>
+          <button class="btn secondary" onclick="startNewExam()">Comença examen nou</button>
           <button class="btn good" onclick="publishExam()">Publica</button>
         </div>
       </div>
@@ -300,6 +320,8 @@
         <button class="tab-btn" data-tab="tab-library" onclick="switchTab(this)">Biblioteca</button>
         <button class="tab-btn" data-tab="tab-results" onclick="switchTab(this)">Resultats</button>
       </div>
+
+      <datalist id="tagSuggestions"></datalist>
 
       <!-- EDITOR TAB -->
       <div id="tab-editor" class="tab-content active">
@@ -322,7 +344,7 @@
             <div id="qList"></div>
             <div class="hr"></div>
             <label for="examDesc">Instruccions per a l’alumnat</label>
-            <textarea id="examDesc" placeholder="Llegeix atentament i respon." oninput="lazySaveExam(); markDirty()"></textarea>
+            <textarea id="examDesc" placeholder="Llegeix atentament i respon." oninput="lazySaveExam()"></textarea>
             <p id="publishInfo" class="help" style="margin-top:10px"></p>
           </aside>
 
@@ -334,7 +356,10 @@
 
           <!-- PREVIEW -->
           <aside class="preview">
-            <h3 class="title">Previsualització</h3>
+            <div class="preview-header">
+              <h3 class="title" style="margin:0">Previsualització</h3>
+              <button id="previewShuffleBtn" class="btn small secondary" type="button" onclick="togglePreviewShuffle()">Simula barreja</button>
+            </div>
             <div id="qPreview" class="help">Cap pregunta seleccionada.</div>
           </aside>
         </div>
@@ -347,16 +372,8 @@
     <p class="muted">Exàmens guardats al servidor per reutilitzar-los o clonar-los amb un nou PIN.</p>
     <div class="row-inline">
       <input id="libSearch" type="text" placeholder="Cerca..." oninput="listExams()" />
-<select id="libSubjectFilter" onchange="listExams()">
+      <select id="libSubjectFilter" onchange="listExams()">
         <option value="">Totes les assignatures</option>
-        <option value="català">Català</option>
-        <option value="castellà">Castellà</option>
-        <option value="anglès">Anglès</option>
-        <option value="mates">Matemàtiques</option>
-        <option value="fisica">Física</option>
-        <option value="quimica">Química</option>
-        <option value="historia">Història</option>
-        <option value="biologia">Biologia</option>
       </select>
       <button class="btn small" id="libRefreshBtn" onclick="listExams()">Actualitza</button>
     </div>
@@ -408,10 +425,8 @@
       <label for="studentName">Nom i cognoms</label>
       <input id="studentName" type="text" placeholder="Ex: Marta Puig" />
       <label for="studentGroup">Grup / Classe</label>
-<select id="studentGroup">
-  <option value="Acadèmia">Acadèmia</option>
-  <option value="Arnau Cadell">Arnau Cadell</option>
-</select>
+      <input id="studentGroup" type="text" list="groupSuggestions" placeholder="Escriu o tria el teu grup" />
+      <datalist id="groupSuggestions"></datalist>
       <button class="btn" onclick="startExam()">Començar</button>
     </div>
 
@@ -447,6 +462,10 @@
 <script>
 /* ========= Config ========= */
 const API_BASE = ''; // mateix host (reverse proxy / estàtic). Si cal: 'http://localhost:3000'
+const DEFAULT_SUBJECTS = ['Català','Castellà','Anglès','Matemàtiques','Física','Química','Història','Biologia'];
+const SUBJECTS_STORAGE_KEY = 'focusSrv_customSubjects';
+const GROUPS_STORAGE_KEY = 'focusSrv_groups';
+const SAVED_AT_STORAGE_KEY = 'focusSrv_examSavedAt';
 
 /* ========= Utils ========= */
 const $ = sel => document.querySelector(sel);
@@ -476,6 +495,14 @@ function showView(id){
 function enterRole(role){ showView(role==='teacher'?'teacher':'student'); }
 function uid(){ return Math.random().toString(36).slice(2,10); }
 function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function shuffledCopy(list){
+  const arr = Array.isArray(list) ? [...list] : [];
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 function tryRenderKatex(root){
   if(!window.__katexReady || !window.renderMathInElement) return;
   try{
@@ -497,7 +524,358 @@ function formatDate(s){ try{ return new Date(s).toLocaleString(); }catch(_){ ret
 let exam = { id:null, subject:'', title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
 let selectedQId = null;
 let dirty = false;
-function markDirty(){ dirty = true; $('#saveDot').classList.remove('ok'); $('#saveDot').classList.add('dirty'); }
+let lastSavedAt = null;
+let previewShuffle = false;
+let autoSaveTimer = null;
+let validationTimer = null;
+let lastValidationSignature = '';
+let subjectOptions = [];
+let customSubjects = new Set();
+let groupSuggestionsSet = new Set();
+
+const STATUS_LABELS = {
+  ok: 'Desat',
+  dirty: 'Canvis pendents',
+  saving: 'Desant…',
+  error: 'Error en desar'
+};
+
+function setSaveStatus(state='ok', label){
+  const dot = $('#saveDot');
+  if(dot){
+    dot.classList.remove('ok','dirty','saving','error');
+    dot.classList.add(state);
+    dot.title = label || STATUS_LABELS[state] || '';
+  }
+  const text = $('#saveStatusText');
+  if(text) text.textContent = label || STATUS_LABELS[state] || '';
+  updateSaveTimestamp({state});
+}
+
+function formatTime(ts){
+  const time = new Date(Number(ts||0));
+  if(Number.isNaN(time.getTime())) return null;
+  try{
+    return time.toLocaleTimeString('ca-ES', { hour:'2-digit', minute:'2-digit' });
+  }catch(_){
+    return time.toLocaleTimeString();
+  }
+}
+
+function updateSaveTimestamp({state}={}){
+  const el = $('#saveTimestamp');
+  if(!el) return;
+  const timeLabel = lastSavedAt ? formatTime(lastSavedAt) : null;
+  if(state==='saving'){
+    el.textContent = 'Desant…';
+    return;
+  }
+  if(state==='error'){
+    el.textContent = timeLabel ? `Error en desar · darrer desament ${timeLabel}` : 'Error en desar';
+    return;
+  }
+  if(state==='dirty'){
+    el.textContent = timeLabel ? `Canvis pendents · darrer desament ${timeLabel}` : 'Canvis pendents';
+    return;
+  }
+  el.textContent = timeLabel ? `Darrer desament ${timeLabel}` : '';
+}
+
+function setLastSavedAt(ts){
+  if(typeof ts === 'number' && Number.isFinite(ts)){
+    lastSavedAt = ts;
+    try{ localStorage.setItem(SAVED_AT_STORAGE_KEY, String(ts)); }
+    catch(_){ /* ignore */ }
+  }else{
+    lastSavedAt = null;
+    try{ localStorage.removeItem(SAVED_AT_STORAGE_KEY); }
+    catch(_){ /* ignore */ }
+  }
+  updateSaveTimestamp({state:'ok'});
+}
+
+function updateExamMeta(){
+  exam.title = $('#examTitle').value.trim();
+  exam.desc = $('#examDesc').value.trim();
+  exam.subject = ($('#examSubject').value || '').trim();
+  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
+  exam.settings.shuffle = !!$('#examShuffle').checked;
+}
+
+function markDirty(){
+  dirty = true;
+  setSaveStatus('dirty');
+  scheduleAutoSave();
+  scheduleValidationRefresh();
+}
+
+function scheduleAutoSave(){
+  if(autoSaveTimer) clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(()=>{
+    persistExam({push:true}).catch(err=>console.error('❌ Error auto-desant:', err));
+  }, 900);
+}
+
+function scheduleValidationRefresh(){
+  if(validationTimer) clearTimeout(validationTimer);
+  validationTimer = setTimeout(()=>{
+    validationTimer = null;
+    refreshValidationState();
+  }, 400);
+}
+
+function refreshValidationState({force=false}={}){
+  const issues = validateExam({syncMeta:false});
+  const signature = `${issues.join('||')}::${(exam.questions||[]).length}::${exam.title?.trim()?1:0}`;
+  if(!force && signature === lastValidationSignature) return;
+  lastValidationSignature = signature;
+  renderValidationSummary(issues);
+}
+
+function renderValidationSummary(issues){
+  const box = $('#publishInfo');
+  if(!box) return;
+  if(!issues.length){
+    if((exam.questions||[]).length){
+      box.innerHTML = '<span class="success">Sense problemes detectats. Pots publicar quan vulguis.</span>';
+    }else{
+      box.innerHTML = '<span class="help">Afegeix preguntes i completa la informació per poder publicar.</span>';
+    }
+    return;
+  }
+  const list = `<ul>${issues.map(msg=>`<li>${escapeHtml(msg)}</li>`).join('')}</ul>`;
+  box.innerHTML = `<span class="warn"><strong>Revisa la prova:</strong>${list}</span>`;
+}
+
+function lazySaveExam(){
+  updateExamMeta();
+  markDirty();
+}
+
+async function persistExam({feedback=false, push=false}={}){
+  updateExamMeta();
+  if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
+  const hadDirty = dirty;
+  if(!hadDirty && !feedback && !push) return;
+
+  try{
+    localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
+  }catch(e){
+    console.warn('No s’ha pogut desar l’esborrany local:', e);
+  }
+
+  if(push && exam._id){
+    setSaveStatus('saving', 'Desant al servidor…');
+    try{
+      await pushExamToServer();
+      dirty = false;
+      setLastSavedAt(Date.now());
+      setSaveStatus('ok', 'Desat al servidor');
+      if(feedback) toast('Canvis sincronitzats.');
+    }catch(err){
+      dirty = true;
+      setSaveStatus('error', 'Error en desar al servidor');
+      console.error('❌ Error desant al servidor:', err);
+      if(autoSaveTimer) clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(()=>{
+        persistExam({push:true}).catch(e=>console.error('❌ Error auto-desant:', e));
+      }, 4000);
+    }
+    return;
+  }
+
+  if(hadDirty){
+    dirty = false;
+    setLastSavedAt(Date.now());
+    const msg = exam._id ? 'Esborrany local actualitzat' : 'Desat localment';
+    setSaveStatus('ok', msg);
+  }
+  if(push && !exam._id){
+    setSaveStatus('ok', 'Esborrany local');
+  }
+  if(feedback) toast('Prova desada localment.');
+}
+
+async function pushExamToServer(){
+  if(!exam._id) return;
+  const { _id, ...body } = exam;
+  delete body.id;
+  const res = await fetch(API_BASE + '/api/exams/' + encodeURIComponent(_id), {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok) throw new Error(await res.text());
+}
+
+function toggleShuffle(v){
+  exam.settings.shuffle = !!v;
+  markDirty();
+  renderPreview();
+}
+
+function startNewExam(){
+  const hasExistingData = dirty || !!exam._id || (exam.questions||[]).length > 0 ||
+    Boolean((exam.title||'').trim()) || Boolean((exam.desc||'').trim()) || Boolean((exam.subject||'').trim());
+  if(hasExistingData){
+    const confirmMsg = exam._id
+      ? 'Deixaràs d’editar l’examen carregat del servidor. Vols començar un examen nou en blanc?'
+      : 'Vols començar un examen nou en blanc? Es perdran els canvis actuals.';
+    if(!confirm(confirmMsg)) return;
+  }
+
+  if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
+  if(validationTimer){ clearTimeout(validationTimer); validationTimer = null; }
+
+  exam = { id:null, subject:'', title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+  selectedQId = null;
+  previewShuffle = false;
+  dirty = false;
+
+  $('#examTitle').value='';
+  $('#examSubject').value='';
+  $('#examDesc').value='';
+  $('#examShowScore').value='yes';
+  $('#examShuffle').checked=false;
+
+  try{ localStorage.removeItem('focusSrv_exam'); }
+  catch(_){ /* ignore */ }
+  setLastSavedAt(null);
+  setSaveStatus('ok', 'Nova prova en blanc');
+  lastValidationSignature = '';
+
+  renderAll();
+  refreshTagSuggestions();
+  refreshValidationState({force:true});
+
+  const editorTabBtn = document.querySelector('.tab-btn[data-tab="tab-editor"]');
+  if(editorTabBtn && !editorTabBtn.classList.contains('active')) editorTabBtn.click();
+
+  const titleInput = $('#examTitle');
+  if(titleInput){
+    titleInput.focus();
+    if(typeof titleInput.select === 'function') titleInput.select();
+  }
+
+  toast('Nova prova preparada');
+}
+
+function handleSubjectInput(value){
+  exam.subject = (value||'').trim();
+  markDirty();
+}
+
+function commitSubjectValue(value){
+  ensureSubjectOption(value, { persist: true });
+}
+
+function promptNewSubject(){
+  const raw = prompt('Nova assignatura');
+  if(!raw) return;
+  const clean = raw.trim();
+  if(!clean) return;
+  ensureSubjectOption(clean, { persist: true });
+  $('#examSubject').value = clean;
+  handleSubjectInput(clean);
+  toast('Assignatura afegida');
+}
+
+function ensureSubjectOption(value, { persist=false }={}){
+  const clean = (value||'').trim();
+  if(!clean) return;
+  if(!subjectOptions.includes(clean)){
+    subjectOptions.push(clean);
+    subjectOptions.sort((a,b)=>a.localeCompare(b,'ca',{sensitivity:'base'}));
+    renderSubjectOptions();
+  }
+  if(persist && !customSubjects.has(clean)){
+    customSubjects.add(clean);
+    saveCustomSubjects();
+    renderSubjectOptions();
+  }
+}
+
+function renderSubjectOptions(){
+  const datalist = document.getElementById('subjectSuggestions');
+  if(datalist){
+    datalist.innerHTML = subjectOptions.map(subj=>`<option value="${escapeAttr(subj)}"></option>`).join('');
+  }
+  const select = document.getElementById('libSubjectFilter');
+  if(select){
+    const current = select.value;
+    const opts = ['<option value="">Totes les assignatures</option>'];
+    subjectOptions.forEach(subj=>opts.push(`<option value="${escapeAttr(subj)}">${escapeHtml(subj)}</option>`));
+    select.innerHTML = opts.join('');
+    if(current && subjectOptions.includes(current)) select.value = current;
+    else if(current==='') select.value = '';
+  }
+}
+
+function loadCustomSubjects(){
+  try{
+    const stored = JSON.parse(localStorage.getItem(SUBJECTS_STORAGE_KEY)||'[]');
+    customSubjects = new Set((stored||[]).filter(Boolean));
+  }catch(_){
+    customSubjects = new Set();
+  }
+}
+
+function saveCustomSubjects(){
+  try{ localStorage.setItem(SUBJECTS_STORAGE_KEY, JSON.stringify(Array.from(customSubjects))); }
+  catch(_){ /* ignore */ }
+}
+
+function bootstrapSubjects(){
+  loadCustomSubjects();
+  subjectOptions = Array.from(new Set([...DEFAULT_SUBJECTS, ...customSubjects])).filter(Boolean);
+  subjectOptions.sort((a,b)=>a.localeCompare(b,'ca',{sensitivity:'base'}));
+  renderSubjectOptions();
+  const current = ($('#examSubject')?.value || '').trim();
+  if(current) ensureSubjectOption(current, { persist: false });
+  fetchSubjectOptions();
+}
+
+async function fetchSubjectOptions(){
+  try{
+    const res = await fetch(API_BASE + '/api/exams/subjects');
+    if(!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    if(Array.isArray(data.subjects)){
+      data.subjects.filter(Boolean).forEach(subj=>ensureSubjectOption(subj, { persist: false }));
+    }
+  }catch(err){
+    console.warn('No s’ha pogut obtenir les assignatures del servidor:', err);
+  }
+}
+
+function renderGroupSuggestions(){
+  const dl = $('#groupSuggestions');
+  if(!dl) return;
+  const items = Array.from(groupSuggestionsSet);
+  items.sort((a,b)=>a.localeCompare(b,'ca',{sensitivity:'base'}));
+  dl.innerHTML = items.map(g=>`<option value="${escapeAttr(g)}"></option>`).join('');
+}
+
+function loadGroupSuggestions(){
+  try{
+    const stored = JSON.parse(localStorage.getItem(GROUPS_STORAGE_KEY)||'[]');
+    groupSuggestionsSet = new Set((stored||[]).filter(Boolean));
+  }catch(_){
+    groupSuggestionsSet = new Set();
+  }
+  renderGroupSuggestions();
+}
+
+function rememberGroup(group){
+  const clean = (group||'').trim();
+  if(!clean) return;
+  if(!groupSuggestionsSet.has(clean)){
+    groupSuggestionsSet.add(clean);
+    try{ localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(Array.from(groupSuggestionsSet))); }
+    catch(_){ /* ignore */ }
+    renderGroupSuggestions();
+  }
+}
 
 /* ===== Imatge (compressió) ===== */
 function compressImage(file, maxW=1400, maxH=1400, quality=0.85){
@@ -530,33 +908,27 @@ async function loadMedia(qid, file){
     const q=exam.questions.find(x=>x.id===qid); if(!q) return;
     q.media = q.media || {};
     q.media.imgData = data;
+    q.media.alt = q.media.alt || '';
     renderAll(); markDirty();
   }catch(e){ alert('No s’ha pogut carregar la imatge.'); }
 }
 
-/* ========= Persistència ========= */
-function lazySaveExam(){ saveExam(false); }
-function saveExam(feedback=false){
-  exam.title = $('#examTitle').value.trim();
-  exam.desc = $('#examDesc').value.trim();
-  exam.subject = $('#examSubject').value || ''; 
-  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
-  localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
-  dirty = false; $('#saveDot').classList.remove('dirty'); $('#saveDot').classList.add('ok');
-  if(feedback) toast('Prova desada localment.');
-}
-function toggleShuffle(v){
-  exam.settings.shuffle = !!v;
-  localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
+function setMediaAlt(qid, value){
+  const q = exam.questions.find(x=>x.id===qid);
+  if(!q) return;
+  q.media = q.media || {};
+  q.media.alt = value;
   markDirty();
+  renderPreview();
 }
-function clearExam(){
-  if(confirm('Vols buidar la prova actual?')){
-    exam = { id:null, title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
-    selectedQId = null;
-    $('#examTitle').value=''; $('#examSubject').value=''; $('#examDesc').value=''; $('#examShowScore').value='yes'; $('#examShuffle').checked=false; $('#publishInfo').textContent='';
-    renderAll(); markDirty();
-  }
+
+function removeMedia(qid){
+  const q = exam.questions.find(x=>x.id===qid);
+  if(!q || !q.media) return;
+  delete q.media.imgData;
+  q.media.alt = '';
+  renderAll();
+  markDirty();
 }
 
 /* ========= PESTANYES ========= */
@@ -571,7 +943,7 @@ function switchTab(btn){
 
 /* ========= Preguntes ========= */
 function baseQuestion(type){
-  const q = { id: uid(), type, text:'', points:1, tags:[], media:{} };
+  const q = { id: uid(), type, text:'', points:1, tags:[], media:{ alt:'' } };
   if(type==='mc'){ q.options=[{text:'Opció 1', correct:false},{text:'Opció 2', correct:true}]; }
   if(type==='tf'){ q.options=[{text:'Vertader', correct:true},{text:'Fals', correct:false}]; }
   if(type==='short'){ q.answerText=''; q.accepts=[]; }
@@ -585,9 +957,15 @@ function addQuestion(type){
   const q = baseQuestion(type);
   exam.questions.push(q);
   selectedQId = q.id;
-  renderAll(); markDirty();
+  previewShuffle = false;
+  renderAll();
+  markDirty();
 }
-function selectQuestion(id){ selectedQId = id; renderAll(); }
+function selectQuestion(id){
+  selectedQId = id;
+  previewShuffle = false;
+  renderAll();
+}
 function moveQuestion(qid, dir){
   const i = exam.questions.findIndex(q=>q.id===qid);
   if(i<0) return;
@@ -663,7 +1041,12 @@ function renderSidebar(){
 function renderEditor(){
   const host = $('#qEditor');
   const q = exam.questions.find(x=>x.id===selectedQId);
-  if(!q){ host.innerHTML = '<div class="help">Selecciona una pregunta o afegeix-ne una.</div>'; return; }
+  if(!q){
+    host.innerHTML = '<div class="help">Selecciona una pregunta o afegeix-ne una.</div>';
+    updatePreviewToggle();
+    renderPreview();
+    return;
+  }
 
   // Editors per tipus
   let inner = '';
@@ -752,13 +1135,18 @@ function renderEditor(){
       <label>Enunciat (admet $\\LaTeX$)</label>
       <textarea oninput="qSet('${q.id}','text', this.value)">${escapeHtml(q.text||'')}</textarea>
 
-      <div class="row-inline" style="align-items:flex-end; gap:16px">
-        <div>
+      <div class="row-inline" style="align-items:flex-start; gap:16px">
+        <div style="flex:1 1 240px">
           <label>Imatge (opcional)</label>
           <input type="file" accept="image/*" onchange="loadMedia('${q.id}',this.files[0])">
           <p class="help">La imatge es comprimeix automàticament per reduir la mida.</p>
+          ${q.media?.imgData ? `<label>Text alternatiu</label>
+          <input type="text" value="${escapeAttr(q.media?.alt||'')}" oninput="setMediaAlt('${q.id}', this.value)" placeholder="Descriu la imatge per accessibilitat">` : ''}
         </div>
-        ${q.media?.imgData ? `<img class="img-preview" src="${q.media.imgData}" alt="">` : ''}
+        ${q.media?.imgData ? `<div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start">
+          <img class="img-preview" src="${q.media.imgData}" alt="${escapeAttr(q.media?.alt||'')}" style="max-width:180px; border:1px solid var(--hair); border-radius:12px">
+          <button class="btn small secondary" type="button" onclick="removeMedia('${q.id}')">Treure imatge</button>
+        </div>` : ''}
       </div>
 
       <div class="hr"></div>
@@ -766,55 +1154,215 @@ function renderEditor(){
 
       <div class="hr"></div>
       <label>Etiquetes</label>
-      <input type="text" value="${(q.tags||[]).join(', ')}" oninput="qSet('${q.id}','tags', this.value.split(',').map(s=>s.trim()).filter(Boolean))" placeholder="ex: mates, fraccions">
+      <div class="tag-editor" id="tagEditor-${q.id}" data-qid="${q.id}"></div>
     </div>
   `;
+  renderTagEditor(q.id);
+  updatePreviewToggle();
   renderPreview();
 }
 function renderPreview(){
   const host = $('#qPreview'); host.innerHTML='';
   const q = exam.questions.find(x=>x.id===selectedQId);
-  if(!q){ host.innerHTML='<div class="help">Cap pregunta seleccionada.</div>'; return; }
+  if(!q){
+    host.innerHTML='<div class="help">Cap pregunta seleccionada.</div>';
+    updatePreviewToggle();
+    return;
+  }
 
-  let media = q.media?.imgData ? `<div><img class="img-preview" src="${q.media.imgData}" alt=""></div>` : '';
+  updatePreviewToggle();
+
+  const media = q.media?.imgData ? `<div><img class="img-preview" src="${q.media.imgData}" alt="${escapeAttr(q.media?.alt||'')}" style="max-width:100%; border:1px solid var(--hair); border-radius:12px"></div>` : '';
   let body = '';
+  let hint = '';
+
   if(q.type==='mc' || q.type==='tf'){
-    body = (q.options||[]).map((o,i)=>`
-      <label class="row-inline" style="gap:8px;margin-bottom:6px">
-        <input type="radio" disabled />
+    body = (q.options||[]).map(o=>`
+      <div class="option${o.correct?' option-correct':''}">
         <span>${escapeHtml(o.text||'')}</span>
-      </label>
+        ${o.correct?'<span class="mini" style="margin-left:auto">✓ correcta</span>':''}
+      </div>
     `).join('');
   } else if(q.type==='short'){
     body = `<input type="text" disabled placeholder="Resposta curta">`;
   } else if(q.type==='num'){
-    body = `<input type="text" disabled placeholder="Ex: 3.14"> <span class="help">± ${q.tolerance||0}</span>`;
+    body = `<div class="row-inline" style="align-items:center; gap:8px"><input type="text" disabled placeholder="Ex: 3.14"><span class="help">± ${escapeHtml(String(q.tolerance||0))}</span></div>`;
   } else if(q.type==='long'){
     body = `<textarea disabled placeholder="Resposta de desenvolupament" style="min-height:120px"></textarea>`;
   } else if(q.type==='order'){
-    const items = (q.items||[]).slice().sort(()=>Math.random()-0.5);
-    body = items.map(t=>`
-      <div class="row-inline"><span class="help" aria-hidden="true">≡</span><input type="text" value="${escapeAttr(t)}" readonly /></div>
-    `).join('');
-  } else if(q.type==='match'){
-    const left = q.left||[], right = (q.right||[]).slice().sort(()=>Math.random()-0.5);
-    body = left.map((L)=>`
-      <div class="row-inline" style="align-items:center">
-        <span style="flex:1">${escapeHtml(L)}</span>
-        <select disabled>${right.map(R=>`<option>${escapeHtml(R)}</option>`).join('')}</select>
+    const items = previewShuffle ? shuffledCopy(q.items||[]) : (q.items||[]);
+    hint = previewShuffle ? 'Mostrant un exemple de llista barrejada.' : 'Mostrant l’ordre correcte.';
+    body = items.map((t,i)=>`
+      <div class="row-inline" style="align-items:center; gap:8px">
+        <span class="help">${i+1}.</span>
+        <input type="text" value="${escapeAttr(t)}" readonly />
       </div>
     `).join('');
+  } else if(q.type==='match'){
+    const left = q.left||[];
+    const right = q.right||[];
+    if(previewShuffle){
+      const randomRight = shuffledCopy(right);
+      hint = 'Opcions de la columna dreta barrejades com les veurà l’alumnat.';
+      body = left.map((L)=>`
+        <div class="row-inline" style="align-items:center">
+          <span style="flex:1">${escapeHtml(L)}</span>
+          <select disabled>${randomRight.map(R=>`<option>${escapeHtml(R)}</option>`).join('')}</select>
+        </div>
+      `).join('');
+    } else {
+      hint = 'Parelles correctes.';
+      body = left.map((L,i)=>`
+        <div class="match-row">
+          <span>${escapeHtml(L)}</span>
+          <span aria-hidden="true">↔</span>
+          <span>${escapeHtml(right[i]||'')}</span>
+        </div>
+      `).join('');
+    }
   }
+
   host.innerHTML = `
     <div class="q-item">
       <div style="font-weight:700; margin-bottom:6px" class="katex-host">${escapeHtml(q.text||'')}</div>
       ${media}
+      ${hint ? `<div class="preview-hint">${escapeHtml(hint)}</div>` : ''}
       ${body}
     </div>
   `;
   tryRenderKatex(host);
 }
-function renderAll(){ renderSidebar(); renderEditor(); saveExam(false); }
+
+function updatePreviewToggle(){
+  const btn = $('#previewShuffleBtn');
+  if(!btn) return;
+  const q = exam.questions.find(x=>x.id===selectedQId);
+  const canShuffle = !!(q && (q.type==='order' || q.type==='match'));
+  btn.style.display = canShuffle ? 'inline-flex' : 'none';
+  btn.disabled = !canShuffle;
+  if(canShuffle){
+    btn.textContent = previewShuffle ? 'Mostra ordre original' : 'Simula barreja';
+  }
+}
+
+function togglePreviewShuffle(){
+  const q = exam.questions.find(x=>x.id===selectedQId);
+  if(!q || (q.type!=='order' && q.type!=='match')) return;
+  previewShuffle = !previewShuffle;
+  updatePreviewToggle();
+  renderPreview();
+}
+
+function refreshTagSuggestions(){
+  const dl = $('#tagSuggestions');
+  if(!dl) return;
+  const tags = Array.from(new Set((exam.questions||[]).flatMap(q=>q.tags||[]).filter(Boolean)));
+  tags.sort((a,b)=>a.localeCompare(b,'ca',{sensitivity:'base'}));
+  dl.innerHTML = tags.map(tag=>`<option value="${escapeAttr(tag)}"></option>`).join('');
+}
+
+function renderTagEditor(qid){
+  const container = document.getElementById('tagEditor-'+qid);
+  const q = exam.questions.find(x=>x.id===qid);
+  if(!container || !q) return;
+  container.innerHTML = '';
+
+  (q.tags||[]).forEach(tag=>{
+    const chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    const text = document.createElement('span');
+    text.textContent = tag;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '×';
+    btn.title = `Elimina ${tag}`;
+    btn.setAttribute('aria-label', `Elimina ${tag}`);
+    btn.addEventListener('click', ev=>{ ev.preventDefault(); ev.stopPropagation(); removeTag(qid, tag); });
+    chip.appendChild(text);
+    chip.appendChild(btn);
+    container.appendChild(chip);
+  });
+
+  const input = document.createElement('input');
+  input.className = 'tag-input';
+  input.placeholder = (q.tags||[]).length ? 'Afegeix etiqueta…' : 'Ex: mates, fraccions';
+  input.setAttribute('list', 'tagSuggestions');
+  const commit = ()=>{
+    const raw = (input.value||'').trim();
+    if(!raw){ input.value=''; return; }
+    addTag(qid, raw);
+    input.value='';
+  };
+  input.addEventListener('keydown', ev=>{
+    if(ev.key==='Enter' || ev.key===',' || ev.key===';'){
+      ev.preventDefault();
+      commit();
+    }
+  });
+  input.addEventListener('blur', commit);
+  container.appendChild(input);
+  refreshTagSuggestions();
+}
+
+function addTag(qid, value){
+  const q = exam.questions.find(x=>x.id===qid);
+  if(!q) return;
+  const clean = (value||'').trim();
+  if(!clean) return;
+  q.tags = Array.from(new Set([...(q.tags||[]), clean]));
+  markDirty();
+  renderTagEditor(qid);
+}
+
+function removeTag(qid, value){
+  const q = exam.questions.find(x=>x.id===qid);
+  if(!q) return;
+  q.tags = (q.tags||[]).filter(tag=>tag!==value);
+  markDirty();
+  renderTagEditor(qid);
+}
+function renderAll(){
+  renderSidebar();
+  renderEditor();
+}
+
+function validateExam({syncMeta=true}={}){
+  const issues = [];
+  if(syncMeta) updateExamMeta();
+  if(!exam.title.trim()) issues.push('Afegeix un títol a la prova.');
+  if(!(exam.questions||[]).length) issues.push('Cal almenys una pregunta.');
+
+  (exam.questions||[]).forEach((q, idx)=>{
+    const label = `Pregunta ${idx+1}`;
+    if(!String(q.text||'').trim()) issues.push(`${label}: falta l’enunciat.`);
+    if((Number(q.points)||0) <= 0) issues.push(`${label}: els punts han de ser majors que zero.`);
+
+    if(q.type==='mc' || q.type==='tf'){
+      const opts = Array.isArray(q.options)?q.options:[];
+      if(opts.length < 2) issues.push(`${label}: calen almenys dues opcions.`);
+      if(!opts.every(o=>String(o.text||'').trim())) issues.push(`${label}: hi ha opcions sense text.`);
+      if(!opts.some(o=>o.correct===true)) issues.push(`${label}: marca una resposta correcta.`);
+    } else if(q.type==='short'){
+      if(!String(q.answerText||'').trim()) issues.push(`${label}: indica la resposta correcta.`);
+    } else if(q.type==='num'){
+      if(!String(q.numAnswer||'').trim()) issues.push(`${label}: indica la resposta numèrica.`);
+      const tol = Number(q.tolerance);
+      if(Number.isNaN(tol)) issues.push(`${label}: la tolerància ha de ser un nombre.`);
+    } else if(q.type==='order'){
+      const items = Array.isArray(q.items)?q.items:[];
+      if(items.length < 2) issues.push(`${label}: afegeix almenys dos elements.`);
+      if(!items.every(t=>String(t||'').trim())) issues.push(`${label}: hi ha elements de la llista buits.`);
+    } else if(q.type==='match'){
+      const left = Array.isArray(q.left)?q.left:[];
+      const right = Array.isArray(q.right)?q.right:[];
+      if(left.length === 0 || right.length === 0) issues.push(`${label}: calen elements a les dues columnes.`);
+      if(left.length !== right.length) issues.push(`${label}: les dues columnes han de tenir el mateix nombre d’elements.`);
+      if(!left.every(t=>String(t||'').trim()) || !right.every(t=>String(t||'').trim())) issues.push(`${label}: hi ha correspondències buides.`);
+    }
+  });
+
+  return issues;
+}
 
 /* ===== Operacions d’opcions i llistes ===== */
 function addOpt(qid){ const q=exam.questions.find(x=>x.id===qid); if(q){ q.options.push({text:'Nova opció', correct:false}); renderAll(); markDirty(); } }
@@ -828,16 +1376,16 @@ function swapOrder(qid,i,dir){ const q=exam.questions.find(x=>x.id===qid); if(!q
 
 /* ========= Publicació ========= */
 async function publishExam(){
-  // Validació
-  exam.title = $('#examTitle').value.trim();
-  exam.desc = $('#examDesc').value.trim();
-  exam.settings.showScoreToStudent = $('#examShowScore').value==='yes';
-  if(!exam.title || (exam.questions||[]).length===0){
-    alert('Cal un títol i almenys una pregunta.'); return;
+  const issues = validateExam();
+  if(issues.length){
+    renderValidationSummary(issues);
+    return;
   }
   try{
-    // ❌ Eliminem _id abans d’enviar al servidor
-    const { _id, ...cleanExam } = exam;
+    setSaveStatus('saving', 'Publicant…');
+    const cleanExam = JSON.parse(JSON.stringify(exam));
+    delete cleanExam._id;
+    delete cleanExam.id;
 
     const res = await fetch(API_BASE + '/api/exams', {
       method: 'POST',
@@ -849,13 +1397,20 @@ async function publishExam(){
 
     // ✅ Guardem el _id que genera Mongo
     exam._id = data.examId;
-
-    localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
+    dirty = false;
+    ensureSubjectOption(exam.subject||'', { persist: true });
+    try{ localStorage.setItem('focusSrv_exam', JSON.stringify(exam)); }
+    catch(_){ /* ignore */ }
+    setLastSavedAt(Date.now());
+    if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
     $('#publishInfo').innerHTML = `<span class="success">Publicat! PIN: <strong>${data.pin}</strong> &middot; examId: <span class="mono">${data.examId}</span></span>`;
     $('#examIdLookup').value = data.examId;
+    setSaveStatus('ok', 'Publicat al servidor');
+    lastValidationSignature = '';
     toast('Prova publicada');
     listExams();
   }catch(e){
+    setSaveStatus('error', 'Error en publicar');
     $('#publishInfo').innerHTML = `<span class="warn">Error en publicar: ${escapeHtml(e.message||'desconegut')}</span>`;
   }
 }
@@ -900,6 +1455,7 @@ function startExam(){
   const name = $('#studentName').value.trim();
   const group = $('#studentGroup').value.trim();
   if(!name){ alert('Escriu el teu nom.'); return; }
+  if(group) rememberGroup(group);
 
   const questions = JSON.parse(JSON.stringify(loadedExam.questions||[]));
   if(loadedExam.settings?.shuffle) shuffleArray(questions);
@@ -910,7 +1466,7 @@ function startExam(){
   questions.forEach((q,idx)=>{
     const el = document.createElement('div'); el.className='q-item';
     let media = '';
-    if(q.media?.imgData) media += `<div><img alt="" src="${q.media.imgData}" style="max-width:100%; border:1px solid var(--hair); border-radius:12px; margin:6px 0"></div>`;
+    if(q.media?.imgData) media += `<div><img alt="${escapeAttr(q.media?.alt||'')}" src="${q.media.imgData}" style="max-width:100%; border:1px solid var(--hair); border-radius:12px; margin:6px 0"></div>`;
 
     let body='';
     if(q.type==='mc' || q.type==='tf'){
@@ -1137,11 +1693,15 @@ async function listExams() {
     if (subj) params.set('subject', subj);
     if (q) params.set('q', q);
 
-    const res = await fetch(API_BASE + '/api/exams?' + params.toString());
+    const query = params.toString();
+    const res = await fetch(API_BASE + '/api/exams' + (query ? ('?' + query) : ''));
     if(!res.ok) throw new Error('No s’ha pogut llistar exàmens');
     libraryItems = await res.json();
+    libraryItems.forEach(item=>ensureSubjectOption(item.subject||'', { persist: false }));
     renderLibrary(libraryItems);
-    $('#libraryInfo').textContent = `${libraryItems.length} exàmens`;
+    if(libraryItems.length){
+      $('#libraryInfo').textContent = `${libraryItems.length} exàmens`;
+    }
   } catch (e) {
     $('#libraryInfo').innerHTML = `<span class="warn">${escapeHtml(e.message||'Error desconegut')}</span>`;
     $('#libraryTable').innerHTML = '';
@@ -1152,7 +1712,11 @@ async function listExams() {
 
 function renderLibrary(items){
   const tbl = $('#libraryTable');
-  if(!items.length){ tbl.innerHTML=''; return; }
+  if(!items.length){
+    tbl.innerHTML='';
+    $('#libraryInfo').innerHTML = '<span class="help">Encara no tens cap prova — crea’n una des de l’editor.</span>';
+    return;
+  }
   let thead = `<tr><th>Títol</th><th>PIN</th><th>examId</th><th>Creat</th><th>Accions</th></tr>`;
   let rows = '';
   items.forEach(x=>{
@@ -1178,14 +1742,31 @@ async function loadExamById(id){
     const res = await fetch(API_BASE + '/api/exams/' + encodeURIComponent(id));
     if(!res.ok) throw new Error('Examen no trobat (GET /api/exams/:id)');
     const data = await res.json();
-    exam = data || { title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+    exam = data || { title:'', desc:'', subject:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+    exam.settings = exam.settings || { showScoreToStudent:true, shuffle:false };
     selectedQId = (exam.questions[0]||{}).id || null;
+    previewShuffle = false;
     $('#examTitle').value = exam.title || '';
     $('#examDesc').value  = exam.desc  || '';
-    $('#examShowScore').value = (exam.settings && exam.settings.showScoreToStudent===false) ? 'no' : 'yes';
-    $('#examShuffle').checked = !!(exam.settings && exam.settings.shuffle);
+    $('#examSubject').value = exam.subject || '';
+    $('#examShowScore').value = exam.settings.showScoreToStudent===false ? 'no' : 'yes';
+    $('#examShuffle').checked = !!exam.settings.shuffle;
     renderAll();
-    localStorage.setItem('focusSrv_exam', JSON.stringify(exam));
+    ensureSubjectOption(exam.subject||'', { persist: false });
+    refreshTagSuggestions();
+    try{ localStorage.setItem('focusSrv_exam', JSON.stringify(exam)); }
+    catch(_){ /* ignore */ }
+    dirty = false;
+    if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
+    let savedAt = Date.now();
+    if(data && data.updatedAt){
+      const parsed = Date.parse(data.updatedAt);
+      if(Number.isFinite(parsed)) savedAt = parsed;
+    }
+    setLastSavedAt(savedAt);
+    setSaveStatus('ok', 'Esborrany carregat del servidor');
+    lastValidationSignature = '';
+    refreshValidationState({force:true});
     toast('Examen carregat a l’editor');
     // passa a la pestanya Editor
     document.querySelector('.tab-btn[data-tab="tab-editor"]').click();
@@ -1275,19 +1856,53 @@ function restoreExam(){
     const raw = localStorage.getItem('focusSrv_exam');
     if(raw){
       exam = JSON.parse(raw);
+      exam.settings = exam.settings || { showScoreToStudent:true, shuffle:false };
       $('#examTitle').value = exam.title||'';
       $('#examDesc').value = exam.desc||'';
       $('#examSubject').value = exam.subject || '';
       $('#examShowScore').value = exam.settings?.showScoreToStudent===false?'no':'yes';
       $('#examShuffle').checked = !!exam.settings?.shuffle;
       selectedQId = (exam.questions[0]||{}).id || null;
+      previewShuffle = false;
       renderAll();
+      ensureSubjectOption(exam.subject||'', { persist: false });
+      refreshTagSuggestions();
+      const savedRaw = localStorage.getItem(SAVED_AT_STORAGE_KEY);
+      const savedNum = savedRaw ? Number(savedRaw) : NaN;
+      setLastSavedAt(Number.isFinite(savedNum) ? savedNum : null);
+      setSaveStatus('ok', exam._id ? 'Esborrany carregat' : 'Desat localment');
+      if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
+      lastValidationSignature = '';
+      refreshValidationState({force:true});
     } else {
+      exam = { id:null, subject:'', title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+      selectedQId = null;
+      previewShuffle = false;
       renderAll();
+      setLastSavedAt(null);
+      setSaveStatus('ok', 'Prova buida');
+      if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
+      lastValidationSignature = '';
+      refreshValidationState({force:true});
     }
-  }catch(e){ renderAll(); }
+  }catch(e){
+    console.warn('No s’ha pogut restaurar l’examen local:', e);
+    exam = { id:null, subject:'', title:'', desc:'', settings:{showScoreToStudent:true, shuffle:false}, questions:[] };
+    selectedQId = null;
+    previewShuffle = false;
+    renderAll();
+    setLastSavedAt(null);
+    setSaveStatus('ok', 'Nova prova');
+    if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; }
+    lastValidationSignature = '';
+    refreshValidationState({force:true});
+  }
 }
-window.addEventListener('load', ()=>{ restoreExam(); });
+window.addEventListener('load', ()=>{
+  bootstrapSubjects();
+  loadGroupSuggestions();
+  restoreExam();
+});
 
 /* ========= Eliminar examen ========= */
 async function deleteExam(id) {
