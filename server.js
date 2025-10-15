@@ -11,6 +11,38 @@ const PORT = process.env.PORT || 3000;
 const client = new MongoClient(process.env.MONGO_URI);
 let exams, results;
 
+function toPlainId(value) {
+  if (!value) return value;
+  if (value instanceof ObjectId) return value.toHexString();
+  if (typeof value === 'object' && typeof value.toHexString === 'function') {
+    try {
+      return value.toHexString();
+    } catch (_err) {
+      // ignore fallbacks
+    }
+  }
+  return value;
+}
+
+function serializeExam(doc) {
+  if (!doc) return doc;
+  const payload = { ...doc };
+  payload._id = toPlainId(doc._id);
+  if (payload.pin != null) payload.pin = String(payload.pin);
+  if (Array.isArray(doc.questions)) {
+    payload.questions = doc.questions.map((q) => ({ ...q }));
+  }
+  return payload;
+}
+
+function serializeResult(doc) {
+  if (!doc) return doc;
+  const payload = { ...doc };
+  payload._id = toPlainId(doc._id);
+  payload.examId = toPlainId(doc.examId);
+  return payload;
+}
+
 async function initDb() {
   await client.connect();
   const db = client.db('focusExams'); // nom de la BD
@@ -54,7 +86,9 @@ app.get('/api/exams', async (req, res) => {
       .sort({ createdAt: -1 })
       .toArray();
 
-    res.json(items);
+    const safeItems = items.map(serializeExam);
+
+    res.json(safeItems);
   } catch (err) {
     console.error('❌ Error llistant exàmens:', err);
     res.status(500).json({ error: 'Error llistant exàmens' });
@@ -80,7 +114,7 @@ app.get('/api/exams/pin/:pin', async (req, res) => {
     const exam = await exams.findOne({ pin: String(req.params.pin) });
     if (!exam) return res.status(404).json({ error: 'PIN no trobat' });
     res.json({
-      _id: exam._id, // 👈 molt important per guardar resultats
+      _id: toPlainId(exam._id), // 👈 molt important per guardar resultats
       title: exam.title,
       desc: exam.desc,
       subject: exam.subject || '',
@@ -99,7 +133,7 @@ app.get('/api/exams/:examId', async (req, res) => {
   try {
     const exam = await exams.findOne({ _id: new ObjectId(req.params.examId) });
     if (!exam) return res.status(404).json({ error: 'Examen no trobat' });
-    res.json(exam);
+    res.json(serializeExam(exam));
   } catch (err) {
     console.error('❌ Error obtenint examen per ID:', err);
     res.status(500).json({ error: 'Error obtenint examen per ID' });
@@ -132,7 +166,7 @@ app.post('/api/exams', async (req, res) => {
     };
 
     const result = await exams.insertOne(doc);
-    res.json({ examId: result.insertedId, pin: String(pin) });
+    res.json({ examId: toPlainId(result.insertedId), pin: String(pin) });
   } catch (err) {
     console.error('❌ Error creant examen:', err, 'Body rebut:', req.body);
     res.status(500).json({ error: 'Error creant examen' });
@@ -185,7 +219,7 @@ app.post('/api/results', async (req, res) => {
     };
 
     const result = await results.insertOne(item);
-    res.json({ ok: true, resultId: result.insertedId });
+    res.json({ ok: true, resultId: toPlainId(result.insertedId) });
   } catch (err) {
     console.error('❌ Error desant resultat:', err, 'Payload rebut:', req.body);
     res.status(500).json({ error: 'Error desant resultat' });
@@ -197,7 +231,8 @@ app.get('/api/results/:examId', async (req, res) => {
   try {
     const examId = new ObjectId(req.params.examId);
     const items = await results.find({ examId }).toArray();
-    res.json({ examId, items });
+    const safeItems = items.map(serializeResult);
+    res.json({ examId: toPlainId(examId), items: safeItems });
   } catch (err) {
     console.error('❌ Error obtenint resultats:', err);
     res.status(500).json({ error: 'Error obtenint resultats' });
